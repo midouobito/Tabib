@@ -1,0 +1,25 @@
+{
+  "name": "tabib",
+  "version": "1.0.0",
+  "description": "TabibDZ - Annuaire Médical - Medical Directory for Algeria",
+  "main": "index.html",
+  "scripts": {
+    "dev": "python -m http.server 8000",
+    "test": "echo \"No tests configured\" && exit 0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/midouobito/Tabib.git"
+  },
+  "keywords": [
+    "medical",
+    "directory",
+    "algeria",
+    "doctors"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@vercel/analytics": "^1.4.1"
+  }
+}
