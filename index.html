@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
   <title>TabibDZ – Annuaire Médical</title>
@@ -219,11 +220,30 @@ const FB=[
 ];
 
 /* ── LOAD ── */
-async function load(){
-  try{const r=await fetch('medecins.json');if(!r.ok)throw 0;ALL=await r.json();}
-  catch{ALL=FB;}
-  buildWChips();buildSChips();filter();
+// 1. Initialise Supabase (remplace avec tes vraies clés trouvées dans tes screenshots)
+const supabase = supabase.createClient(
+  'URL_DE_TON_PROJET', // ex: https://viabbt...
+  'CLE_ANON_PUBLIQUE'  // ta clé sb_publishable...
+);
+
+// 2. Fonction pour récupérer les médecins
+async function chargerMedecins() {
+  const { data, error } = await supabase
+    .from('medecins')
+    .select('*')
+    .order('is_premium', { ascending: false }); // Les Premium en haut !
+
+  if (error) {
+    console.error("Erreur de connexion à Supabase :", error);
+    return;
+  }
+
+  // 3. Appel à ta fonction qui affiche les cartes sur le site
+  afficherMedecins(data);
 }
+
+// 4. Lancer au chargement de la page
+chargerMedecins();
 
 /* ── AVAILABILITY ── */
 function isOpen(d){
