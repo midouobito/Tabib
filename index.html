@@ -221,9 +221,9 @@ const FB=[
 
 /* ── LOAD ── */
 // 1. Initialise Supabase (remplace avec tes vraies clés trouvées dans tes screenshots)
-const supabase = supabase.createClient(
-  'https://viabbtrtusufxbuhxypb.supabase.co', // ex: https://viabbt...
-  'sb_publishable_i2E9hvP2PfkSsrYauszvCw_GO7BhNeP'  // ta clé sb_publishable...
+const supabase = window.supabase.createClient(
+  'https://viabbtrtusufxbuhxypb.supabase.co',
+  'sb_publishable_i2E9hvP2PfkSsrYauszvCw_GO7BhNeP'
 );
 
 // 2. Fonction pour récupérer les médecins
