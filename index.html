@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+  <title>TabibDZ – Annuaire Médical</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --blue:     #1D4ED8;
+      --blue-dk:  #1E3A5F;
+      --blue-lt:  #EFF6FF;
+      --teal:     #0891B2;
+      --green:    #16A34A;
+      --green-lt: #DCFCE7;
+      --red:      #DC2626;
+      --red-lt:   #FEE2E2;
+      --amber:    #D97706;
+      --amber-lt: #FEF3C7;
+      --page-bg:  #F1F5F9;
+    }
+    *{-webkit-tap-highlight-color:transparent;box-sizing:border-box;}
+    body{background:var(--page-bg);font-family:'Segoe UI',system-ui,-apple-system,sans-serif;min-height:100dvh;}
+
+    .hdr{background:linear-gradient(140deg,#1E3A5F 0%,#1D4ED8 100%);}
+
+    /* Sticky search */
+    .sz{position:sticky;top:0;z-index:40;background:#1E3A5F;padding:10px 14px 14px;box-shadow:0 4px 16px rgba(30,58,95,.30);}
+    .si{width:100%;padding:13px 46px;border-radius:13px;border:2px solid transparent;font-size:16px;background:#fff;color:#1F2937;outline:none;transition:border-color .18s;}
+    .si:focus{border-color:var(--teal);}
+    .sic{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:#9CA3AF;pointer-events:none;}
+    .sclr{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:#E5E7EB;border:none;border-radius:50%;width:24px;height:24px;cursor:pointer;font-size:12px;color:#6B7280;display:none;align-items:center;justify-content:center;}
+
+    /* GPS button */
+    .loc-btn{width:100%;margin-top:8px;padding:11px;border-radius:12px;border:none;background:rgba(255,255,255,.12);color:#fff;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:background .15s;}
+    .loc-btn.on{background:rgba(8,145,178,.35);border:1.5px solid rgba(8,145,178,.6);}
+
+    /* Chips */
+    .row{display:flex;gap:8px;overflow-x:auto;padding:10px 14px;background:var(--page-bg);-ms-overflow-style:none;scrollbar-width:none;}
+    .row::-webkit-scrollbar{display:none;}
+    .chip{flex-shrink:0;padding:7px 15px;border-radius:999px;font-size:13px;font-weight:600;border:2px solid #CBD5E1;background:#fff;color:#6B7280;cursor:pointer;white-space:nowrap;transition:all .15s;}
+    .chip.on{background:var(--blue);border-color:var(--blue);color:#fff;}
+    .schip{flex-shrink:0;padding:5px 13px;border-radius:999px;font-size:12px;font-weight:600;border:1.5px solid #E2E8F0;background:#fff;color:#9CA3AF;cursor:pointer;white-space:nowrap;transition:all .15s;}
+    .schip.on{background:var(--teal);border-color:var(--teal);color:#fff;}
+
+    /* Stats bar */
+    .stats{background:#fff;border-bottom:1px solid #E2E8F0;padding:9px 14px;font-size:13px;color:#6B7280;display:flex;align-items:center;gap:6px;}
+
+    /* Card */
+    .card{background:#fff;border-radius:18px;border:1px solid #E2E8F0;box-shadow:0 2px 10px rgba(0,0,0,.06);margin:0 14px 16px;overflow:hidden;transition:transform .12s;}
+    .card:active{transform:scale(.983);}
+
+    /* Avatar */
+    .avatar{width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--teal));display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px;color:#fff;flex-shrink:0;}
+
+    /* Badges */
+    .b-ok{background:var(--green-lt);color:var(--green);font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;}
+    .b-no{background:var(--red-lt);color:var(--red);font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;}
+    .b-spec{background:var(--blue-lt);color:var(--blue);font-size:11.5px;font-weight:700;padding:4px 10px;border-radius:999px;display:inline-block;margin-top:4px;}
+    .b-dist{background:#F0FDF4;color:#15803D;font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;display:flex;align-items:center;gap:4px;}
+
+    /* Stars */
+    .stars{display:inline-flex;gap:1px;font-size:15px;line-height:1;}
+    .star-full{color:#F59E0B;}
+    .star-empty{color:#D1D5DB;}
+
+    /* Score ring */
+    .score-ring{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:17px;flex-shrink:0;}
+    .score-high{background:var(--green-lt);color:var(--green);}
+    .score-mid{background:var(--amber-lt);color:var(--amber);}
+    .score-low{background:var(--red-lt);color:var(--red);}
+
+    /* Avis row */
+    .avis-row{display:flex;gap:10px;overflow-x:auto;padding:4px 16px 12px;-ms-overflow-style:none;scrollbar-width:none;}
+    .avis-row::-webkit-scrollbar{display:none;}
+    .avis-card{flex-shrink:0;width:220px;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:10px 12px;}
+
+    /* Avis sentiment dot */
+    .dot-pos{width:8px;height:8px;border-radius:50%;background:var(--green);flex-shrink:0;}
+    .dot-mid{width:8px;height:8px;border-radius:50%;background:var(--amber);flex-shrink:0;}
+    .dot-neg{width:8px;height:8px;border-radius:50%;background:var(--red);flex-shrink:0;}
+
+    /* Add review form */
+    .rev-form{background:#F8FAFC;border-top:1px solid #E2E8F0;padding:14px 16px;}
+    .rev-form textarea{width:100%;border:1.5px solid #E2E8F0;border-radius:10px;padding:10px 12px;font-size:14px;resize:none;outline:none;background:#fff;color:#1F2937;transition:border-color .18s;}
+    .rev-form textarea:focus{border-color:var(--teal);}
+    .rev-form input[type=text]{width:100%;border:1.5px solid #E2E8F0;border-radius:10px;padding:9px 12px;font-size:14px;outline:none;background:#fff;color:#1F2937;transition:border-color .18s;margin-bottom:8px;}
+    .rev-form input:focus{border-color:var(--teal);}
+
+    /* Star picker */
+    .star-pick{display:flex;gap:6px;font-size:26px;cursor:pointer;margin:8px 0;}
+    .star-pick span{transition:transform .1s;color:#D1D5DB;}
+    .star-pick span.sel{color:#F59E0B;}
+    .star-pick span:active{transform:scale(1.3);}
+
+    /* Toggle button */
+    .toggle-rev{width:100%;background:none;border:1.5px solid #E2E8F0;border-radius:10px;padding:9px;font-size:13px;font-weight:600;color:#6B7280;cursor:pointer;margin:0 0 0;transition:all .15s;}
+    .toggle-rev:active{background:#F1F5F9;}
+
+    /* Action buttons */
+    .btn-call{flex:1;display:flex;align-items:center;justify-content:center;gap:7px;background:var(--green);color:#fff;font-weight:700;font-size:15px;padding:13px 10px;border-radius:12px;text-decoration:none;transition:filter .13s;}
+    .btn-call:active{filter:brightness(.88);}
+    .btn-map{flex:1;display:flex;align-items:center;justify-content:center;gap:7px;background:var(--blue-lt);color:var(--blue);font-weight:700;font-size:15px;padding:13px 10px;border-radius:12px;text-decoration:none;border:2px solid #BFDBFE;transition:filter .13s;}
+    .btn-map:active{filter:brightness(.93);}
+
+    /* Skeleton */
+    .skel{background:linear-gradient(90deg,#E2E8F0 25%,#F8FAFC 50%,#E2E8F0 75%);background-size:200% 100%;animation:sh 1.3s infinite;border-radius:8px;}
+    @keyframes sh{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+    /* Empty */
+    #empty{display:none;flex-direction:column;align-items:center;text-align:center;padding:60px 28px;}
+
+    /* Toast */
+    .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1E3A5F;color:#fff;padding:12px 20px;border-radius:14px;font-size:13px;font-weight:600;box-shadow:0 4px 20px rgba(0,0,0,.25);z-index:99;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap;}
+    .toast.show{opacity:1;}
+
+    /* Submit btn */
+    .btn-submit{background:var(--blue);color:#fff;border:none;border-radius:10px;padding:10px 20px;font-size:14px;font-weight:700;cursor:pointer;transition:filter .15s;}
+    .btn-submit:active{filter:brightness(.88);}
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="hdr text-white px-4 pt-10 pb-5">
+  <div class="flex items-center gap-3 mb-2">
+    <div class="bg-white/15 rounded-2xl p-2.5">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+      </svg>
+    </div>
+    <div>
+      <h1 class="text-2xl font-black tracking-tight leading-none">TabibDZ</h1>
+      <p class="text-blue-200 text-xs font-semibold tracking-wider mt-0.5">ANNUAIRE MÉDICAL</p>
+    </div>
+  </div>
+  <p class="text-blue-100/75 text-sm leading-relaxed mt-1">Trouvez un médecin, lisez les avis et appelez en un clic.</p>
+</header>
+
+<!-- SEARCH -->
+<div class="sz">
+  <div class="relative">
+    <span class="sic">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+      </svg>
+    </span>
+    <input id="q" class="si" type="search" placeholder="Nom, spécialité ou ville…" autocomplete="off" inputmode="search"/>
+    <button id="clr" class="sclr">✕</button>
+  </div>
+  <button id="gpsBtn" class="loc-btn" onclick="requestGPS()">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round">
+      <circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>
+    </svg>
+    <span id="gpsTxt">Médecins près de moi</span>
+  </button>
+</div>
+
+<!-- WILAYA CHIPS -->
+<div class="row" id="wbar"></div>
+<!-- SPEC CHIPS -->
+<div class="row" id="sbar" style="padding-top:0"></div>
+
+<!-- STATS -->
+<div class="stats">
+  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+    <circle cx="9" cy="7" r="4"/>
+  </svg>
+  <span id="statsTxt">Chargement…</span>
+</div>
+
+<!-- CARDS -->
+<main id="list" class="pt-3 pb-6">
+  <!-- Skeleton -->
+  <div class="card p-4" id="sk1">
+    <div class="flex gap-3"><div class="skel rounded-full" style="width:52px;height:52px;flex-shrink:0"></div>
+    <div class="flex-1 pt-1 space-y-2"><div class="skel h-4 w-3/4"></div><div class="skel h-3 w-2/5"></div><div class="skel h-3 w-3/5"></div></div></div>
+    <div class="flex gap-3 mt-4"><div class="skel flex-1 h-12 rounded-xl"></div><div class="skel flex-1 h-12 rounded-xl"></div></div>
+  </div>
+  <div class="card p-4" id="sk2">
+    <div class="flex gap-3"><div class="skel rounded-full" style="width:52px;height:52px;flex-shrink:0"></div>
+    <div class="flex-1 pt-1 space-y-2"><div class="skel h-4 w-4/5"></div><div class="skel h-3 w-1/3"></div><div class="skel h-3 w-1/2"></div></div></div>
+    <div class="flex gap-3 mt-4"><div class="skel flex-1 h-12 rounded-xl"></div><div class="skel flex-1 h-12 rounded-xl"></div></div>
+  </div>
+</main>
+
+<!-- EMPTY -->
+<div id="empty">
+  <div style="font-size:52px">🩺</div>
+  <h3 class="text-lg font-bold text-gray-700 mt-4 mb-2">Aucun médecin trouvé</h3>
+  <p class="text-sm text-gray-500 max-w-xs">Essayez un autre nom, spécialité ou ville.</p>
+  <button onclick="resetAll()" class="mt-5 px-6 py-3 rounded-full text-white text-sm font-semibold" style="background:var(--blue)">Réinitialiser</button>
+</div>
+
+<footer class="text-center text-xs text-gray-400 pb-8 pt-2">TabibDZ © 2025 · Données à titre indicatif</footer>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ── STATE ── */
+let ALL=[], activeW='Toutes', activeS='Toutes', userLat=null, userLng=null, gpsOn=false;
+// localAvis: { docId: [{auteur,note,commentaire,date},...] }
+let localAvis = JSON.parse(localStorage.getItem('tabibdz_avis')||'{}');
+
+/* ── FALLBACK DATA ── */
+const FB=[
+  {id:1,nom:"Dr. Benali Ahmed",specialite:"Ophtalmologue",ville:"Ain Touta",wilaya:"Batna",adresse:"Rue principale, bâtiment X",telephone:"0550123456",horaires:"08:00 - 16:00",jours:["Dim","Lun","Mar","Mer","Jeu"],disponible:true,lat:35.4167,lng:5.8833,
+    avis:[{auteur:"Fatima B.",note:5,commentaire:"Très bon médecin, très à l'écoute.",date:"2025-05-10"},{auteur:"Karim M.",note:4,commentaire:"Bon docteur, attente un peu longue.",date:"2025-04-22"},{auteur:"Nadia R.",note:2,commentaire:"Cabinet mal organisé, j'ai attendu 2h.",date:"2025-03-15"}]},
+  {id:2,nom:"Dr. Mansouri Djamila",specialite:"Pédiatre",ville:"Batna",wilaya:"Batna",adresse:"Cité 1200 logements",telephone:"0661987654",horaires:"09:00 - 17:00",jours:["Sam","Dim","Lun","Mar","Mer","Jeu"],disponible:true,lat:35.5555,lng:6.1667,
+    avis:[{auteur:"Amira K.",note:5,commentaire:"Parfaite avec les enfants, très douce.",date:"2025-05-18"},{auteur:"Yacine D.",note:5,commentaire:"Je recommande vivement.",date:"2025-05-01"},{auteur:"Samira L.",note:3,commentaire:"Bien mais difficile à joindre.",date:"2025-04-10"}]},
+  {id:3,nom:"Dr. Hadjadj Karim",specialite:"Cardiologue",ville:"Batna",wilaya:"Batna",adresse:"Rue Mostefa Ben Boulaïd",telephone:"0770445566",horaires:"08:30 - 15:30",jours:["Dim","Lun","Mar","Mer","Jeu"],disponible:false,lat:35.5600,lng:6.1700,
+    avis:[{auteur:"Hassan B.",note:5,commentaire:"Excellent cardiologue, diagnostic précis.",date:"2025-05-20"},{auteur:"Meriem O.",note:1,commentaire:"Fermé sans prévenir, déplacement pour rien.",date:"2025-04-30"}]},
+  {id:4,nom:"Dr. Rahmani Sonia",specialite:"Généraliste",ville:"Ain Touta",wilaya:"Batna",adresse:"Avenue de l'indépendance",telephone:"0555321987",horaires:"07:30 - 14:00",jours:["Dim","Lun","Mar","Mer","Jeu","Ven"],disponible:true,lat:35.4200,lng:5.8900,
+    avis:[{auteur:"Omar T.",note:4,commentaire:"Rapide, efficace, prix raisonnable.",date:"2025-05-12"},{auteur:"Leila S.",note:5,commentaire:"La meilleure généraliste de la région !",date:"2025-05-05"}]},
+  {id:5,nom:"Dr. Bouzid Omar",specialite:"Dermatologue",ville:"Arris",wilaya:"Batna",adresse:"Rue des Martyrs",telephone:"0699112233",horaires:"09:00 - 16:00",jours:["Sam","Dim","Lun","Mar"],disponible:true,lat:35.2000,lng:6.3500,
+    avis:[{auteur:"Rania M.",note:3,commentaire:"Correct mais manque d'équipement.",date:"2025-04-28"},{auteur:"Bilal A.",note:4,commentaire:"Bon suivi, explique bien les traitements.",date:"2025-04-15"}]},
+  {id:6,nom:"Dr. Cherif Nadia",specialite:"Gynécologue",ville:"Batna",wilaya:"Batna",adresse:"Cité Administrative",telephone:"0550778899",horaires:"10:00 - 18:00",jours:["Sam","Dim","Lun","Mar","Mer","Jeu"],disponible:true,lat:35.5620,lng:6.1750,
+    avis:[{auteur:"Houda B.",note:5,commentaire:"Très professionnelle et discrète.",date:"2025-05-22"},{auteur:"Asma K.",note:5,commentaire:"Excellente, toujours disponible.",date:"2025-05-08"},{auteur:"Wafa N.",note:2,commentaire:"Attente très longue, manque d'organisation.",date:"2025-03-30"}]}
+];
+
+/* ── LOAD ── */
+async function load(){
+  try{const r=await fetch('medecins.json');if(!r.ok)throw 0;ALL=await r.json();}
+  catch{ALL=FB;}
+  buildWChips();buildSChips();filter();
+}
+
+/* ── AVAILABILITY ── */
+function isOpen(d){
+  if(!d.disponible)return false;
+  const now=new Date(),days=['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
+  if(d.jours&&!d.jours.includes(days[now.getDay()]))return false;
+  const m=d.horaires.match(/(\d{1,2}):(\d{2})\s*-\s*(\d{1,2}):(\d{2})/);
+  if(!m)return true;
+  const o=+m[1]*60+ +m[2],c=+m[3]*60+ +m[4],n=now.getHours()*60+now.getMinutes();
+  return n>=o&&n<c;
+}
+
+/* ── DISTANCE ── */
+function dist(a,b,c,e){const R=6371,dL=(c-a)*Math.PI/180,dG=(e-b)*Math.PI/180,x=Math.sin(dL/2)**2+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(dG/2)**2;return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));}
+function fmtD(k){return k<1?`${Math.round(k*1000)} m`:`${k.toFixed(1)} km`;}
+
+/* ── GPS ── */
+function requestGPS(){
+  if(!navigator.geolocation){showToast("GPS non disponible");return;}
+  document.getElementById('gpsTxt').textContent='Localisation…';
+  navigator.geolocation.getCurrentPosition(p=>{
+    userLat=p.coords.latitude;userLng=p.coords.longitude;gpsOn=true;
+    document.getElementById('gpsTxt').textContent='✓ Tri par distance';
+    document.getElementById('gpsBtn').classList.add('on');
+    showToast('📍 Position détectée — médecins triés par distance');
+    filter();
+  },()=>{document.getElementById('gpsTxt').textContent='Médecins près de moi';showToast('Position non disponible');},{timeout:8000});
+}
+
+/* ── STARS HTML ── */
+function starsHtml(note){
+  let h='<span class="stars">';
+  for(let i=1;i<=5;i++)h+=`<span class="${i<=note?'star-full':'star-empty'}">★</span>`;
+  return h+'</span>';
+}
+
+/* ── SENTIMENT ── */
+function sentimentClass(note){return note>=4?'dot-pos':note===3?'dot-mid':'dot-neg';}
+function sentimentLabel(note){return note>=4?'Positif':note===3?'Neutre':'Négatif';}
+function sentimentColor(note){return note>=4?'#16A34A':note===3?'#D97706':'#DC2626';}
+
+/* ── SCORE RING ── */
+function scoreClass(avg){return avg>=4?'score-high':avg>=3?'score-mid':'score-low';}
+
+/* ── GET ALL AVIS (JSON + local) ── */
+function getAllAvis(doc){
+  const local=localAvis[doc.id]||[];
+  return [...(doc.avis||[]),...local];
+}
+
+/* ── AVG SCORE ── */
+function avgScore(avis){
+  if(!avis.length)return null;
+  return avis.reduce((s,a)=>s+a.note,0)/avis.length;
+}
+
+/* ── CHIPS ── */
+function buildWChips(){
+  const ws=['Toutes',...new Set(ALL.map(d=>d.wilaya))];
+  const z=document.getElementById('wbar');z.innerHTML='';
+  ws.forEach(w=>{const b=document.createElement('button');b.className='chip'+(w==='Toutes'?' on':'');b.textContent=w;
+    b.onclick=()=>{activeW=w;z.querySelectorAll('.chip').forEach(c=>c.classList.toggle('on',c===b));filter();};z.appendChild(b);});
+}
+function buildSChips(){
+  const ss=['Toutes',...new Set(ALL.map(d=>d.specialite))];
+  const z=document.getElementById('sbar');z.innerHTML='';
+  ss.forEach(s=>{const b=document.createElement('button');b.className='schip'+(s==='Toutes'?' on':'');b.textContent=s;
+    b.onclick=()=>{activeS=s;z.querySelectorAll('.schip').forEach(c=>c.classList.toggle('on',c===b));filter();};z.appendChild(b);});
+}
+
+/* ── FILTER ── */
+function filter(){
+  const q=document.getElementById('q').value.toLowerCase().trim();
+  let res=ALL.slice();
+  if(activeW!=='Toutes')res=res.filter(d=>d.wilaya===activeW);
+  if(activeS!=='Toutes')res=res.filter(d=>d.specialite===activeS);
+  if(q)res=res.filter(d=>d.nom.toLowerCase().includes(q)||d.specialite.toLowerCase().includes(q)||d.ville.toLowerCase().includes(q)||d.wilaya.toLowerCase().includes(q));
+  if(gpsOn&&userLat!==null){res.forEach(d=>d._dist=dist(userLat,userLng,d.lat,d.lng));res.sort((a,b)=>a._dist-b._dist);}
+  else res.sort((a,b)=>(isOpen(a)?0:1)-(isOpen(b)?0:1)||a.nom.localeCompare(b.nom));
+  render(res);
+}
+
+/* ── RENDER ── */
+function render(docs){
+  ['sk1','sk2'].forEach(id=>{const el=document.getElementById(id);if(el)el.remove();});
+  const list=document.getElementById('list'),empty=document.getElementById('empty');
+  list.innerHTML='';
+  if(!docs.length){empty.style.display='flex';document.getElementById('statsTxt').textContent='Aucun résultat';return;}
+  empty.style.display='none';
+  const open=docs.filter(d=>isOpen(d)).length;
+  document.getElementById('statsTxt').textContent=`${docs.length} médecin${docs.length>1?'s':''} · ${open} ouvert${open>1?'s':''}${gpsOn?' · trié par distance':''}`;
+  docs.forEach(d=>list.appendChild(buildCard(d)));
+}
+
+/* ── INI ── */
+function ini(n){const p=n.replace(/Dr\.?\s*/i,'').trim().split(/\s+/);return(p[0][0]+(p[1]?p[1][0]:'')).toUpperCase();}
+
+/* ── BUILD CARD ── */
+function buildCard(doc){
+  const open=isOpen(doc);
+  const allAvis=getAllAvis(doc);
+  const avg=avgScore(allAvis);
+  const avgDisp=avg?avg.toFixed(1):'–';
+  const sClass=avg?scoreClass(avg):'score-mid';
+  const tel=`tel:${doc.telephone}`;
+  const mapsUrl=`https://www.google.com/maps/search/?api=1&query=${doc.lat},${doc.lng}`;
+  const distHtml=gpsOn&&doc._dist!=null?`<span class="b-dist"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>${fmtD(doc._dist)}</span>`:'';
+
+  // Avis section: scrollable horizontal cards
+  const avisHtml = allAvis.length ? `
+    <div style="padding:0 16px 4px;font-size:12px;font-weight:700;color:#9CA3AF;letter-spacing:.05em;">AVIS PATIENTS (${allAvis.length})</div>
+    <div class="avis-row">
+      ${allAvis.map(a=>`
+        <div class="avis-card">
+          <div class="flex items-center gap-2 mb-1.5">
+            <div class="${sentimentClass(a.note)}"></div>
+            <span class="text-xs font-bold" style="color:${sentimentColor(a.note)}">${sentimentLabel(a.note)}</span>
+            <span class="ml-auto text-xs text-gray-400">${a.date.slice(0,7)}</span>
+          </div>
+          <div style="font-size:13px;">${starsHtml(a.note)}</div>
+          <p class="text-xs text-gray-700 mt-1.5 leading-relaxed" style="display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden">${a.commentaire}</p>
+          <p class="text-xs text-gray-400 mt-1.5 font-semibold">— ${a.auteur}</p>
+        </div>
+      `).join('')}
+    </div>
+  ` : `<div class="px-4 pb-3 text-xs text-gray-400 italic">Aucun avis pour l'instant. Soyez le premier !</div>`;
+
+  const el=document.createElement('div');
+  el.className='card';
+  el.innerHTML=`
+    <div class="p-4 pb-3">
+      <!-- Header row -->
+      <div class="flex items-start gap-3">
+        <div class="avatar">${ini(doc.nom)}</div>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-start justify-between gap-2 flex-wrap">
+            <h2 class="font-bold text-base text-gray-800 leading-snug">${doc.nom}</h2>
+            <div class="flex gap-1.5 flex-wrap items-center">
+              ${distHtml}
+              <span class="${open?'b-ok':'b-no'}">${open?'● Ouvert':'● Fermé'}</span>
+            </div>
+          </div>
+          <span class="b-spec">${doc.specialite}</span>
+        </div>
+      </div>
+
+      <!-- Global score -->
+      ${avg ? `
+      <div class="flex items-center gap-3 mt-3 p-2.5 rounded-xl" style="background:#F8FAFC;border:1px solid #E2E8F0">
+        <div class="score-ring ${sClass}">${avgDisp}</div>
+        <div>
+          <div>${starsHtml(Math.round(avg))}</div>
+          <div class="text-xs text-gray-500 mt-0.5">${allAvis.length} avis · ${allAvis.filter(a=>a.note>=4).length} positifs · ${allAvis.filter(a=>a.note<=2).length} négatifs</div>
+        </div>
+      </div>` : ''}
+
+      <!-- Details -->
+      <div class="mt-3 space-y-1.5 text-sm text-gray-600">
+        <div class="flex items-start gap-2">
+          <svg class="mt-0.5 flex-shrink-0" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#60A5FA" stroke-width="2.3" stroke-linecap="round">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+          </svg>
+          <span>${doc.adresse}, <strong>${doc.ville}</strong> — <span class="text-blue-500 font-semibold">${doc.wilaya}</span></span>
+        </div>
+        <div class="flex items-center gap-2">
+          <svg class="flex-shrink-0" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#60A5FA" stroke-width="2.3" stroke-linecap="round">
+            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+          </svg>
+          <span>${doc.horaires} · ${(doc.jours||[]).join(' ')}</span>
+        </div>
+        <div class="flex items-center gap-2 font-semibold" style="color:#0891B2">
+          <svg class="flex-shrink-0" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round">
+            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.07 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3 1.22h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 9a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 16z"/>
+          </svg>
+          ${doc.telephone}
+        </div>
+      </div>
+    </div>
+
+    <!-- Divider -->
+    <div style="height:1px;background:#F1F5F9"></div>
+
+    <!-- AVIS SECTION -->
+    <div class="pt-3">${avisHtml}</div>
+
+    <!-- Toggle add review -->
+    <div class="px-4 pb-3">
+      <button class="toggle-rev" onclick="toggleForm(${doc.id})">✏️ Laisser un avis</button>
+    </div>
+
+    <!-- Add review form (hidden by default) -->
+    <div class="rev-form" id="form-${doc.id}" style="display:none">
+      <p class="text-sm font-bold text-gray-700 mb-2">Votre avis</p>
+      <input type="text" id="name-${doc.id}" placeholder="Votre prénom (ex: Fatima B.)"/>
+      <div class="star-pick" id="stars-${doc.id}" data-val="0">
+        <span onclick="setStar(${doc.id},1)">★</span>
+        <span onclick="setStar(${doc.id},2)">★</span>
+        <span onclick="setStar(${doc.id},3)">★</span>
+        <span onclick="setStar(${doc.id},4)">★</span>
+        <span onclick="setStar(${doc.id},5)">★</span>
+      </div>
+      <textarea id="txt-${doc.id}" rows="3" placeholder="Décrivez votre expérience…"></textarea>
+      <div class="flex gap-2 mt-2">
+        <button class="btn-submit" onclick="submitAvis(${doc.id})">Publier</button>
+        <button onclick="toggleForm(${doc.id})" style="flex:1;background:#F1F5F9;border:none;border-radius:10px;padding:10px;font-size:13px;font-weight:600;color:#6B7280;cursor:pointer;">Annuler</button>
+      </div>
+    </div>
+
+    <!-- Divider -->
+    <div style="height:1px;background:#F1F5F9"></div>
+
+    <!-- Action buttons -->
+    <div class="flex gap-3 p-4">
+      <a href="${tel}" class="btn-call">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round">
+          <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.07 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3 1.22h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 9a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 16z"/>
+        </svg>
+        Appeler
+      </a>
+      <a href="${mapsUrl}" target="_blank" rel="noopener" class="btn-map">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+          <polygon points="3 11 22 2 13 21 11 13 3 11"/>
+        </svg>
+        Localiser
+      </a>
+    </div>
+  `;
+  return el;
+}
+
+/* ── TOGGLE FORM ── */
+function toggleForm(id){
+  const f=document.getElementById(`form-${id}`);
+  f.style.display=f.style.display==='none'?'block':'none';
+}
+
+/* ── SET STAR ── */
+function setStar(id,val){
+  const zone=document.getElementById(`stars-${id}`);
+  zone.dataset.val=val;
+  zone.querySelectorAll('span').forEach((s,i)=>s.classList.toggle('sel',i<val));
+}
+
+/* ── SUBMIT AVIS ── */
+function submitAvis(id){
+  const name=document.getElementById(`name-${id}`).value.trim();
+  const note=parseInt(document.getElementById(`stars-${id}`).dataset.val||'0');
+  const txt=document.getElementById(`txt-${id}`).value.trim();
+  if(!name){showToast('⚠️ Entrez votre prénom');return;}
+  if(!note){showToast('⚠️ Choisissez une note (étoiles)');return;}
+  if(txt.length<10){showToast('⚠️ Commentaire trop court');return;}
+  const today=new Date().toISOString().slice(0,10);
+  const newAvis={auteur:name,note,commentaire:txt,date:today};
+  if(!localAvis[id])localAvis[id]=[];
+  localAvis[id].push(newAvis);
+  localStorage.setItem('tabibdz_avis',JSON.stringify(localAvis));
+  showToast('✅ Merci pour votre avis !');
+  filter(); // re-render
+}
+
+/* ── RESET ── */
+function resetAll(){
+  document.getElementById('q').value='';document.getElementById('clr').style.display='none';
+  activeW='Toutes';activeS='Toutes';gpsOn=false;userLat=userLng=null;
+  document.getElementById('gpsTxt').textContent='Médecins près de moi';
+  document.getElementById('gpsBtn').classList.remove('on');
+  document.querySelectorAll('.chip').forEach(c=>c.classList.toggle('on',c.textContent==='Toutes'));
+  document.querySelectorAll('.schip').forEach(c=>c.classList.toggle('on',c.textContent==='Toutes'));
+  filter();
+}
+
+/* ── TOAST ── */
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
+
+/* ── SEARCH EVENTS ── */
+const qEl=document.getElementById('q'),clrEl=document.getElementById('clr');
+qEl.addEventListener('input',()=>{clrEl.style.display=qEl.value?'flex':'none';filter();});
+clrEl.addEventListener('click',()=>{qEl.value='';clrEl.style.display='none';filter();qEl.focus();});
+
+load();
+</script>
+</body>
+</html>

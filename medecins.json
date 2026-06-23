@@ -1,0 +1,113 @@
+[
+  {
+    "id": 1,
+    "nom": "Dr. Benali Ahmed",
+    "specialite": "Ophtalmologue",
+    "ville": "Ain Touta",
+    "wilaya": "Batna",
+    "adresse": "Rue principale, bâtiment X",
+    "telephone": "0550123456",
+    "horaires": "08:00 - 16:00",
+    "jours": ["Dim","Lun","Mar","Mer","Jeu"],
+    "disponible": true,
+    "lat": 35.4167,
+    "lng": 5.8833,
+    "avis": [
+      { "auteur": "Fatima B.", "note": 5, "commentaire": "Très bon médecin, très à l'écoute et professionnel.", "date": "2025-05-10" },
+      { "auteur": "Karim M.", "note": 4, "commentaire": "Bon docteur, attente un peu longue mais consultation excellente.", "date": "2025-04-22" },
+      { "auteur": "Nadia R.", "note": 2, "commentaire": "Cabinet mal organisé, j'ai attendu 2h sans rendez-vous.", "date": "2025-03-15" }
+    ]
+  },
+  {
+    "id": 2,
+    "nom": "Dr. Mansouri Djamila",
+    "specialite": "Pédiatre",
+    "ville": "Batna",
+    "wilaya": "Batna",
+    "adresse": "Cité 1200 logements",
+    "telephone": "0661987654",
+    "horaires": "09:00 - 17:00",
+    "jours": ["Sam","Dim","Lun","Mar","Mer","Jeu"],
+    "disponible": true,
+    "lat": 35.5555,
+    "lng": 6.1667,
+    "avis": [
+      { "auteur": "Amira K.", "note": 5, "commentaire": "Parfaite avec les enfants, très douce et rassurante.", "date": "2025-05-18" },
+      { "auteur": "Yacine D.", "note": 5, "commentaire": "Je recommande vivement, très compétente.", "date": "2025-05-01" },
+      { "auteur": "Samira L.", "note": 3, "commentaire": "Bien mais difficile à joindre par téléphone.", "date": "2025-04-10" }
+    ]
+  },
+  {
+    "id": 3,
+    "nom": "Dr. Hadjadj Karim",
+    "specialite": "Cardiologue",
+    "ville": "Batna",
+    "wilaya": "Batna",
+    "adresse": "Rue Mostefa Ben Boulaïd, centre-ville",
+    "telephone": "0770445566",
+    "horaires": "08:30 - 15:30",
+    "jours": ["Dim","Lun","Mar","Mer","Jeu"],
+    "disponible": false,
+    "lat": 35.5600,
+    "lng": 6.1700,
+    "avis": [
+      { "auteur": "Hassan B.", "note": 5, "commentaire": "Excellent cardiologue, diagnostic précis et rapide.", "date": "2025-05-20" },
+      { "auteur": "Meriem O.", "note": 1, "commentaire": "Fermé sans prévenir, déplacement pour rien.", "date": "2025-04-30" }
+    ]
+  },
+  {
+    "id": 4,
+    "nom": "Dr. Rahmani Sonia",
+    "specialite": "Généraliste",
+    "ville": "Ain Touta",
+    "wilaya": "Batna",
+    "adresse": "Avenue de l'indépendance",
+    "telephone": "0555321987",
+    "horaires": "07:30 - 14:00",
+    "jours": ["Dim","Lun","Mar","Mer","Jeu","Ven"],
+    "disponible": true,
+    "lat": 35.4200,
+    "lng": 5.8900,
+    "avis": [
+      { "auteur": "Omar T.", "note": 4, "commentaire": "Rapide, efficace, prix raisonnable.", "date": "2025-05-12" },
+      { "auteur": "Leila S.", "note": 5, "commentaire": "La meilleure généraliste de la région !", "date": "2025-05-05" }
+    ]
+  },
+  {
+    "id": 5,
+    "nom": "Dr. Bouzid Omar",
+    "specialite": "Dermatologue",
+    "ville": "Arris",
+    "wilaya": "Batna",
+    "adresse": "Rue des Martyrs, Arris",
+    "telephone": "0699112233",
+    "horaires": "09:00 - 16:00",
+    "jours": ["Sam","Dim","Lun","Mar"],
+    "disponible": true,
+    "lat": 35.2000,
+    "lng": 6.3500,
+    "avis": [
+      { "auteur": "Rania M.", "note": 3, "commentaire": "Correct mais manque d'équipement moderne.", "date": "2025-04-28" },
+      { "auteur": "Bilal A.", "note": 4, "commentaire": "Bon suivi, explique bien les traitements.", "date": "2025-04-15" }
+    ]
+  },
+  {
+    "id": 6,
+    "nom": "Dr. Cherif Nadia",
+    "specialite": "Gynécologue",
+    "ville": "Batna",
+    "wilaya": "Batna",
+    "adresse": "Cité Administrative, Batna",
+    "telephone": "0550778899",
+    "horaires": "10:00 - 18:00",
+    "jours": ["Sam","Dim","Lun","Mar","Mer","Jeu"],
+    "disponible": true,
+    "lat": 35.5620,
+    "lng": 6.1750,
+    "avis": [
+      { "auteur": "Houda B.", "note": 5, "commentaire": "Très professionnelle et discrète, je recommande.", "date": "2025-05-22" },
+      { "auteur": "Asma K.", "note": 5, "commentaire": "Excellente, toujours disponible pour répondre aux questions.", "date": "2025-05-08" },
+      { "auteur": "Wafa N.", "note": 2, "commentaire": "Attente très longue, manque d'organisation.", "date": "2025-03-30" }
+    ]
+  }
+]
