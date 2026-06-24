@@ -74,8 +74,8 @@
               <li>Recherchez une requête précise (ex: <code class="bg-slate-800 text-slate-200 px-1.5 py-0.5 rounded">pédiatre Batna</code> ou <code class="bg-slate-800 text-slate-200 px-1.5 py-0.5 rounded">cardiologue Alger</code>).</li>
               <li>Ouvrez la console de développement (Appuyez sur <kbd class="bg-slate-800 px-1 rounded text-xs">F12</kbd> ou <kbd class="bg-slate-800 px-1 rounded text-xs">Ctrl+Maj+I</kbd>, puis onglet <strong>Console</strong>).</li>
               <li>Copiez le script ci-dessous, collez-le dans la console et appuyez sur <kbd class="bg-slate-800 px-1 rounded text-xs">Entrée</kbd>.</li>
-              <li>Tapez <code class="bg-slate-800 text-slate-200 px-1.5 py-0.5 rounded">await scrapeGoogleMaps("Spécialité", "Wilaya")</code> (ex: <code class="bg-slate-800 text-slate-200 px-1.5 py-0.5 rounded">await scrapeGoogleMaps("Pédiatre", "Batna")</code>) et lancez l'exécution.</li>
-              <li>La page va défiler automatiquement puis télécharger un fichier JSON sur votre ordinateur.</li>
+              <li>Le script va s'exécuter et vous demander de confirmer la spécialité et la ville via des fenêtres pop-up.</li>
+              <li>Il fera ensuite défiler la liste automatiquement puis téléchargera le fichier JSON.</li>
             </ol>
           </div>
 
@@ -189,13 +189,29 @@
 
     // SCRAPER SCRIPT FOR GOOGLE MAPS
     const scraperScript = `async function scrapeGoogleMaps(specialite, wilaya) {
-  const feed = document.querySelector('div[role="feed"]');
+  // Détection automatique du conteneur de défilement (feed)
+  let feed = document.querySelector('div[role="feed"]');
   if (!feed) {
-    console.error("Erreur: Le volet latéral de recherche Google Maps n'a pas été trouvé. Assurez-vous d'avoir lancé une recherche (ex: 'pédiatre Batna').");
+    const divs = document.querySelectorAll('div');
+    for (const div of divs) {
+      const style = window.getComputedStyle(div);
+      const hasScroll = div.scrollHeight > div.clientHeight;
+      const isScrollable = style.overflowY === 'auto' || style.overflowY === 'scroll';
+      const isSidebarWidth = div.clientWidth > 250 && div.clientWidth < 500;
+      if (hasScroll && isScrollable && isSidebarWidth) {
+        feed = div;
+        break;
+      }
+    }
+  }
+
+  if (!feed) {
+    console.error("Erreur: Le volet latéral des résultats de recherche n'a pas été trouvé.");
+    alert("Erreur: Impossible de trouver la liste des résultats. Assurez-vous que les résultats de recherche sont bien visibles à gauche.");
     return;
   }
   
-  console.log("Défilement automatique en cours... Veuillez patienter.");
+  console.log("Défilement automatique de la liste en cours... Veuillez patienter.");
   let lastHeight = feed.scrollHeight;
   while (true) {
     feed.scrollBy(0, 1000);
@@ -213,12 +229,13 @@
   }
 
   console.log("Extraction des données...");
-  const items = document.querySelectorAll('a.hfpxzc');
+  const items = document.querySelectorAll('a[href*="/maps/place/"]');
   const results = [];
+  const phoneRegex = /(?:0|\\+213)\\s*[2-7](?:\\s*[0-9]){7,8}/;
 
   items.forEach((item, index) => {
     try {
-      const nom = item.getAttribute('aria-label') || "Sans nom";
+      const nom = item.getAttribute('aria-label') || item.innerText.split('\\n')[0] || "Sans nom";
       const url = item.getAttribute('href') || "";
       
       // Extraction lat/lng
@@ -235,46 +252,56 @@
         }
       }
 
-      // Recherche du conteneur parent
-      let parent = item.parentElement;
-      while (parent && parent.tagName !== 'DIV') {
-        parent = parent.parentElement;
+      // Recherche du conteneur parent direct du flux
+      let card = item;
+      while (card && card.parentElement !== feed) {
+        card = card.parentElement;
       }
       
-      const cardText = parent ? parent.innerText : "";
+      const cardText = card ? card.innerText : "";
       const lines = cardText.split('\\n').map(l => l.trim()).filter(Boolean);
       
       // Extraction téléphone algérien
       let telephone = "Non renseigné";
-      const phoneRegex = /(0[567][0-9]\\s*[0-9\\s-]{6,10})|(\\+213\\s*[567][0-9\\s-]{8,12})/;
-      for (const line of lines) {
-        const match = line.match(phoneRegex);
-        if (match) {
-          telephone = match[0].replace(/[\\s-]/g, '').replace('+213', '0');
-          break;
-        }
+      const phoneMatch = cardText.match(phoneRegex);
+      if (phoneMatch) {
+        telephone = phoneMatch[0].replace(/[\\s-]/g, '').replace('+213', '0');
       }
 
       // Extraction Adresse
       let adresse = "Algérie";
-      const excludeKeywords = ['étoile', 'stars', 'fermé', 'ouvert', 'horaires', 'site', 'direction', 'partager', 'enregistrer', 'téléphone', 'appeler'];
-      const addressLines = lines.filter(line => {
-        if (line.includes(nom)) return false;
-        if (phoneRegex.test(line)) return false;
-        if (line.match(/^[0-9.,]+$/)) return false;
-        if (excludeKeywords.some(kw => line.toLowerCase().includes(kw))) return false;
-        return true;
-      });
-      
-      if (addressLines.length > 0) {
-        adresse = addressLines[0];
+      for (const line of lines) {
+        if (line.includes('·')) {
+          const parts = line.split('·');
+          const secondPart = parts[1] ? parts[1].trim() : '';
+          if (secondPart && !secondPart.includes('Ferm') && !secondPart.includes('Ouvert') && !secondPart.match(/[0-9]{9,10}/) && !secondPart.includes('+')) {
+            adresse = secondPart;
+            break;
+          }
+        }
+      }
+      if (adresse === "Algérie" || adresse.includes('+')) {
+        const excludeKeywords = ['étoile', 'stars', 'fermé', 'ouvert', 'horaires', 'site', 'direction', 'partager', 'enregistrer', 'téléphone', 'appeler', 'ferme'];
+        const addressLines = lines.filter(line => {
+          if (line.includes(nom)) return false;
+          if (phoneRegex.test(line)) return false;
+          if (line.match(/^[0-9.,\\s()]+$/)) return false;
+          if (excludeKeywords.some(kw => line.toLowerCase().includes(kw))) return false;
+          return true;
+        });
+        if (addressLines.length > 0) {
+          adresse = addressLines[0];
+        }
       }
 
       // Extraction de la note
       let rating = null;
-      const ratingMatch = cardText.match(/([3-5][.,][0-9])\\s*étoiles?/i) || cardText.match(/([3-5][.,][0-9])/);
-      if (ratingMatch) {
-        rating = parseFloat(ratingMatch[1].replace(',', '.'));
+      for (const line of lines) {
+        const match = line.match(/^([2-5][.,][0-9])\\s*\\(([0-9]+)\\)$/);
+        if (match) {
+          rating = parseFloat(match[1].replace(',', '.'));
+          break;
+        }
       }
 
       results.push({
@@ -292,11 +319,11 @@
         avis: rating ? [{ auteur: "Patient", note: Math.round(rating), commentaire: "Avis importé depuis Google Maps", date: new Date().toISOString().slice(0,10) }] : []
       });
     } catch (err) {
-      console.error("Erreur de parsing:", err);
+      console.error("Erreur de parsing de l'élément " + index + ":", err);
     }
   });
 
-  console.log(results.length + " médecins extraits !");
+  console.log("Extraction terminée : " + results.length + " médecins extraits !");
   
   // Téléchargement du JSON
   const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(results, null, 2));
@@ -306,7 +333,20 @@
   document.body.appendChild(dlAnchor);
   dlAnchor.click();
   dlAnchor.remove();
-}`;
+  
+  alert("Succès ! " + results.length + " médecins ont été extraits. Le fichier JSON a été téléchargé.");
+}
+
+// Lancement automatique du prompt
+(async () => {
+  const spec = prompt("Entrez la spécialité (ex: Pédiatre) :", "Pédiatre");
+  const wil = prompt("Entrez la wilaya / ville (ex: Batna) :", "Batna");
+  if (spec && wil) {
+    await scrapeGoogleMaps(spec, wil);
+  } else {
+    console.log("Scraping annulé.");
+  }
+})();`;
 
     // Fill script in textarea
     document.getElementById('scraperCode').value = scraperScript;
