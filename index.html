@@ -1254,6 +1254,7 @@
         doneProgress(); return;
       }
     }catch(e){ console.warn('Supabase:',e.message); }
+    }
     try{
       const r=await fetch('medecins.json'); if(!r.ok) throw 0;
       const data = await r.json();
@@ -1308,6 +1309,7 @@
     if(!d.disponible) return false;
     const now=new Date(), days=['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
     if(d.jours&&!d.jours.includes(days[now.getDay()])) return false;
+    if(!d.horaires || typeof d.horaires !== 'string') return true;
     const m=d.horaires.match(/(\d{1,2}):(\d{2})\s*-\s*(\d{1,2}):(\d{2})/);
     if(!m) return true;
     const o=+m[1]*60+ +m[2], c=+m[3]*60+ +m[4], n=now.getHours()*60+now.getMinutes();
@@ -1636,6 +1638,29 @@
   }
 
   /* ══════════ HELPERS ══════════ */
+  function canReview(id) {
+    let reviewed = [];
+    try {
+      reviewed = JSON.parse(localStorage.getItem('tabibdz_reviewed_ids') || '[]');
+    } catch(e) {}
+    return reviewed.length < 3;
+  }
+  function recordReview(id) {
+    let reviewed = [];
+    try {
+      reviewed = JSON.parse(localStorage.getItem('tabibdz_reviewed_ids') || '[]');
+    } catch(e) {}
+    if (!reviewed.includes(id)) {
+      reviewed.push(id);
+      localStorage.setItem('tabibdz_reviewed_ids', JSON.stringify(reviewed));
+    }
+  }
+  function sanitizeName(n) {
+    return n.replace(/<[^>]*>/g, '').trim().slice(0, 60);
+  }
+  function sanitizeComment(txt) {
+    return txt.replace(/<[^>]*>/g, '').trim().slice(0, 500);
+  }
   function toggleForm(id){
     const f=document.getElementById(`form-${id}`);
     if(f.style.display==='none'||f.style.display===''){f.style.display='flex';f.style.flexDirection='column';}
