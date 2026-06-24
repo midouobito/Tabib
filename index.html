@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
   <title>TabibDZ – Annuaire Médical</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root {
       --blue:     #1D4ED8;
@@ -202,6 +203,11 @@ let ALL=[], activeW='Toutes', activeS='Toutes', userLat=null, userLng=null, gpsO
 // localAvis: { docId: [{auteur,note,commentaire,date},...] }
 let localAvis = JSON.parse(localStorage.getItem('tabibdz_avis')||'{}');
 
+/* ── SUPABASE CLIENT ── */
+const supabaseUrl = 'https://viabbtrtusufxbuhxypb.supabase.co';
+const supabaseKey = 'sb_publishable_i2E9hvP2PfkSsrYauszvCw_GO7BhNeP';
+const supabaseDb = supabase.createClient(supabaseUrl, supabaseKey);
+
 /* ── FALLBACK DATA ── */
 const FB=[
   {id:1,nom:"Dr. Benali Ahmed",specialite:"Ophtalmologue",ville:"Ain Touta",wilaya:"Batna",adresse:"Rue principale, bâtiment X",telephone:"0550123456",horaires:"08:00 - 16:00",jours:["Dim","Lun","Mar","Mer","Jeu"],disponible:true,lat:35.4167,lng:5.8833,
@@ -220,8 +226,26 @@ const FB=[
 
 /* ── LOAD ── */
 async function load(){
-  try{const r=await fetch('medecins.json');if(!r.ok)throw 0;ALL=await r.json();}
-  catch{ALL=FB;}
+  try{
+    const { data, error } = await supabaseDb.from('medecins').select('*, avis(*)');
+    if(error) throw error;
+    if(data && data.length > 0) {
+      ALL = data;
+    } else {
+      const r = await fetch('medecins.json');
+      if(!r.ok) throw 0;
+      ALL = await r.json();
+    }
+  } catch(err) {
+    console.error("Error loading from Supabase:", err);
+    try{
+      const r = await fetch('medecins.json');
+      if(!r.ok) throw 0;
+      ALL = await r.json();
+    } catch {
+      ALL = FB;
+    }
+  }
   buildWChips();buildSChips();filter();
 }
 
@@ -468,7 +492,7 @@ function setStar(id,val){
 }
 
 /* ── SUBMIT AVIS ── */
-function submitAvis(id){
+async function submitAvis(id){
   const name=document.getElementById(`name-${id}`).value.trim();
   const note=parseInt(document.getElementById(`stars-${id}`).dataset.val||'0');
   const txt=document.getElementById(`txt-${id}`).value.trim();
@@ -476,12 +500,35 @@ function submitAvis(id){
   if(!note){showToast('⚠️ Choisissez une note (étoiles)');return;}
   if(txt.length<10){showToast('⚠️ Commentaire trop court');return;}
   const today=new Date().toISOString().slice(0,10);
-  const newAvis={auteur:name,note,commentaire:txt,date:today};
-  if(!localAvis[id])localAvis[id]=[];
-  localAvis[id].push(newAvis);
-  localStorage.setItem('tabibdz_avis',JSON.stringify(localAvis));
-  showToast('✅ Merci pour votre avis !');
-  filter(); // re-render
+  
+  const newAvis = {
+    medecin_id: id,
+    auteur: name,
+    note: note,
+    commentaire: txt,
+    date: today
+  };
+
+  try {
+    const { error } = await supabaseDb.from('avis').insert([newAvis]);
+    if (error) throw error;
+    showToast('✅ Merci pour votre avis !');
+  } catch(err) {
+    console.error("Error saving review to Supabase, saving locally:", err);
+    if(!localAvis[id])localAvis[id]=[];
+    localAvis[id].push({auteur:name,note,commentaire:txt,date:today});
+    localStorage.setItem('tabibdz_avis',JSON.stringify(localAvis));
+    showToast('✅ Avis enregistré localement');
+  }
+  
+  // Reset and toggle form
+  document.getElementById(`name-${id}`).value = '';
+  document.getElementById(`stars-${id}`).dataset.val = '0';
+  document.getElementById(`stars-${id}`).querySelectorAll('span').forEach(s => s.classList.remove('sel'));
+  document.getElementById(`txt-${id}`).value = '';
+  toggleForm(id);
+  
+  await load();
 }
 
 /* ── RESET ── */
