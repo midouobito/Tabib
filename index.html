@@ -475,6 +475,7 @@
       notif_new_doc:(nom, city)=>`Nouveau praticien : ${nom} a ouvert à ${city} !`,
       notif_new_lab:(nom, city)=>`Nouveau laboratoire : ${nom} disponible à ${city} !`,
       toast_notif_granted:'🔔 Notifications activées !',
+      load_more:'Voir plus',
     },
     ar: {
       cat_medecin:'أطباء', cat_pharmacie:'صيدليات', cat_labo:'مخابر', cat_hopital:'مستشفيات',
@@ -535,6 +536,7 @@
       notif_new_doc:(nom, city)=>`طبيب جديد: تم افتتاح عيادة ${nom} في ${city}!`,
       notif_new_lab:(nom, city)=>`مخبر جديد: يتوفر مختبر ${nom} في ${city}!`,
       toast_notif_granted:'🔔 تم تفعيل التنبيهات!',
+      load_more:'عرض المزيد',
     }
   };
 
@@ -598,6 +600,7 @@
   }
   let currentView = 'list';
   let currentFilteredDocs = [];
+  let visibleLimit = 12;
 
   let supabaseDb = null;
   if (typeof supabase !== 'undefined') {
@@ -836,7 +839,10 @@
   }
 
   /* ══════════ FILTER & RENDER ══════════ */
-  function filter(){
+  function filter(keepLimit = false){
+    if (!keepLimit) {
+      visibleLimit = 12;
+    }
     const q=document.getElementById('q').value.toLowerCase().trim();
     let res=ALL.slice().filter(d=>getCategory(d)===activeCategory);
     if(activeW!=='Toutes') res=res.filter(d=>d.wilaya===activeW);
@@ -878,7 +884,26 @@
     const open=docs.filter(d=>isOpen(d)).length;
     const catLabel=activeCategory==='médecin'?t('cat_label_med'):activeCategory==='pharmacie'?t('cat_label_pha'):activeCategory==='laboratoire'?t('cat_label_lab'):t('cat_label_hop');
     document.getElementById('statsTxt').textContent=t('stats_found',docs.length,catLabel,open,gpsOn);
-    docs.forEach(d=>list.appendChild(buildCard(d)));
+    
+    // Render only up to visibleLimit items
+    const visibleDocs = docs.slice(0, visibleLimit);
+    visibleDocs.forEach(d=>list.appendChild(buildCard(d)));
+    
+    // Add "Voir plus" button if there are more results
+    if (docs.length > visibleLimit) {
+      const loadMoreWrap = document.createElement('div');
+      loadMoreWrap.style.cssText = 'display:flex; justify-content:center; padding:10px 0 20px; width:100%;';
+      const btn = document.createElement('button');
+      btn.className = 'btn-map';
+      btn.style.cssText = 'max-width:200px; padding:10px 24px; font-weight:700;';
+      btn.textContent = t('load_more');
+      btn.onclick = () => {
+        visibleLimit += 12;
+        filter(true);
+      };
+      loadMoreWrap.appendChild(btn);
+      list.appendChild(loadMoreWrap);
+    }
   }
 
   /* ══════════ BUILD CARD ══════════ */
