@@ -1,68 +1,140 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" data-theme="light" dir="ltr">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
-  <title>TabibDZ – Annuaire Médical & Santé d'Algérie</title>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://viabbtrtusufxbuhxypb.supabase.co https://cdn.tailwindcss.com https://cdn.jsdelivr.net https://fonts.googleapis.com https://fonts.gstatic.com; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://viabbtrtusufxbuhxypb.supabase.co;">
+  <meta name="description" content="TabibDZ – Annuaire médical d'Algérie : trouvez médecins, pharmacies, laboratoires et hôpitaux avec avis patients."/>
+  <title>TabibDZ – Annuaire Médical &amp; Santé d'Algérie</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
+    /* ══════════════════════════════════════════
+       THEME TOKENS — Light (default) / Dark
+    ══════════════════════════════════════════ */
     :root {
-      --bg-dark: #090D1A;
-      --card-dark: #131A2B;
-      --card-border: rgba(255, 255, 255, 0.05);
-      --violet-primary: #8B5CF6;
-      --cyan-primary: #06B6D4;
-      --emerald-primary: #10B981;
-      --rose-primary: #F43F5E;
-      --amber-primary: #F59E0B;
+      --bg:            #F0F4FF;
+      --bg2:           #E8EEF9;
+      --surface:       #FFFFFF;
+      --surface2:      #F5F7FF;
+      --border:        rgba(100, 116, 139, 0.15);
+      --border2:       rgba(100, 116, 139, 0.10);
+      --text-primary:  #0F172A;
+      --text-secondary:#475569;
+      --text-muted:    #94A3B8;
+      --sticky-bg:     rgba(240, 244, 255, 0.90);
+      --card-hover-bg: rgba(139, 92, 246, 0.03);
+      --chip-bg:       rgba(241, 245, 249, 0.9);
+      --chip-color:    #475569;
+      --input-bg:      #FFFFFF;
+      --input-border:  rgba(100, 116, 139, 0.2);
+      --skel-from:     rgba(0,0,0,0.04);
+      --skel-mid:      rgba(0,0,0,0.09);
+      --violet-primary:#7C3AED;
+      --cyan-primary:  #0891B2;
+      --emerald-primary:#059669;
+      --rose-primary:  #E11D48;
+      --amber-primary: #D97706;
+      --shadow-card:   0 2px 16px rgba(0,0,0,0.07);
     }
-    
+
+    [data-theme="dark"] {
+      --bg:            #090D1A;
+      --bg2:           #0D1220;
+      --surface:       #131A2B;
+      --surface2:      #0F1525;
+      --border:        rgba(255, 255, 255, 0.06);
+      --border2:       rgba(255, 255, 255, 0.03);
+      --text-primary:  #F1F5F9;
+      --text-secondary:#94A3B8;
+      --text-muted:    #475569;
+      --sticky-bg:     rgba(9, 13, 26, 0.90);
+      --card-hover-bg: rgba(139, 92, 246, 0.05);
+      --chip-bg:       rgba(19, 26, 43, 0.6);
+      --chip-color:    #64748B;
+      --input-bg:      rgba(19, 26, 43, 0.6);
+      --input-border:  rgba(255, 255, 255, 0.06);
+      --skel-from:     rgba(255,255,255,0.03);
+      --skel-mid:      rgba(255,255,255,0.08);
+      --violet-primary:#8B5CF6;
+      --cyan-primary:  #06B6D4;
+      --emerald-primary:#10B981;
+      --rose-primary:  #F43F5E;
+      --amber-primary: #F59E0B;
+      --shadow-card:   0 2px 16px rgba(0,0,0,0.4);
+    }
+
     * {
       -webkit-tap-highlight-color: transparent;
       box-sizing: border-box;
     }
-    
+
     body {
-      background-color: var(--bg-dark);
-      color: #F1F5F9;
+      background-color: var(--bg);
+      color: var(--text-primary);
       font-family: 'Outfit', sans-serif;
       min-height: 100dvh;
+      transition: background-color 0.3s ease, color 0.3s ease;
     }
 
-    /* Sticky search container */
+    [dir="rtl"] body,
+    [dir="rtl"] * {
+      font-family: 'IBM Plex Sans Arabic', 'Outfit', sans-serif;
+    }
+
+    /* ── Progress Bar ── */
+    #progress-bar {
+      position: fixed;
+      top: 0; left: 0;
+      height: 3px;
+      width: 0%;
+      background: linear-gradient(90deg, var(--violet-primary), var(--cyan-primary));
+      z-index: 9999;
+      transition: width 0.3s ease, opacity 0.4s ease;
+      border-radius: 0 2px 2px 0;
+    }
+    #progress-bar.done {
+      width: 100%;
+      opacity: 0;
+    }
+
+    /* ── Sticky search container ── */
     .sz {
       position: sticky;
       top: 0;
       z-index: 40;
-      background: rgba(9, 13, 26, 0.85);
+      background: var(--sticky-bg);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      border-bottom: 1px solid var(--border2);
     }
-    
+
     .si {
       width: 100%;
       padding: 14px 18px 14px 48px;
       border-radius: 16px;
-      border: 1.5px solid rgba(255, 255, 255, 0.06);
+      border: 1.5px solid var(--input-border);
       font-size: 15px;
       font-weight: 500;
-      background: rgba(19, 26, 43, 0.6);
-      color: #fff;
+      background: var(--input-bg);
+      color: var(--text-primary);
       outline: none;
       transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
+    [dir="rtl"] .si {
+      padding: 14px 48px 14px 18px;
+    }
+    .si::placeholder { color: var(--text-muted); }
     .si:focus {
       border-color: var(--cyan-primary);
-      background: rgba(19, 26, 43, 0.9);
-      box-shadow: 0 0 0 4px rgba(6, 182, 212, 0.15);
+      background: var(--surface);
+      box-shadow: 0 0 0 4px rgba(6, 182, 212, 0.12);
     }
-    
-    /* Chips rows */
+
+    /* ── Chips rows ── */
     .row {
       display: flex;
       gap: 8px;
@@ -71,33 +143,28 @@
       -ms-overflow-style: none;
       scrollbar-width: none;
     }
-    .row::-webkit-scrollbar {
-      display: none;
-    }
-    
+    [dir="rtl"] .row { flex-direction: row-reverse; }
+    .row::-webkit-scrollbar { display: none; }
+
     .chip {
       flex-shrink: 0;
       padding: 7px 16px;
       border-radius: 999px;
       font-size: 13px;
       font-weight: 600;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      background: rgba(19, 26, 43, 0.6);
-      color: #94A3B8;
+      border: 1px solid var(--border);
+      background: var(--chip-bg);
+      color: var(--chip-color);
       cursor: pointer;
       white-space: nowrap;
       transition: all 0.15s ease;
     }
-    .chip:hover {
-      color: #fff;
-      border-color: rgba(255, 255, 255, 0.15);
-      background: rgba(19, 26, 43, 0.9);
-    }
+    .chip:hover { color: var(--text-primary); border-color: var(--border); }
     .chip.on {
       background: linear-gradient(135deg, var(--violet-primary), var(--cyan-primary));
       border-color: transparent;
       color: #fff;
-      box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
+      box-shadow: 0 4px 12px rgba(139, 92, 246, 0.25);
     }
 
     .schip {
@@ -106,17 +173,14 @@
       border-radius: 999px;
       font-size: 12px;
       font-weight: 600;
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      background: rgba(19, 26, 43, 0.3);
-      color: #64748B;
+      border: 1px solid var(--border2);
+      background: var(--chip-bg);
+      color: var(--text-muted);
       cursor: pointer;
       white-space: nowrap;
       transition: all 0.15s ease;
     }
-    .schip:hover {
-      color: #fff;
-      border-color: rgba(255, 255, 255, 0.12);
-    }
+    .schip:hover { color: var(--text-primary); border-color: var(--border); }
     .schip.on {
       background: var(--cyan-primary);
       border-color: transparent;
@@ -124,10 +188,10 @@
       box-shadow: 0 4px 10px rgba(6, 182, 212, 0.25);
     }
 
-    /* Category selection buttons */
+    /* ── Category buttons ── */
     .cat-btn {
       flex: 1;
-      min-width: 120px;
+      min-width: 110px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -136,53 +200,44 @@
       border-radius: 12px;
       font-size: 14px;
       font-weight: 600;
-      color: #94A3B8;
+      color: var(--text-secondary);
       background: transparent;
       border: none;
       cursor: pointer;
       white-space: nowrap;
       transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    .cat-btn:hover {
-      color: #F8FAFC;
-      background: rgba(255, 255, 255, 0.03);
-    }
+    .cat-btn:hover { color: var(--text-primary); background: var(--border2); }
     .cat-btn.active {
       color: #fff;
       background: linear-gradient(135deg, var(--violet-primary), var(--cyan-primary));
       box-shadow: 0 4px 15px rgba(139, 92, 246, 0.25);
     }
 
-    /* Score Ring */
+    /* ── Cat tabs container ── */
+    .cat-tabs {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-card);
+    }
+
+    /* ── Score Ring ── */
     .score-ring {
-      width: 44px;
-      height: 44px;
+      width: 44px; height: 44px;
       border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 800;
-      font-size: 15px;
-      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 15px; flex-shrink: 0;
     }
-    .score-high { background: rgba(16, 185, 129, 0.1); color: var(--emerald-primary); border: 1.5px solid rgba(16, 185, 129, 0.2); }
-    .score-mid { background: rgba(245, 158, 11, 0.1); color: var(--amber-primary); border: 1.5px solid rgba(245, 158, 11, 0.2); }
-    .score-low { background: rgba(244, 63, 94, 0.1); color: var(--rose-primary); border: 1.5px solid rgba(244, 63, 94, 0.2); }
+    .score-high { background: rgba(16,185,129,0.1); color: var(--emerald-primary); border: 1.5px solid rgba(16,185,129,0.2); }
+    .score-mid  { background: rgba(245,158,11,0.1); color: var(--amber-primary);   border: 1.5px solid rgba(245,158,11,0.2); }
+    .score-low  { background: rgba(244,63,94,0.1);  color: var(--rose-primary);    border: 1.5px solid rgba(244,63,94,0.2);  }
 
-    /* Custom Scrollbar for desktop/elements */
-    .custom-scroll::-webkit-scrollbar {
-      width: 5px;
-      height: 5px;
-    }
-    .custom-scroll::-webkit-scrollbar-track {
-      background: transparent;
-    }
-    .custom-scroll::-webkit-scrollbar-thumb {
-      background: rgba(255, 255, 255, 0.08);
-      border-radius: 4px;
-    }
+    /* ── Custom Scrollbar ── */
+    .custom-scroll::-webkit-scrollbar { width: 5px; height: 5px; }
+    .custom-scroll::-webkit-scrollbar-track { background: transparent; }
+    .custom-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
 
-    /* Avis scroll */
+    /* ── Avis scroll ── */
     .avis-row {
       display: flex;
       gap: 12px;
@@ -191,59 +246,59 @@
       -ms-overflow-style: none;
       scrollbar-width: none;
     }
-    .avis-row::-webkit-scrollbar {
-      display: none;
-    }
+    [dir="rtl"] .avis-row { flex-direction: row-reverse; }
+    .avis-row::-webkit-scrollbar { display: none; }
     .avis-card {
       flex-shrink: 0;
       width: 230px;
-      background: rgba(255, 255, 255, 0.02);
-      border: 1px solid rgba(255, 255, 255, 0.04);
+      background: var(--surface2);
+      border: 1px solid var(--border2);
       border-radius: 14px;
       padding: 12px;
     }
 
-    /* Sentiment indicators */
+    /* ── Sentiment dots ── */
     .dot-pos { width: 8px; height: 8px; border-radius: 50%; background: var(--emerald-primary); box-shadow: 0 0 8px var(--emerald-primary); }
-    .dot-mid { width: 8px; height: 8px; border-radius: 50%; background: var(--amber-primary); box-shadow: 0 0 8px var(--amber-primary); }
-    .dot-neg { width: 8px; height: 8px; border-radius: 50%; background: var(--rose-primary); box-shadow: 0 0 8px var(--rose-primary); }
+    .dot-mid { width: 8px; height: 8px; border-radius: 50%; background: var(--amber-primary);   box-shadow: 0 0 8px var(--amber-primary);   }
+    .dot-neg { width: 8px; height: 8px; border-radius: 50%; background: var(--rose-primary);    box-shadow: 0 0 8px var(--rose-primary);    }
 
-    /* Skeleton Loading */
+    /* ── Skeleton Loading ── */
     .skel {
-      background: linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.03) 75%);
+      background: linear-gradient(90deg, var(--skel-from) 25%, var(--skel-mid) 50%, var(--skel-from) 75%);
       background-size: 200% 100%;
       animation: sh 1.3s infinite;
     }
     @keyframes sh {
-      0% { background-position: 200% 0 }
+      0%   { background-position: 200% 0 }
       100% { background-position: -200% 0 }
     }
 
-    /* Star Picker */
+    /* ── Star Picker ── */
     .star-pick span {
       transition: all 0.15s ease;
-      color: rgba(255, 255, 255, 0.15);
+      color: var(--border);
+      font-size: 24px;
     }
     .star-pick span.sel {
       color: var(--amber-primary);
       text-shadow: 0 0 8px rgba(245, 158, 11, 0.4);
     }
 
-    /* Toast style */
+    /* ── Toast ── */
     .toast {
       position: fixed;
       bottom: 24px;
       left: 50%;
-      transform: translateX(-50%);
-      background: rgba(19, 26, 43, 0.95);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      color: #fff;
+      transform: translateX(-50%) translateY(8px);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text-primary);
       padding: 14px 22px;
       border-radius: 16px;
       font-size: 13px;
       font-weight: 600;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-      z-index: 99;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+      z-index: 9998;
       opacity: 0;
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       pointer-events: none;
@@ -251,104 +306,254 @@
     }
     .toast.show {
       opacity: 1;
-      bottom: 32px;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* ── Card ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-card);
+      transition: all 0.3s ease;
+    }
+    .card:hover {
+      border-color: rgba(139, 92, 246, 0.25);
+      box-shadow: 0 6px 28px rgba(139, 92, 246, 0.10);
+    }
+
+    /* ── Search section ── */
+    .search-section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-card);
+    }
+
+    /* ── Input fields inside forms ── */
+    .form-input {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      color: var(--text-primary);
+      transition: all 0.2s ease;
+    }
+    .form-input::placeholder { color: var(--text-muted); }
+    .form-input:focus {
+      border-color: var(--cyan-primary);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(6,182,212,0.1);
+    }
+
+    /* ── Divider ── */
+    .divider { border-color: var(--border); }
+
+    /* ── Header ── */
+    header {
+      background: linear-gradient(180deg, var(--surface2) 0%, transparent 100%);
+    }
+    [data-theme="light"] header {
+      background: linear-gradient(180deg, #EEF2FF 0%, transparent 100%);
+    }
+
+    /* ── Stats bar ── */
+    .stats-bar {
+      border-color: var(--border);
+      color: var(--text-muted);
+    }
+
+    /* ── Theme & Lang buttons ── */
+    .ctrl-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 13px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 700;
+      border: 1.5px solid var(--border);
+      background: var(--surface);
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+    .ctrl-btn:hover {
+      color: var(--text-primary);
+      border-color: var(--violet-primary);
+      background: var(--surface2);
+    }
+
+    /* ── GPS Button ── */
+    .gps-btn {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+    }
+    .gps-btn:hover {
+      background: var(--surface);
+      color: var(--text-primary);
+    }
+    .gps-btn.active {
+      background: rgba(6,182,212,0.08);
+      border-color: rgba(6,182,212,0.3);
+      color: var(--cyan-primary);
+    }
+
+    /* ── Section labels ── */
+    .section-label { color: var(--text-muted); }
+
+    /* ── Empty state ── */
+    .empty-state {
+      background: var(--surface);
+      border: 1px solid var(--border);
+    }
+
+    /* ── Rating badge ── */
+    .rating-badge {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+    }
+
+    /* ── Review form container ── */
+    .rev-form-inner {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+    }
+
+    /* ── Btn secondary (cancel, leave review) ── */
+    .btn-secondary {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+    }
+    .btn-secondary:hover {
+      background: var(--surface2);
+      color: var(--text-primary);
+    }
+
+    /* ── Action button maps ── */
+    .btn-maps {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+    }
+    .btn-maps:hover {
+      background: var(--surface);
+      color: var(--text-primary);
+    }
+
+    /* Smooth color transitions */
+    .card, .cat-tabs, .search-section, .chip, .schip, .cat-btn,
+    .ctrl-btn, .gps-btn, .form-input, .rating-badge, .rev-form-inner,
+    .btn-secondary, .btn-maps, .avis-card, header {
+      transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease;
     }
   </style>
 </head>
 <body class="selection:bg-violet-600/30">
 
+  <!-- Progress Bar -->
+  <div id="progress-bar"></div>
+
   <!-- HEADER -->
-  <header class="text-slate-100 px-4 pt-10 pb-8 relative overflow-hidden bg-gradient-to-b from-slate-900/60 to-transparent">
+  <header class="px-4 pt-10 pb-8 relative overflow-hidden">
     <!-- Background glows -->
     <div class="absolute -top-24 -left-20 w-80 h-80 rounded-full bg-violet-600/10 blur-3xl pointer-events-none"></div>
     <div class="absolute top-0 right-0 w-64 h-64 rounded-full bg-cyan-600/10 blur-3xl pointer-events-none"></div>
-    
-    <div class="max-w-md mx-auto flex items-center justify-between gap-4">
+
+    <div class="max-w-md mx-auto flex items-center justify-between gap-3">
+      <!-- Logo -->
       <div class="flex items-center gap-3">
-        <div class="bg-gradient-to-br from-violet-600 to-cyan-500 rounded-2xl p-2.5 shadow-lg shadow-violet-600/25">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <div class="bg-gradient-to-br from-violet-600 to-cyan-500 rounded-2xl p-2.5 shadow-lg shadow-violet-600/25 flex-shrink-0">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
           </svg>
         </div>
         <div>
-          <h1 class="text-2xl font-black tracking-tight leading-none bg-gradient-to-r from-white via-slate-100 to-slate-300 bg-clip-text text-transparent">TabibDZ</h1>
-          <p class="text-[9px] font-extrabold tracking-widest text-cyan-400 uppercase mt-1">Dossier Santé Algérie</p>
+          <h1 class="text-2xl font-black tracking-tight leading-none bg-gradient-to-r from-violet-600 via-purple-500 to-cyan-500 bg-clip-text text-transparent">TabibDZ</h1>
+          <p id="tagline" class="text-[9px] font-extrabold tracking-widest text-cyan-600 uppercase mt-1">Dossier Santé Algérie</p>
         </div>
       </div>
-      <a href="admin.html" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-800/80 hover:bg-slate-800 border border-slate-700/60 rounded-xl text-xs font-bold text-slate-300 hover:text-white transition-all duration-200">
-        🔧 Admin
-      </a>
+
+      <!-- Controls: Lang + Theme -->
+      <div class="flex items-center gap-2 flex-shrink-0">
+        <button id="langBtn" onclick="toggleLang()" class="ctrl-btn" title="Changer la langue">
+          <span id="langIcon">🌐</span>
+          <span id="langLabel">عربي</span>
+        </button>
+        <button id="themeBtn" onclick="toggleTheme()" class="ctrl-btn" title="Changer le thème">
+          <span id="themeIcon">🌙</span>
+        </button>
+      </div>
     </div>
-    
+
     <div class="max-w-md mx-auto mt-4">
-      <p class="text-slate-400 text-sm leading-relaxed">Trouvez un médecin, une pharmacie, un laboratoire ou un hôpital à proximité en Algérie, lisez les avis patients et contactez-les instantanément.</p>
+      <p id="header-desc" class="text-sm leading-relaxed" style="color: var(--text-secondary)">Trouvez un médecin, une pharmacie, un laboratoire ou un hôpital en Algérie, lisez les avis patients et contactez-les instantanément.</p>
     </div>
   </header>
 
   <!-- MAIN WRAPPER -->
   <div class="max-w-md mx-auto px-4 pb-12">
 
-    <!-- CATEGORIES ONGLETS (STYLE MACHROU3) -->
-    <div class="flex gap-1.5 p-1.5 bg-slate-900/70 backdrop-blur-md rounded-2xl border border-slate-800/80 mb-5 overflow-x-auto custom-scroll">
-      <button onclick="setCategory('médecin')" class="cat-btn active" data-cat="médecin">
-        <span>🩺</span> Médecins
+    <!-- CATEGORIES TABS -->
+    <div class="cat-tabs flex gap-1.5 p-1.5 rounded-2xl mb-5 overflow-x-auto custom-scroll">
+      <button onclick="setCategory('médecin')" class="cat-btn active" data-cat="médecin" id="cat-medecin">
+        <span>🩺</span> <span class="i18n" data-key="cat_medecin">Médecins</span>
       </button>
-      <button onclick="setCategory('pharmacie')" class="cat-btn" data-cat="pharmacie">
-        <span>💊</span> Pharmacies
+      <button onclick="setCategory('pharmacie')" class="cat-btn" data-cat="pharmacie" id="cat-pharmacie">
+        <span>💊</span> <span class="i18n" data-key="cat_pharmacie">Pharmacies</span>
       </button>
-      <button onclick="setCategory('laboratoire')" class="cat-btn" data-cat="laboratoire">
-        <span>🔬</span> Labos
+      <button onclick="setCategory('laboratoire')" class="cat-btn" data-cat="laboratoire" id="cat-laboratoire">
+        <span>🔬</span> <span class="i18n" data-key="cat_labo">Labos</span>
       </button>
-      <button onclick="setCategory('hôpital')" class="cat-btn" data-cat="hôpital">
-        <span>🏥</span> Hôpitaux
+      <button onclick="setCategory('hôpital')" class="cat-btn" data-cat="hôpital" id="cat-hopital">
+        <span>🏥</span> <span class="i18n" data-key="cat_hopital">Hôpitaux</span>
       </button>
     </div>
 
     <!-- SEARCH & GPS -->
-    <div class="sz rounded-2xl border border-slate-800/60 bg-slate-900/20 p-3 mb-5 space-y-3">
+    <div class="search-section sz rounded-2xl p-3 mb-5 space-y-3">
       <div class="relative">
-        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none">
+        <span class="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" style="color: var(--text-muted)">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
             <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
           </svg>
         </span>
-        <input id="q" class="si" type="search" placeholder="Rechercher par nom, ville..." autocomplete="off" inputmode="search"/>
-        <button id="clr" class="absolute right-4 top-1/2 -translate-y-1/2 bg-slate-800 hover:bg-slate-700 w-6 h-6 rounded-full text-xs text-slate-400 hover:text-white flex items-center justify-center transition-all" style="display:none">✕</button>
+        <input id="q" class="si" type="search" placeholder="Rechercher par nom, ville..." autocomplete="off" inputmode="search" maxlength="80"/>
+        <button id="clr" class="absolute right-4 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full text-xs flex items-center justify-center transition-all btn-secondary" style="display:none">✕</button>
       </div>
-      
-      <button id="gpsBtn" class="w-full py-3 rounded-16 bg-slate-800/50 hover:bg-slate-800 border border-slate-700/40 text-slate-200 hover:text-white text-sm font-semibold flex items-center justify-center gap-2.5 transition-all duration-200" onclick="requestGPS()">
-        <svg class="text-cyan-400 animate-pulse" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+
+      <button id="gpsBtn" class="gps-btn w-full py-3 rounded-xl border text-sm font-semibold flex items-center justify-center gap-2.5 transition-all duration-200" onclick="requestGPS()">
+        <svg class="text-cyan-500 animate-pulse" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
           <circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>
         </svg>
-        <span id="gpsTxt">Établissements près de moi</span>
+        <span id="gpsTxt" class="i18n" data-key="gps_btn">Établissements près de moi</span>
       </button>
     </div>
 
     <!-- FILTERS: WILAYAS -->
     <div class="mb-2">
-      <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest px-4 mb-1">Filtrer par Wilaya</p>
+      <p class="section-label text-[10px] font-bold uppercase tracking-widest px-4 mb-1 i18n" data-key="filter_wilaya">Filtrer par Wilaya</p>
       <div class="row custom-scroll" id="wbar"></div>
     </div>
-    
-    <!-- FILTERS: SPECIALTIES (Only for médecins) -->
+
+    <!-- FILTERS: SPECIALTIES -->
     <div class="mb-4" id="sbar_container">
-      <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest px-4 mb-1">Spécialité médicale</p>
+      <p class="section-label text-[10px] font-bold uppercase tracking-widest px-4 mb-1 i18n" data-key="filter_spec">Spécialité médicale</p>
       <div class="row custom-scroll" id="sbar"></div>
     </div>
 
     <!-- STATS -->
-    <div class="flex items-center gap-2 px-2 py-3 border-b border-slate-800/50 text-xs text-slate-400 font-semibold mb-4">
-      <svg class="text-violet-400" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+    <div class="stats-bar flex items-center gap-2 px-2 py-3 border-b text-xs font-semibold mb-4">
+      <svg class="text-violet-500 flex-shrink-0" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
         <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
         <circle cx="9" cy="7" r="4"/>
       </svg>
-      <span id="statsTxt">Chargement en cours...</span>
+      <span id="statsTxt" class="i18n" data-key="loading">Chargement en cours...</span>
     </div>
 
     <!-- LIST CARDS -->
     <main id="list" class="space-y-4">
-      <!-- Skeleton loader (visible initially) -->
-      <div class="bg-slate-900/20 border border-slate-800/80 rounded-2xl p-5 space-y-4" id="sk1">
+      <!-- Skeleton loaders -->
+      <div class="card rounded-2xl p-5 space-y-4" id="sk1">
         <div class="flex gap-4">
           <div class="skel rounded-2xl w-14 h-14 flex-shrink-0"></div>
           <div class="flex-1 py-1 space-y-2.5">
@@ -358,7 +563,7 @@
         </div>
         <div class="skel h-12 w-full rounded-xl"></div>
       </div>
-      <div class="bg-slate-900/20 border border-slate-800/80 rounded-2xl p-5 space-y-4" id="sk2">
+      <div class="card rounded-2xl p-5 space-y-4" id="sk2">
         <div class="flex gap-4">
           <div class="skel rounded-2xl w-14 h-14 flex-shrink-0"></div>
           <div class="flex-1 py-1 space-y-2.5">
@@ -368,513 +573,1008 @@
         </div>
         <div class="skel h-12 w-full rounded-xl"></div>
       </div>
+      <div class="card rounded-2xl p-5 space-y-4" id="sk3">
+        <div class="flex gap-4">
+          <div class="skel rounded-2xl w-14 h-14 flex-shrink-0"></div>
+          <div class="flex-1 py-1 space-y-2.5">
+            <div class="skel h-4 w-4/5 rounded"></div>
+            <div class="skel h-3.5 w-2/5 rounded"></div>
+          </div>
+        </div>
+        <div class="skel h-12 w-full rounded-xl"></div>
+      </div>
+      <div class="card rounded-2xl p-5 space-y-4" id="sk4">
+        <div class="flex gap-4">
+          <div class="skel rounded-2xl w-14 h-14 flex-shrink-0"></div>
+          <div class="flex-1 py-1 space-y-2.5">
+            <div class="skel h-4 w-1/2 rounded"></div>
+            <div class="skel h-3.5 w-1/3 rounded"></div>
+          </div>
+        </div>
+        <div class="skel h-12 w-full rounded-xl"></div>
+      </div>
     </main>
 
-    <!-- EMPTY CONTAINER -->
-    <div id="empty" class="hidden flex-col items-center text-center py-16 px-4 bg-slate-900/10 border border-slate-800/50 rounded-2xl">
+    <!-- EMPTY STATE -->
+    <div id="empty" class="hidden flex-col items-center text-center py-16 px-4 empty-state rounded-2xl">
       <div class="text-5xl">🩺</div>
-      <h3 class="text-base font-bold text-slate-300 mt-4 mb-1">Aucun résultat trouvé</h3>
-      <p class="text-xs text-slate-500 max-w-xs leading-relaxed">Essayez d'ajuster votre recherche, de changer de catégorie ou de réinitialiser vos filtres.</p>
-      <button onclick="resetAll()" class="mt-6 px-6 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-500 text-white text-xs font-bold transition-all shadow-md shadow-violet-600/10">Réinitialiser les filtres</button>
+      <h3 class="text-base font-bold mt-4 mb-1 i18n" data-key="empty_title" style="color:var(--text-primary)">Aucun résultat trouvé</h3>
+      <p class="text-xs max-w-xs leading-relaxed i18n" data-key="empty_desc" style="color:var(--text-muted)">Essayez d'ajuster votre recherche, de changer de catégorie ou de réinitialiser vos filtres.</p>
+      <button onclick="resetAll()" class="mt-6 px-6 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-500 text-white text-xs font-bold transition-all shadow-md shadow-violet-600/10 i18n" data-key="reset_btn">Réinitialiser les filtres</button>
     </div>
 
     <!-- FOOTER -->
-    <footer class="text-center text-[10px] text-slate-600 pt-12 pb-6 border-t border-slate-800/30 mt-8">
-      TabibDZ © 2026 · Les données récoltées le sont à titre purement indicatif.
+    <footer class="text-center text-[10px] pt-12 pb-6 border-t mt-8" style="color:var(--text-muted); border-color:var(--border)">
+      TabibDZ © 2026 · <span class="i18n" data-key="footer_note">Les données récoltées le sont à titre purement indicatif.</span>
     </footer>
 
   </div>
 
-  <!-- TOAST NOTIFICATION -->
+  <!-- TOAST -->
   <div class="toast" id="toast"></div>
 
   <script>
-    /* ── STATE ── */
-    let ALL=[], activeCategory='médecin', activeW='Toutes', activeS='Toutes', userLat=null, userLng=null, gpsOn=false;
-    // localAvis: { docId: [{auteur,note,commentaire,date},...] }
-    let localAvis = JSON.parse(localStorage.getItem('tabibdz_avis')||'{}');
+  /* ══════════════════════════════════════════════════════
+     SECURITY: HTML Escape (XSS prevention)
+  ══════════════════════════════════════════════════════ */
+  function escHtml(s) {
+    if (typeof s !== 'string') return '';
+    return s
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
 
-    /* ── SUPABASE CLIENT ── */
-    const supabaseUrl = 'https://viabbtrtusufxbuhxypb.supabase.co';
-    const supabaseKey = 'sb_publishable_i2E9hvP2PfkSsrYauszvCw_GO7BhNeP';
-    const supabaseDb = supabase.createClient(supabaseUrl, supabaseKey);
+  function sanitizeName(s) {
+    return s.replace(/[<>{}()\[\]\\\/;=]/g, '').slice(0, 60).trim();
+  }
+  function sanitizeComment(s) {
+    return s.replace(/[<>{}\\]/g, '').slice(0, 500).trim();
+  }
 
-    /* ── FALLBACK DATA (Pour tests ou secours) ── */
-    const FB=[
-      {id:1,nom:"Dr. Benali Ahmed",specialite:"Ophtalmologue",ville:"Ain Touta",wilaya:"Batna",adresse:"Rue principale, bâtiment X",telephone:"0550123456",horaires:"08:00 - 16:00",jours:["Dim","Lun","Mar","Mer","Jeu"],disponible:true,lat:35.4167,lng:5.8833,
-        avis:[{auteur:"Fatima B.",note:5,commentaire:"Très bon médecin, très à l'écoute.",date:"2025-05-10"},{auteur:"Karim M.",note:4,commentaire:"Bon docteur, attente un peu longue.",date:"2025-04-22"},{auteur:"Nadia R.",note:2,commentaire:"Cabinet mal organisé, j'ai attendu 2h.",date:"2025-03-15"}]},
-      {id:2,nom:"Dr. Mansouri Djamila",specialite:"Pédiatre",ville:"Batna",wilaya:"Batna",adresse:"Cité 1200 logements",telephone:"0661987654",horaires:"09:00 - 17:00",jours:["Sam","Dim","Lun","Mar","Mer","Jeu"],disponible:true,lat:35.5555,lng:6.1667,
-        avis:[{auteur:"Amira K.",note:5,commentaire:"Parfaite avec les enfants, très douce.",date:"2025-05-18"},{auteur:"Yacine D.",note:5,commentaire:"Je recommande vivement.",date:"2025-05-01"},{auteur:"Samira L.",note:3,commentaire:"Bien mais difficile à joindre.",date:"2025-04-10"}]},
-      {id:3,nom:"Dr. Hadjadj Karim",specialite:"Cardiologue",ville:"Batna",wilaya:"Batna",adresse:"Rue Mostefa Ben Boulaïd",telephone:"0770445566",horaires:"08:30 - 15:30",jours:["Dim","Lun","Mar","Mer","Jeu"],disponible:false,lat:35.5600,lng:6.1700,
-        avis:[{auteur:"Hassan B.",note:5,commentaire:"Excellent cardiologue, diagnostic précis.",date:"2025-05-20"},{auteur:"Meriem O.",note:1,commentaire:"Fermé sans prévenir, déplacement pour rien.",date:"2025-04-30"}]},
-      {id:4,nom:"Pharmacie de Garde Batna",specialite:"Pharmacie",ville:"Batna",wilaya:"Batna",adresse:"Avenue de l'Indépendance",telephone:"033801234",horaires:"00:00 - 24:00",jours:["Sam","Dim","Lun","Mar","Mer","Jeu","Ven"],disponible:true,lat:35.5500,lng:6.1600,avis:[]},
-      {id:5,nom:"Laboratoire d'analyses médicales Mila",specialite:"Laboratoire",ville:"Mila",wilaya:"Mila",adresse:"Cité des Fleurs",telephone:"031567890",horaires:"07:30 - 16:30",jours:["Dim","Lun","Mar","Mer","Jeu"],disponible:true,lat:36.4500,lng:6.2600,avis:[]}
-    ];
+  /* ── Rate limiting: max 3 avis per doctor per session ── */
+  const sessionReviews = JSON.parse(sessionStorage.getItem('tabibdz_session_rev') || '{}');
+  function canReview(docId) {
+    return (sessionReviews[docId] || 0) < 3;
+  }
+  function recordReview(docId) {
+    sessionReviews[docId] = (sessionReviews[docId] || 0) + 1;
+    sessionStorage.setItem('tabibdz_session_rev', JSON.stringify(sessionReviews));
+  }
 
-    /* ── LOAD DATA ── */
-    async function load(){
-      try{
-        const { data, error } = await supabaseDb.from('medecins').select('*, avis(*)');
-        if(error) throw error;
-        if(data && data.length > 0) {
-          ALL = data;
-        } else {
-          const r = await fetch('medecins.json');
-          if(!r.ok) throw 0;
-          ALL = await r.json();
-        }
-      } catch(err) {
-        console.error("Error loading from Supabase, using fallback:", err);
-        try{
-          const r = await fetch('medecins.json');
-          if(!r.ok) throw 0;
-          ALL = await r.json();
-        } catch {
-          ALL = FB;
-        }
+  /* ══════════════════════════════════════════════════════
+     TRANSLATIONS (FR / AR)
+  ══════════════════════════════════════════════════════ */
+  const LANGS = {
+    fr: {
+      cat_medecin:   'Médecins',
+      cat_pharmacie: 'Pharmacies',
+      cat_labo:      'Labos',
+      cat_hopital:   'Hôpitaux',
+      gps_btn:       'Établissements près de moi',
+      gps_locating:  'Géolocalisation...',
+      gps_sorted:    '✓ Trié par distance',
+      filter_wilaya: 'Filtrer par Wilaya',
+      filter_spec:   'Spécialité médicale',
+      loading:       'Chargement en cours...',
+      no_result:     'Aucun résultat',
+      stats_found:   (n, cat, open, gps) => `${n} ${cat}${n>1?'s':''} trouvé${n>1?'s':''} · ${open} ouvert${open>1?'s':''}${gps?' · trié par proximité':''}`,
+      empty_title:   'Aucun résultat trouvé',
+      empty_desc:    "Essayez d'ajuster votre recherche, de changer de catégorie ou de réinitialiser vos filtres.",
+      reset_btn:     'Réinitialiser les filtres',
+      leave_review:  '✏️ Laisser un avis',
+      give_review:   'Donner votre avis',
+      name_ph:       'Votre prénom (ex: Fatima B.)',
+      rating_lbl:    'Note :',
+      comment_ph:    'Rédigez votre commentaire...',
+      publish_btn:   'Publier',
+      cancel_btn:    'Annuler',
+      call_btn:      'Appeler',
+      directions_btn:'Itinéraire',
+      open_lbl:      'Ouvert',
+      closed_lbl:    'Fermé',
+      reviews_title: (n) => `Avis des Patients (${n})`,
+      no_reviews:    'Aucun avis patient pour le moment.',
+      pos_lbl:       'Positif',
+      neu_lbl:       'Neutre',
+      neg_lbl:       'Négatif',
+      all_lbl:       'Toutes',
+      tagline:       'Dossier Santé Algérie',
+      header_desc:   "Trouvez un médecin, une pharmacie, un laboratoire ou un hôpital en Algérie, lisez les avis patients et contactez-les instantanément.",
+      footer_note:   "Les données récoltées le sont à titre purement indicatif.",
+      toast_no_gps:  'GPS non disponible',
+      toast_gps_ok:  '📍 Position captée — triés par proximité',
+      toast_gps_err: 'Position non disponible',
+      toast_review_ok:'✅ Merci pour votre avis !',
+      toast_review_local:'✅ Avis enregistré localement',
+      toast_name_req:'⚠️ Entrez votre prénom',
+      toast_star_req:'⚠️ Choisissez une note',
+      toast_short_cmt:'⚠️ Commentaire trop court (min. 10 caractères)',
+      toast_rate_limit:'⚠️ Limite de 3 avis par médecin atteinte',
+      loading_cache: '⚡ Données en cache chargées',
+      cat_label_med: 'médecin',
+      cat_label_pha: 'pharmacie',
+      cat_label_lab: 'laboratoire',
+      cat_label_hop: 'hôpital',
+    },
+    ar: {
+      cat_medecin:   'أطباء',
+      cat_pharmacie: 'صيدليات',
+      cat_labo:      'مخابر',
+      cat_hopital:   'مستشفيات',
+      gps_btn:       'المرافق بالقرب مني',
+      gps_locating:  'جاري تحديد الموقع...',
+      gps_sorted:    '✓ مرتب حسب المسافة',
+      filter_wilaya: 'تصفية حسب الولاية',
+      filter_spec:   'التخصص الطبي',
+      loading:       'جاري التحميل...',
+      no_result:     'لا توجد نتائج',
+      stats_found:   (n, cat, open, gps) => `${n} ${cat} موجود · ${open} مفتوح${gps?' · مرتب حسب القرب':''}`,
+      empty_title:   'لا توجد نتائج',
+      empty_desc:    'حاول تعديل بحثك أو تغيير الفئة أو إعادة ضبط الفلاتر.',
+      reset_btn:     'إعادة ضبط الفلاتر',
+      leave_review:  '✏️ اترك تقييماً',
+      give_review:   'أعطِ رأيك',
+      name_ph:       'اسمك (مثال: فاطمة ب.)',
+      rating_lbl:    'التقييم:',
+      comment_ph:    'اكتب تعليقك...',
+      publish_btn:   'نشر',
+      cancel_btn:    'إلغاء',
+      call_btn:      'اتصل',
+      directions_btn:'المسار',
+      open_lbl:      'مفتوح',
+      closed_lbl:    'مغلق',
+      reviews_title: (n) => `آراء المرضى (${n})`,
+      no_reviews:    'لا توجد آراء بعد.',
+      pos_lbl:       'إيجابي',
+      neu_lbl:       'محايد',
+      neg_lbl:       'سلبي',
+      all_lbl:       'الكل',
+      tagline:       'الدليل الصحي الجزائري',
+      header_desc:   'ابحث عن طبيب أو صيدلية أو مخبر أو مستشفى في الجزائر، واقرأ آراء المرضى وتواصل معهم فوراً.',
+      footer_note:   'البيانات المجمعة لأغراض إعلامية فقط.',
+      toast_no_gps:  'GPS غير متاح',
+      toast_gps_ok:  '📍 تم تحديد الموقع — مرتبون حسب القرب',
+      toast_gps_err: 'الموقع غير متاح',
+      toast_review_ok:'✅ شكراً على تقييمك!',
+      toast_review_local:'✅ تم حفظ التقييم محلياً',
+      toast_name_req:'⚠️ أدخل اسمك',
+      toast_star_req:'⚠️ اختر عدد النجوم',
+      toast_short_cmt:'⚠️ التعليق قصير جداً (10 أحرف على الأقل)',
+      toast_rate_limit:'⚠️ حد 3 تقييمات للطبيب الواحد',
+      loading_cache: '⚡ البيانات محملة من الذاكرة المؤقتة',
+      cat_label_med: 'طبيب',
+      cat_label_pha: 'صيدلية',
+      cat_label_lab: 'مخبر',
+      cat_label_hop: 'مستشفى',
+    }
+  };
+
+  let currentLang = localStorage.getItem('tabibdz_lang') || 'fr';
+
+  function t(key, ...args) {
+    const entry = LANGS[currentLang][key];
+    return typeof entry === 'function' ? entry(...args) : (entry || key);
+  }
+
+  function applyLang() {
+    const isAr = currentLang === 'ar';
+    document.documentElement.lang = currentLang;
+    document.documentElement.dir = isAr ? 'rtl' : 'ltr';
+
+    document.getElementById('langLabel').textContent = isAr ? 'FR' : 'عربي';
+    document.getElementById('tagline').textContent = t('tagline');
+    document.getElementById('header-desc').textContent = t('header_desc');
+
+    // Update all i18n elements
+    document.querySelectorAll('.i18n[data-key]').forEach(el => {
+      const key = el.dataset.key;
+      if (LANGS[currentLang][key] && typeof LANGS[currentLang][key] !== 'function') {
+        el.textContent = LANGS[currentLang][key];
       }
+    });
+
+    // Update search placeholder
+    document.getElementById('q').placeholder = isAr
+      ? 'ابحث بالاسم أو المدينة...'
+      : 'Rechercher par nom, ville...';
+
+    // Update GPS button (if not already active)
+    if (!gpsOn) {
+      document.getElementById('gpsTxt').textContent = t('gps_btn');
+    }
+
+    // Re-render if data loaded
+    if (ALL.length > 0) {
       buildWChips();
       buildSChips();
       filter();
     }
+  }
 
-    /* ── CATEGORY CLASSIFICATION (MACHROU3 STYLE) ── */
-    function getCategory(item) {
-      const spec = (item.specialite || "").toLowerCase().trim();
-      if (spec.includes('pharmacie')) return 'pharmacie';
-      if (spec.includes('laboratoire') || spec.includes('analyse')) return 'laboratoire';
-      if (spec.includes('hôpital') || spec.includes('hopital') || spec.includes('clinique')) return 'hôpital';
-      return 'médecin';
-    }
+  function toggleLang() {
+    currentLang = currentLang === 'fr' ? 'ar' : 'fr';
+    localStorage.setItem('tabibdz_lang', currentLang);
+    applyLang();
+  }
 
-    function setCategory(cat) {
-      activeCategory = cat;
-      activeS = 'Toutes'; // reset specialty filter
-      
-      // Update category active style
-      document.querySelectorAll('.cat-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.cat === cat);
-      });
-      
-      // Toggle specialties chips bar visibility
-      const sbarContainer = document.getElementById('sbar_container');
-      if (cat === 'médecin') {
-        sbarContainer.style.display = 'block';
-        buildSChips();
-      } else {
-        sbarContainer.style.display = 'none';
+  /* ══════════════════════════════════════════════════════
+     THEME
+  ══════════════════════════════════════════════════════ */
+  let currentTheme = localStorage.getItem('tabibdz_theme') || 'light';
+
+  function applyTheme() {
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    document.getElementById('themeIcon').textContent = currentTheme === 'dark' ? '☀️' : '🌙';
+  }
+
+  function toggleTheme() {
+    currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+    localStorage.setItem('tabibdz_theme', currentTheme);
+    applyTheme();
+  }
+
+  // Apply on load
+  applyTheme();
+
+  /* ══════════════════════════════════════════════════════
+     PROGRESS BAR
+  ══════════════════════════════════════════════════════ */
+  let progressTimer = null;
+  function startProgress() {
+    const bar = document.getElementById('progress-bar');
+    bar.style.width = '0%';
+    bar.style.opacity = '1';
+    bar.classList.remove('done');
+    let w = 0;
+    progressTimer = setInterval(() => {
+      w = Math.min(w + (w < 60 ? 8 : w < 85 ? 3 : 0.5), 90);
+      bar.style.width = w + '%';
+    }, 120);
+  }
+  function doneProgress() {
+    clearInterval(progressTimer);
+    const bar = document.getElementById('progress-bar');
+    bar.style.width = '100%';
+    setTimeout(() => bar.classList.add('done'), 300);
+  }
+
+  /* ══════════════════════════════════════════════════════
+     STATE
+  ══════════════════════════════════════════════════════ */
+  let ALL = [], activeCategory = 'médecin', activeW = 'Toutes', activeS = 'Toutes';
+  let userLat = null, userLng = null, gpsOn = false;
+  let localAvis = JSON.parse(localStorage.getItem('tabibdz_avis') || '{}');
+
+  /* ── Supabase client ── */
+  const supabaseUrl = 'https://viabbtrtusufxbuhxypb.supabase.co';
+  const supabaseKey = 'sb_publishable_i2E9hvP2PfkSsrYauszvCw_GO7BhNeP';
+  const supabaseDb  = supabase.createClient(supabaseUrl, supabaseKey);
+
+  /* ── Fallback data ── */
+  const FB = [
+    {id:1,nom:"Dr. Benali Ahmed",specialite:"Ophtalmologue",ville:"Ain Touta",wilaya:"Batna",adresse:"Rue principale, bâtiment X",telephone:"0550123456",horaires:"08:00 - 16:00",jours:["Dim","Lun","Mar","Mer","Jeu"],disponible:true,lat:35.4167,lng:5.8833,
+      avis:[{auteur:"Fatima B.",note:5,commentaire:"Très bon médecin, très à l'écoute.",date:"2025-05-10"},{auteur:"Karim M.",note:4,commentaire:"Bon docteur, attente un peu longue.",date:"2025-04-22"},{auteur:"Nadia R.",note:2,commentaire:"Cabinet mal organisé, j'ai attendu 2h.",date:"2025-03-15"}]},
+    {id:2,nom:"Dr. Mansouri Djamila",specialite:"Pédiatre",ville:"Batna",wilaya:"Batna",adresse:"Cité 1200 logements",telephone:"0661987654",horaires:"09:00 - 17:00",jours:["Sam","Dim","Lun","Mar","Mer","Jeu"],disponible:true,lat:35.5555,lng:6.1667,
+      avis:[{auteur:"Amira K.",note:5,commentaire:"Parfaite avec les enfants, très douce.",date:"2025-05-18"},{auteur:"Yacine D.",note:5,commentaire:"Je recommande vivement.",date:"2025-05-01"},{auteur:"Samira L.",note:3,commentaire:"Bien mais difficile à joindre.",date:"2025-04-10"}]},
+    {id:3,nom:"Dr. Hadjadj Karim",specialite:"Cardiologue",ville:"Batna",wilaya:"Batna",adresse:"Rue Mostefa Ben Boulaïd",telephone:"0770445566",horaires:"08:30 - 15:30",jours:["Dim","Lun","Mar","Mer","Jeu"],disponible:false,lat:35.5600,lng:6.1700,
+      avis:[{auteur:"Hassan B.",note:5,commentaire:"Excellent cardiologue, diagnostic précis.",date:"2025-05-20"},{auteur:"Meriem O.",note:1,commentaire:"Fermé sans prévenir, déplacement pour rien.",date:"2025-04-30"}]},
+    {id:4,nom:"Pharmacie de Garde Batna",specialite:"Pharmacie",ville:"Batna",wilaya:"Batna",adresse:"Avenue de l'Indépendance",telephone:"033801234",horaires:"00:00 - 24:00",jours:["Sam","Dim","Lun","Mar","Mer","Jeu","Ven"],disponible:true,lat:35.5500,lng:6.1600,avis:[]},
+    {id:5,nom:"Laboratoire d'analyses médicales Mila",specialite:"Laboratoire",ville:"Mila",wilaya:"Mila",adresse:"Cité des Fleurs",telephone:"031567890",horaires:"07:30 - 16:30",jours:["Dim","Lun","Mar","Mer","Jeu"],disponible:true,lat:36.4500,lng:6.2600,avis:[]}
+  ];
+
+  /* ══════════════════════════════════════════════════════
+     LOAD DATA — with cache + timeout + retry
+  ══════════════════════════════════════════════════════ */
+  const CACHE_KEY  = 'tabibdz_data';
+  const CACHE_TIME = 'tabibdz_data_ts';
+  const CACHE_TTL  = 30 * 60 * 1000; // 30 minutes
+
+  function loadFromCache() {
+    try {
+      const ts   = parseInt(sessionStorage.getItem(CACHE_TIME) || '0');
+      const data = sessionStorage.getItem(CACHE_KEY);
+      if (data && Date.now() - ts < CACHE_TTL) {
+        return JSON.parse(data);
       }
-      
+    } catch(e) {}
+    return null;
+  }
+
+  function saveToCache(data) {
+    try {
+      sessionStorage.setItem(CACHE_KEY, JSON.stringify(data));
+      sessionStorage.setItem(CACHE_TIME, Date.now().toString());
+    } catch(e) {}
+  }
+
+  function withTimeout(promise, ms) {
+    return Promise.race([
+      promise,
+      new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), ms))
+    ]);
+  }
+
+  async function load() {
+    startProgress();
+
+    // 1. Try cache first (instant display)
+    const cached = loadFromCache();
+    if (cached) {
+      ALL = cached;
+      buildWChips();
+      buildSChips();
       filter();
+      doneProgress();
+      showToast(t('loading_cache'));
+      // Background refresh
+      refreshFromNetwork();
+      return;
     }
 
-    /* ── OPENING HOURS STATUS ── */
-    function isOpen(d){
-      if(!d.disponible)return false;
-      const now=new Date(),days=['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
-      if(d.jours&&!d.jours.includes(days[now.getDay()]))return false;
-      const m=d.horaires.match(/(\d{1,2}):(\d{2})\s*-\s*(\d{1,2}):(\d{2})/);
-      if(!m)return true;
-      const o=+m[1]*60+ +m[2],c=+m[3]*60+ +m[4],n=now.getHours()*60+now.getMinutes();
-      return n>=o&&n<c;
-    }
+    // 2. Try Supabase (with 6s timeout)
+    await refreshFromNetwork();
+  }
 
-    /* ── DISTANCE GPS ── */
-    function dist(a,b,c,e){const R=6371,dL=(c-a)*Math.PI/180,dG=(e-b)*Math.PI/180,x=Math.sin(dL/2)**2+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(dG/2)**2;return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));}
-    function fmtD(k){return k<1?`${Math.round(k*1000)} m`:`${k.toFixed(1)} km`;}
-
-    /* ── GPS LOCATION ── */
-    function requestGPS(){
-      if(!navigator.geolocation){showToast("GPS non disponible");return;}
-      document.getElementById('gpsTxt').textContent='Géolocalisation...';
-      navigator.geolocation.getCurrentPosition(p=>{
-        userLat=p.coords.latitude;userLng=p.coords.longitude;gpsOn=true;
-        document.getElementById('gpsTxt').textContent='✓ Trié par distance';
-        document.getElementById('gpsBtn').classList.add('bg-cyan-950/40', 'border-cyan-800/80', 'text-cyan-200');
-        showToast('📍 Position captée — médecins triés par proximité');
+  async function refreshFromNetwork() {
+    try {
+      const { data, error } = await withTimeout(
+        supabaseDb.from('medecins').select('*, avis(*)'),
+        6000
+      );
+      if (error) throw error;
+      if (data && data.length > 0) {
+        ALL = data;
+        saveToCache(data);
+        buildWChips();
+        buildSChips();
         filter();
-      },()=>{document.getElementById('gpsTxt').textContent='Établissements près de moi';showToast('Position non disponible');},{timeout:8000});
-    }
-
-    /* ── STARS RENDER ── */
-    function starsHtml(note){
-      let h='<span class="inline-flex gap-0.5 text-amber-500 font-bold">';
-      for(let i=1;i<=5;i++)h+=`<span class="${i<=note?'':'opacity-20'}">★</span>`;
-      return h+'</span>';
-    }
-
-    /* ── SENTIMENT ── */
-    function sentimentClass(note){return note>=4?'dot-pos':note===3?'dot-mid':'dot-neg';}
-    function sentimentLabel(note){return note>=4?'Positif':note===3?'Neutre':'Négatif';}
-    function sentimentColor(note){return note>=4?'#10B981':note===3?'#F59E0B':'#F43F5E';}
-    function scoreClass(avg){return avg>=4?'score-high':avg>=3?'score-mid':'score-low';}
-
-    /* ── GET ALL REVIEWS (DB + Local) ── */
-    function getAllAvis(doc){
-      const local=localAvis[doc.id]||[];
-      return [...(doc.avis||[]),...local];
-    }
-    function avgScore(avis){
-      if(!avis.length)return null;
-      return avis.reduce((s,a)=>s+a.note,0)/avis.length;
-    }
-
-    /* ── CHIPS BUILDERS ── */
-    function buildWChips(){
-      const ws=['Toutes',...new Set(ALL.map(d=>d.wilaya))];
-      const z=document.getElementById('wbar');z.innerHTML='';
-      ws.forEach(w=>{
-        const b=document.createElement('button');
-        b.className='chip'+(w==='Toutes'?' on':'');
-        b.textContent=w;
-        b.onclick=()=>{
-          activeW=w;
-          z.querySelectorAll('.chip').forEach(c=>c.classList.toggle('on',c===b));
-          filter();
-        };
-        z.appendChild(b);
-      });
-    }
-    
-    function buildSChips(){
-      // Filtre uniquement les spécialités des établissements de type 'médecin'
-      const docsMedecins = ALL.filter(d => getCategory(d) === 'médecin');
-      const ss=['Toutes',...new Set(docsMedecins.map(d=>d.specialite))];
-      const z=document.getElementById('sbar');z.innerHTML='';
-      ss.forEach(s=>{
-        const b=document.createElement('button');
-        b.className='schip'+(s==='Toutes'?' on':'');
-        b.textContent=s;
-        b.onclick=()=>{
-          activeS=s;
-          z.querySelectorAll('.schip').forEach(c=>c.classList.toggle('on',c===b));
-          filter();
-        };
-        z.appendChild(b);
-      });
-    }
-
-    /* ── FILTER LOGIC ── */
-    function filter(){
-      const q=document.getElementById('q').value.toLowerCase().trim();
-      let res=ALL.slice();
-      
-      // 1. Filtrer par Catégorie
-      res = res.filter(d => getCategory(d) === activeCategory);
-      
-      // 2. Filtrer par Wilaya
-      if(activeW!=='Toutes') res=res.filter(d=>d.wilaya===activeW);
-      
-      // 3. Filtrer par Spécialité (seulement si catégorie = médecin)
-      if(activeCategory === 'médecin' && activeS!=='Toutes') res=res.filter(d=>d.specialite===activeS);
-      
-      // 4. Moteur de recherche
-      if(q) {
-        res=res.filter(d=>
-          d.nom.toLowerCase().includes(q) || 
-          d.specialite.toLowerCase().includes(q) || 
-          d.ville.toLowerCase().includes(q) || 
-          d.wilaya.toLowerCase().includes(q) ||
-          d.adresse.toLowerCase().includes(q)
-        );
-      }
-      
-      // 5. GPS Sort ou disponible en premier
-      if(gpsOn&&userLat!==null){
-        res.forEach(d=>d._dist=dist(userLat,userLng,d.lat,d.lng));
-        res.sort((a,b)=>a._dist-b._dist);
-      }
-      else {
-        res.sort((a,b)=>(isOpen(a)?0:1)-(isOpen(b)?0:1) || a.nom.localeCompare(b.nom));
-      }
-      
-      render(res);
-    }
-
-    /* ── RENDER CARDS ── */
-    function render(docs){
-      // Supprimer le skeleton
-      ['sk1','sk2'].forEach(id=>{const el=document.getElementById(id);if(el)el.remove();});
-      
-      const list=document.getElementById('list'),empty=document.getElementById('empty');
-      list.innerHTML='';
-      
-      if(!docs.length){
-        empty.classList.remove('hidden');
-        document.getElementById('statsTxt').textContent='Aucun résultat';
+        doneProgress();
         return;
       }
-      
-      empty.classList.add('hidden');
-      const open=docs.filter(d=>isOpen(d)).length;
-      
-      let label = "établissement";
-      if (activeCategory === 'médecin') label = "médecin";
-      else if (activeCategory === 'pharmacie') label = "pharmacie";
-      else if (activeCategory === 'laboratoire') label = "laboratoire";
-      else if (activeCategory === 'hôpital') label = "hôpital";
-      
-      document.getElementById('statsTxt').textContent=`${docs.length} ${label}${docs.length>1?'s':''} trouvé${docs.length>1?'s':''} · ${open} ouvert${open>1?'s':''}${gpsOn?' · trié par proximité':''}`;
-      
-      docs.forEach(d=>list.appendChild(buildCard(d)));
+    } catch(err) {
+      console.warn('Supabase unreachable or timed out, trying local JSON:', err.message);
     }
 
-    /* ── INIT AVATAR LETTERS ── */
-    function ini(n){
-      const p=n.replace(/Dr\.?\s*/i,'').trim().split(/\s+/);
-      return(p[0][0]+(p[1]?p[1][0]:'')).toUpperCase();
+    // 3. Try medecins.json
+    try {
+      const r = await fetch('medecins.json');
+      if (!r.ok) throw new Error('JSON not found');
+      const data = await r.json();
+      ALL = data;
+      saveToCache(data);
+    } catch(e) {
+      // 4. Ultimate fallback
+      ALL = FB;
     }
 
-    /* ── CARD HTML GENERATOR ── */
-    function buildCard(doc){
-      const open=isOpen(doc);
-      const allAvis=getAllAvis(doc);
-      const avg=avgScore(allAvis);
-      const avgDisp=avg?avg.toFixed(1):'–';
-      const sClass=avg?scoreClass(avg):'score-mid';
-      const tel=`tel:${doc.telephone}`;
-      const mapsUrl=`https://www.google.com/maps/search/?api=1&query=${doc.lat},${doc.lng}`;
-      
-      const distHtml=gpsOn&&doc._dist!=null?`
-        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
-          ${fmtD(doc._dist)}
-        </span>
-      `:'';
+    buildWChips();
+    buildSChips();
+    filter();
+    doneProgress();
+  }
 
-      // Global rating indicator badge
-      const ratingBadgeHtml = avg ? `
-        <div class="flex items-center gap-3 mt-3 p-2.5 rounded-xl border border-slate-800 bg-slate-950/20">
-          <div class="score-ring ${sClass}">${avgDisp}</div>
-          <div>
-            <div>${starsHtml(Math.round(avg))}</div>
-            <div class="text-[10px] text-slate-500 font-semibold mt-0.5">${allAvis.length} avis · ${allAvis.filter(a=>a.note>=4).length} pos · ${allAvis.filter(a=>a.note<=2).length} neg</div>
-          </div>
-        </div>
-      ` : '';
+  /* ══════════════════════════════════════════════════════
+     CATEGORY CLASSIFICATION
+  ══════════════════════════════════════════════════════ */
+  function getCategory(item) {
+    const spec = (item.specialite || '').toLowerCase().trim();
+    if (spec.includes('pharmacie'))  return 'pharmacie';
+    if (spec.includes('laboratoire') || spec.includes('analyse')) return 'laboratoire';
+    if (spec.includes('hôpital') || spec.includes('hopital') || spec.includes('clinique')) return 'hôpital';
+    return 'médecin';
+  }
 
-      // Avis cards
-      const avisHtml = allAvis.length ? `
-        <div class="px-4 pb-1 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Avis des Patients (${allAvis.length})</div>
-        <div class="avis-row custom-scroll">
-          ${allAvis.map(a=>`
-            <div class="avis-card">
-              <div class="flex items-center gap-1.5 mb-1.5">
-                <div class="${sentimentClass(a.note)}"></div>
-                <span class="text-[10px] font-bold" style="color:${sentimentColor(a.note)}">${sentimentLabel(a.note)}</span>
-                <span class="ml-auto text-[10px] font-bold text-slate-600">${a.date.slice(0,7)}</span>
-              </div>
-              <div style="font-size:11px;">${starsHtml(a.note)}</div>
-              <p class="text-xs text-slate-300 mt-2 leading-relaxed line-clamp-3">${a.commentaire}</p>
-              <p class="text-[10px] text-slate-500 mt-2 font-bold">— ${a.auteur}</p>
-            </div>
-          `).join('')}
-        </div>
-      ` : `<div class="px-4 pb-3 text-xs text-slate-500 italic">Aucun avis patient pour le moment.</div>`;
+  function setCategory(cat) {
+    activeCategory = cat;
+    activeS = 'Toutes';
+    document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.cat === cat));
+    const sbar = document.getElementById('sbar_container');
+    if (cat === 'médecin') { sbar.style.display = 'block'; buildSChips(); }
+    else                   { sbar.style.display = 'none'; }
+    filter();
+  }
 
-      const el=document.createElement('div');
-      el.className='card p-5 relative group overflow-hidden border border-slate-800/80 bg-slate-900/40 rounded-2xl transition-all duration-300 hover:border-slate-700/80';
-      el.innerHTML=`
-        <div class="absolute inset-0 bg-gradient-to-br from-violet-600/5 to-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
-        
-        <div class="relative flex items-start gap-4">
-          <!-- Avatar representation -->
-          <div class="avatar flex-shrink-0 w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-600 to-cyan-500 flex items-center justify-center font-black text-lg text-white shadow-md">
-            ${ini(doc.nom)}
-          </div>
-          
-          <!-- Doctor Name & Quick Badges -->
-          <div class="flex-1 min-w-0">
-            <div class="flex items-start justify-between gap-3 flex-wrap">
-              <h2 class="font-extrabold text-base text-slate-100 group-hover:text-white transition-colors duration-200">${doc.nom}</h2>
-              <div class="flex gap-2 flex-wrap items-center">
-                ${distHtml}
-                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold ${open ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-slate-800 text-slate-500 border border-slate-700/50'}">
-                  <span class="w-1.5 h-1.5 rounded-full ${open ? 'bg-emerald-400 animate-pulse' : 'bg-slate-500'}"></span>
-                  ${open ? 'Ouvert' : 'Fermé'}
-                </span>
-              </div>
-            </div>
-            
-            <span class="inline-block mt-2 px-2.5 py-0.5 rounded-lg text-[10px] font-bold bg-violet-500/10 text-violet-300 border border-violet-500/20">
-              ${doc.specialite}
-            </span>
-            
-            ${ratingBadgeHtml}
-          </div>
-        </div>
-        
-        <!-- Divider -->
-        <div class="my-4 border-t border-slate-800/80"></div>
-        
-        <!-- Location details -->
-        <div class="space-y-2 text-sm text-slate-400">
-          <div class="flex items-start gap-2.5">
-            <svg class="mt-0.5 flex-shrink-0 text-cyan-400" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-            <span>${doc.adresse}, <strong>${doc.ville}</strong> — <span class="text-cyan-400 font-bold">${doc.wilaya}</span></span>
-          </div>
-          <div class="flex items-center gap-2.5">
-            <svg class="flex-shrink-0 text-cyan-400" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-            <span>${doc.horaires} · <span class="font-medium text-slate-300">${(doc.jours||[]).join(' ')}</span></span>
-          </div>
-          <div class="flex items-center gap-2.5 font-bold text-violet-400">
-            <svg class="flex-shrink-0 text-violet-400" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.07 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3 1.22h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 9a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 16z"/></svg>
-            <span>${doc.telephone}</span>
-          </div>
-        </div>
-        
-        <!-- Divider -->
-        <div class="my-4 border-t border-slate-800/80"></div>
-        
-        <!-- Reviews list -->
-        <div class="py-1">${avisHtml}</div>
-        
-        <!-- Collapsible Rating form -->
-        <div class="mt-3 flex flex-col gap-2.5">
-          <button class="w-full bg-slate-800/40 hover:bg-slate-800 text-slate-400 hover:text-white border border-slate-800/80 rounded-xl py-2 text-xs font-bold transition-all duration-200" onclick="toggleForm(${doc.id})">
-            ✏️ Laisser un avis
-          </button>
-          
-          <div class="rev-form hidden bg-slate-950/20 border border-slate-800/80 rounded-xl p-4 mt-1" id="form-${doc.id}">
-            <p class="text-xs font-bold text-slate-300 uppercase tracking-widest mb-3">Donner votre avis</p>
-            <input type="text" id="name-${doc.id}" placeholder="Votre prénom (ex: Fatima B.)" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-200 placeholder-slate-500 focus:border-cyan-500 focus:outline-none transition-all duration-200 mb-3"/>
-            
-            <div class="flex items-center gap-2 mb-3">
-              <span class="text-xs text-slate-400 font-semibold">Note :</span>
-              <div class="star-pick flex gap-1 text-2xl cursor-pointer" id="stars-${doc.id}" data-val="0">
-                <span onclick="setStar(${doc.id},1)">★</span>
-                <span onclick="setStar(${doc.id},2)">★</span>
-                <span onclick="setStar(${doc.id},3)">★</span>
-                <span onclick="setStar(${doc.id},4)">★</span>
-                <span onclick="setStar(${doc.id},5)">★</span>
-              </div>
-            </div>
-            
-            <textarea id="txt-${doc.id}" rows="3" placeholder="Rédigez votre commentaire..." class="w-full bg-slate-900 border border-slate-800 rounded-xl p-3.5 text-xs text-slate-200 placeholder-slate-500 focus:border-cyan-500 focus:outline-none resize-none transition-all duration-200 mb-4"></textarea>
-            
-            <div class="flex gap-2">
-              <button class="flex-1 bg-gradient-to-r from-violet-600 to-cyan-500 hover:from-violet-500 hover:to-cyan-400 text-white font-bold py-2.5 rounded-xl text-xs transition-all duration-200 shadow-md shadow-violet-600/10" onclick="submitAvis(${doc.id})">
-                Publier
-              </button>
-              <button onclick="toggleForm(${doc.id})" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-400 font-semibold py-2.5 rounded-xl text-xs transition-all duration-200 border border-slate-800/60">
-                Annuler
-              </button>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Divider -->
-        <div class="my-4 border-t border-slate-800/80"></div>
-        
-        <!-- Action buttons -->
-        <div class="flex gap-3">
-          <a href="${tel}" class="flex-1 inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-sm py-3.5 rounded-xl transition-all duration-200 shadow-lg shadow-emerald-600/15">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.07 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3 1.22h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 9a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 16z"/></svg>
-            Appeler
-          </a>
-          <a href="${mapsUrl}" target="_blank" rel="noopener" class="flex-1 inline-flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 border border-slate-800 text-slate-300 hover:text-white font-extrabold text-sm py-3.5 rounded-xl transition-all duration-200">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
-            Itinéraire
-          </a>
-        </div>
-      `;
-      return el;
-    }
+  /* ══════════════════════════════════════════════════════
+     OPENING HOURS
+  ══════════════════════════════════════════════════════ */
+  function isOpen(d) {
+    if (!d.disponible) return false;
+    const now = new Date(), days = ['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
+    if (d.jours && !d.jours.includes(days[now.getDay()])) return false;
+    const m = d.horaires.match(/(\d{1,2}):(\d{2})\s*-\s*(\d{1,2}):(\d{2})/);
+    if (!m) return true;
+    const o = +m[1]*60 + +m[2], c = +m[3]*60 + +m[4], n = now.getHours()*60 + now.getMinutes();
+    return n >= o && n < c;
+  }
 
-    /* ── TOGGLE RATING FORM ── */
-    function toggleForm(id){
-      const f=document.getElementById(`form-${id}`);
-      f.classList.toggle('hidden');
-    }
+  /* ── Distance ── */
+  function dist(a, b, c, e) {
+    const R=6371, dL=(c-a)*Math.PI/180, dG=(e-b)*Math.PI/180;
+    const x=Math.sin(dL/2)**2 + Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(dG/2)**2;
+    return R * 2 * Math.atan2(Math.sqrt(x), Math.sqrt(1-x));
+  }
+  function fmtD(k) { return k < 1 ? `${Math.round(k*1000)} m` : `${k.toFixed(1)} km`; }
 
-    /* ── STAR SELECTION ── */
-    function setStar(id,val){
-      const zone=document.getElementById(`stars-${id}`);
-      zone.dataset.val=val;
-      zone.querySelectorAll('span').forEach((s,i)=>s.classList.toggle('sel',i<val));
-    }
+  /* ── GPS ── */
+  function requestGPS() {
+    if (!navigator.geolocation) { showToast(t('toast_no_gps')); return; }
+    document.getElementById('gpsTxt').textContent = t('gps_locating');
+    navigator.geolocation.getCurrentPosition(p => {
+      userLat = p.coords.latitude; userLng = p.coords.longitude; gpsOn = true;
+      document.getElementById('gpsTxt').textContent = t('gps_sorted');
+      document.getElementById('gpsBtn').classList.add('active');
+      showToast(t('toast_gps_ok'));
+      filter();
+    }, () => {
+      document.getElementById('gpsTxt').textContent = t('gps_btn');
+      showToast(t('toast_gps_err'));
+    }, { timeout: 8000 });
+  }
 
-    /* ── SUBMIT REVIEW TO DB ── */
-    async function submitAvis(id){
-      const name=document.getElementById(`name-${id}`).value.trim();
-      const note=parseInt(document.getElementById(`stars-${id}`).dataset.val||'0');
-      const txt=document.getElementById(`txt-${id}`).value.trim();
-      if(!name){showToast('⚠️ Entrez votre prénom');return;}
-      if(!note){showToast('⚠️ Choisissez une note (étoiles)');return;}
-      if(txt.length<10){showToast('⚠️ Commentaire trop court');return;}
-      const today=new Date().toISOString().slice(0,10);
-      
-      const newAvis = {
-        medecin_id: id,
-        auteur: name,
-        note: note,
-        commentaire: txt,
-        date: today
+  /* ── Stars ── */
+  function starsHtml(note) {
+    let h = '<span class="inline-flex gap-0.5 font-bold" style="color:var(--amber-primary)">';
+    for (let i = 1; i <= 5; i++) h += `<span class="${i <= note ? '' : 'opacity-20'}">★</span>`;
+    return h + '</span>';
+  }
+
+  /* ── Sentiment ── */
+  function sentimentClass(note) { return note >= 4 ? 'dot-pos' : note === 3 ? 'dot-mid' : 'dot-neg'; }
+  function sentimentLabel(note) { return note >= 4 ? t('pos_lbl') : note === 3 ? t('neu_lbl') : t('neg_lbl'); }
+  function sentimentColor(note) { return note >= 4 ? 'var(--emerald-primary)' : note === 3 ? 'var(--amber-primary)' : 'var(--rose-primary)'; }
+  function scoreClass(avg)      { return avg >= 4 ? 'score-high' : avg >= 3 ? 'score-mid' : 'score-low'; }
+
+  /* ── All reviews ── */
+  function getAllAvis(doc) {
+    const local = localAvis[doc.id] || [];
+    return [...(doc.avis || []), ...local];
+  }
+  function avgScore(avis) {
+    if (!avis.length) return null;
+    return avis.reduce((s, a) => s + a.note, 0) / avis.length;
+  }
+
+  /* ══════════════════════════════════════════════════════
+     CHIPS
+  ══════════════════════════════════════════════════════ */
+  function buildWChips() {
+    const ws = [t('all_lbl'), ...new Set(ALL.map(d => d.wilaya))];
+    const z  = document.getElementById('wbar');
+    z.innerHTML = '';
+    ws.forEach(w => {
+      const b = document.createElement('button');
+      b.className = 'chip' + (w === t('all_lbl') || (w === activeW) ? ' on' : '');
+      b.textContent = w;
+      b.onclick = () => {
+        activeW = w === t('all_lbl') ? 'Toutes' : w;
+        z.querySelectorAll('.chip').forEach(c => c.classList.toggle('on', c === b));
+        filter();
       };
-
-      try {
-        const { error } = await supabaseDb.from('avis').insert([newAvis]);
-        if (error) throw error;
-        showToast('✅ Merci pour votre avis !');
-      } catch(err) {
-        console.error("Error saving review to Supabase, saving locally:", err);
-        if(!localAvis[id])localAvis[id]=[];
-        localAvis[id].push({auteur:name,note,commentaire:txt,date:today});
-        localStorage.setItem('tabibdz_avis',JSON.stringify(localAvis));
-        showToast('✅ Avis enregistré localement');
-      }
-      
-      // Reset form
-      document.getElementById(`name-${id}`).value = '';
-      document.getElementById(`stars-${id}`).dataset.val = '0';
-      document.getElementById(`stars-${id}`).querySelectorAll('span').forEach(s => s.classList.remove('sel'));
-      document.getElementById(`txt-${id}`).value = '';
-      toggleForm(id);
-      
-      await load();
-    }
-
-    /* ── RESET FILTERS ── */
-    function resetAll(){
-      document.getElementById('q').value='';
-      document.getElementById('clr').style.display='none';
-      activeW='Toutes';
-      activeS='Toutes';
-      gpsOn=false;
-      userLat=userLng=null;
-      
-      document.getElementById('gpsTxt').textContent='Établissements près de moi';
-      document.getElementById('gpsBtn').className='w-full py-3 rounded-16 bg-slate-800/50 hover:bg-slate-800 border border-slate-700/40 text-slate-200 hover:text-white text-sm font-semibold flex items-center justify-center gap-2.5 transition-all duration-200';
-      
-      document.querySelectorAll('.chip').forEach(c=>c.classList.toggle('on',c.textContent==='Toutes'));
-      document.querySelectorAll('.schip').forEach(c=>c.classList.toggle('on',c.textContent==='Toutes'));
-      
-      filter();
-    }
-
-    /* ── TOAST NOTIFICATIONS ── */
-    function showToast(msg){
-      const t=document.getElementById('toast');
-      t.textContent=msg;
-      t.classList.add('show');
-      setTimeout(()=>t.classList.remove('show'),3000);
-    }
-
-    /* ── SEARCH ACTIONS ── */
-    const qEl=document.getElementById('q'),clrEl=document.getElementById('clr');
-    qEl.addEventListener('input',()=>{
-      clrEl.style.display=qEl.value?'flex':'none';
-      filter();
+      // Re-mark active if it matches
+      if ((activeW === 'Toutes' && w === t('all_lbl')) || w === activeW) b.classList.add('on');
+      z.appendChild(b);
     });
-    clrEl.addEventListener('click',()=>{
-      qEl.value='';
-      clrEl.style.display='none';
-      filter();
-      qEl.focus();
-    });
+  }
 
-    // Run loader
-    load();
+  function buildSChips() {
+    const docsMedecins = ALL.filter(d => getCategory(d) === 'médecin');
+    const ss = [t('all_lbl'), ...new Set(docsMedecins.map(d => d.specialite))];
+    const z  = document.getElementById('sbar');
+    z.innerHTML = '';
+    ss.forEach(s => {
+      const b = document.createElement('button');
+      b.className = 'schip' + (s === t('all_lbl') || s === activeS ? ' on' : '');
+      b.textContent = s;
+      b.onclick = () => {
+        activeS = s === t('all_lbl') ? 'Toutes' : s;
+        z.querySelectorAll('.schip').forEach(c => c.classList.toggle('on', c === b));
+        filter();
+      };
+      z.appendChild(b);
+    });
+  }
+
+  /* ══════════════════════════════════════════════════════
+     FILTER & RENDER
+  ══════════════════════════════════════════════════════ */
+  function filter() {
+    const q = document.getElementById('q').value.toLowerCase().trim();
+    let res  = ALL.slice();
+
+    res = res.filter(d => getCategory(d) === activeCategory);
+    if (activeW !== 'Toutes') res = res.filter(d => d.wilaya === activeW);
+    if (activeCategory === 'médecin' && activeS !== 'Toutes') res = res.filter(d => d.specialite === activeS);
+
+    if (q) {
+      res = res.filter(d =>
+        d.nom.toLowerCase().includes(q) ||
+        d.specialite.toLowerCase().includes(q) ||
+        d.ville.toLowerCase().includes(q) ||
+        d.wilaya.toLowerCase().includes(q) ||
+        d.adresse.toLowerCase().includes(q)
+      );
+    }
+
+    if (gpsOn && userLat !== null) {
+      res.forEach(d => d._dist = dist(userLat, userLng, d.lat, d.lng));
+      res.sort((a, b) => a._dist - b._dist);
+    } else {
+      res.sort((a, b) => (isOpen(a) ? 0 : 1) - (isOpen(b) ? 0 : 1) || a.nom.localeCompare(b.nom));
+    }
+
+    render(res);
+  }
+
+  function render(docs) {
+    ['sk1','sk2','sk3','sk4'].forEach(id => { const el = document.getElementById(id); if (el) el.remove(); });
+
+    const list  = document.getElementById('list');
+    const empty = document.getElementById('empty');
+    list.innerHTML = '';
+
+    if (!docs.length) {
+      empty.classList.remove('hidden');
+      empty.style.display = 'flex';
+      document.getElementById('statsTxt').textContent = t('no_result');
+      // Update i18n inside empty
+      empty.querySelectorAll('.i18n[data-key]').forEach(el => {
+        const k = el.dataset.key;
+        if (LANGS[currentLang][k] && typeof LANGS[currentLang][k] !== 'function') el.textContent = LANGS[currentLang][k];
+      });
+      return;
+    }
+
+    empty.classList.add('hidden');
+    empty.style.display = '';
+    const open = docs.filter(d => isOpen(d)).length;
+
+    let catLabel;
+    if (activeCategory === 'médecin')    catLabel = t('cat_label_med');
+    else if (activeCategory === 'pharmacie')  catLabel = t('cat_label_pha');
+    else if (activeCategory === 'laboratoire') catLabel = t('cat_label_lab');
+    else                                       catLabel = t('cat_label_hop');
+
+    document.getElementById('statsTxt').textContent = t('stats_found', docs.length, catLabel, open, gpsOn);
+    docs.forEach(d => list.appendChild(buildCard(d)));
+  }
+
+  /* ── Avatar initials ── */
+  function ini(n) {
+    const p = n.replace(/Dr\.?\s*/i, '').trim().split(/\s+/);
+    return (p[0][0] + (p[1] ? p[1][0] : '')).toUpperCase();
+  }
+
+  /* ══════════════════════════════════════════════════════
+     BUILD CARD (secure, all textContent for user data)
+  ══════════════════════════════════════════════════════ */
+  function buildCard(doc) {
+    const open     = isOpen(doc);
+    const allAvis  = getAllAvis(doc);
+    const avg      = avgScore(allAvis);
+    const avgDisp  = avg ? avg.toFixed(1) : '–';
+    const sClass   = avg ? scoreClass(avg) : 'score-mid';
+    const mapsUrl  = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(doc.lat + ',' + doc.lng)}`;
+
+    const el = document.createElement('div');
+    el.className = 'card p-5 relative group overflow-hidden rounded-2xl';
+
+    // ── Hover gradient overlay
+    const overlay = document.createElement('div');
+    overlay.className = 'absolute inset-0 bg-gradient-to-br from-violet-600/5 to-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none';
+    el.appendChild(overlay);
+
+    // ── Top row: avatar + header info
+    const topRow = document.createElement('div');
+    topRow.className = 'relative flex items-start gap-4';
+
+    // Avatar
+    const avatar = document.createElement('div');
+    avatar.className = 'flex-shrink-0 w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-600 to-cyan-500 flex items-center justify-center font-black text-lg text-white shadow-md';
+    avatar.textContent = ini(doc.nom);
+    topRow.appendChild(avatar);
+
+    // Info block
+    const info = document.createElement('div');
+    info.className = 'flex-1 min-w-0';
+
+    // Name row
+    const nameRow = document.createElement('div');
+    nameRow.className = 'flex items-start justify-between gap-3 flex-wrap';
+
+    const nameEl = document.createElement('h2');
+    nameEl.className = 'font-extrabold text-base group-hover:opacity-90 transition-opacity';
+    nameEl.style.color = 'var(--text-primary)';
+    nameEl.textContent = doc.nom;
+    nameRow.appendChild(nameEl);
+
+    // Badges row
+    const badges = document.createElement('div');
+    badges.className = 'flex gap-2 flex-wrap items-center';
+
+    // Distance badge
+    if (gpsOn && doc._dist != null) {
+      const distB = document.createElement('span');
+      distB.className = 'inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold';
+      distB.style.cssText = 'background:rgba(16,185,129,0.1); color:var(--emerald-primary); border:1px solid rgba(16,185,129,0.2)';
+      distB.innerHTML = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>`;
+      distB.appendChild(document.createTextNode(fmtD(doc._dist)));
+      badges.appendChild(distB);
+    }
+
+    // Open/Closed badge
+    const statusB = document.createElement('span');
+    statusB.className = 'inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold';
+    statusB.style.cssText = open
+      ? 'background:rgba(16,185,129,0.1); color:var(--emerald-primary); border:1px solid rgba(16,185,129,0.2)'
+      : 'background:var(--bg2); color:var(--text-muted); border:1px solid var(--border)';
+    const dot = document.createElement('span');
+    dot.className = `w-1.5 h-1.5 rounded-full ${open ? 'bg-emerald-400 animate-pulse' : ''}`;
+    dot.style.background = open ? 'var(--emerald-primary)' : 'var(--text-muted)';
+    statusB.appendChild(dot);
+    statusB.appendChild(document.createTextNode(open ? t('open_lbl') : t('closed_lbl')));
+    badges.appendChild(statusB);
+
+    nameRow.appendChild(badges);
+    info.appendChild(nameRow);
+
+    // Specialty badge
+    const specB = document.createElement('span');
+    specB.className = 'inline-block mt-2 px-2.5 py-0.5 rounded-lg text-[10px] font-bold';
+    specB.style.cssText = 'background:rgba(124,58,237,0.1); color:var(--violet-primary); border:1px solid rgba(124,58,237,0.2)';
+    specB.textContent = doc.specialite;
+    info.appendChild(specB);
+
+    // Rating badge
+    if (avg) {
+      const ratBadge = document.createElement('div');
+      ratBadge.className = 'rating-badge flex items-center gap-3 mt-3 p-2.5 rounded-xl';
+      const ring = document.createElement('div');
+      ring.className = `score-ring ${sClass}`;
+      ring.textContent = avgDisp;
+      ratBadge.appendChild(ring);
+      const ratInfo = document.createElement('div');
+      const starsDiv = document.createElement('div');
+      starsDiv.innerHTML = starsHtml(Math.round(avg));
+      ratInfo.appendChild(starsDiv);
+      const ratMeta = document.createElement('div');
+      ratMeta.className = 'text-[10px] font-semibold mt-0.5';
+      ratMeta.style.color = 'var(--text-muted)';
+      const posCount = allAvis.filter(a => a.note >= 4).length;
+      const negCount = allAvis.filter(a => a.note <= 2).length;
+      ratMeta.textContent = `${allAvis.length} avis · ${posCount} pos · ${negCount} neg`;
+      ratInfo.appendChild(ratMeta);
+      ratBadge.appendChild(ratInfo);
+      info.appendChild(ratBadge);
+    }
+
+    topRow.appendChild(info);
+    el.appendChild(topRow);
+
+    // ── Divider
+    const div1 = document.createElement('div');
+    div1.className = 'my-4 border-t divider';
+    el.appendChild(div1);
+
+    // ── Location details
+    const details = document.createElement('div');
+    details.className = 'space-y-2 text-sm';
+    details.style.color = 'var(--text-secondary)';
+
+    // Address
+    const addrRow = document.createElement('div');
+    addrRow.className = 'flex items-start gap-2.5';
+    addrRow.innerHTML = `<svg class="mt-0.5 flex-shrink-0" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--cyan-primary)" stroke-width="2.5" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>`;
+    const addrTxt = document.createElement('span');
+    const addrStrong = document.createElement('strong');
+    addrStrong.textContent = doc.ville;
+    const addrWilaya = document.createElement('span');
+    addrWilaya.style.cssText = 'color:var(--cyan-primary); font-weight:700';
+    addrWilaya.textContent = doc.wilaya;
+    addrTxt.appendChild(document.createTextNode(doc.adresse + ', '));
+    addrTxt.appendChild(addrStrong);
+    addrTxt.appendChild(document.createTextNode(' — '));
+    addrTxt.appendChild(addrWilaya);
+    addrRow.appendChild(addrTxt);
+    details.appendChild(addrRow);
+
+    // Hours
+    const hoursRow = document.createElement('div');
+    hoursRow.className = 'flex items-center gap-2.5';
+    hoursRow.innerHTML = `<svg class="flex-shrink-0" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--cyan-primary)" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`;
+    const hoursTxt = document.createElement('span');
+    hoursTxt.textContent = `${doc.horaires} · `;
+    const joursSpan = document.createElement('span');
+    joursSpan.className = 'font-medium';
+    joursSpan.style.color = 'var(--text-primary)';
+    joursSpan.textContent = (doc.jours || []).join(' ');
+    hoursTxt.appendChild(joursSpan);
+    hoursRow.appendChild(hoursTxt);
+    details.appendChild(hoursRow);
+
+    // Phone
+    const phoneRow = document.createElement('div');
+    phoneRow.className = 'flex items-center gap-2.5 font-bold';
+    phoneRow.style.color = 'var(--violet-primary)';
+    phoneRow.innerHTML = `<svg class="flex-shrink-0" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--violet-primary)" stroke-width="2.5" stroke-linecap="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.07 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3 1.22h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 9a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 16z"/></svg>`;
+    const phoneTxt = document.createElement('span');
+    phoneTxt.textContent = doc.telephone;
+    phoneRow.appendChild(phoneTxt);
+    details.appendChild(phoneRow);
+
+    el.appendChild(details);
+
+    // ── Divider
+    const div2 = document.createElement('div');
+    div2.className = 'my-4 border-t divider';
+    el.appendChild(div2);
+
+    // ── Reviews section
+    const reviewsWrap = document.createElement('div');
+    reviewsWrap.className = 'py-1';
+
+    if (allAvis.length > 0) {
+      const revTitle = document.createElement('div');
+      revTitle.className = 'px-4 pb-1 text-[10px] font-bold uppercase tracking-widest';
+      revTitle.style.color = 'var(--text-muted)';
+      revTitle.textContent = t('reviews_title', allAvis.length);
+      reviewsWrap.appendChild(revTitle);
+
+      const avisRow = document.createElement('div');
+      avisRow.className = 'avis-row custom-scroll';
+
+      allAvis.forEach(a => {
+        const card = document.createElement('div');
+        card.className = 'avis-card';
+
+        const sentRow = document.createElement('div');
+        sentRow.className = 'flex items-center gap-1.5 mb-1.5';
+        const dotEl = document.createElement('div');
+        dotEl.className = sentimentClass(a.note);
+        const sentLabel = document.createElement('span');
+        sentLabel.className = 'text-[10px] font-bold';
+        sentLabel.style.color = sentimentColor(a.note);
+        sentLabel.textContent = sentimentLabel(a.note);
+        const dateSpan = document.createElement('span');
+        dateSpan.className = 'ml-auto text-[10px] font-bold';
+        dateSpan.style.color = 'var(--text-muted)';
+        dateSpan.textContent = a.date.slice(0, 7);
+        sentRow.appendChild(dotEl);
+        sentRow.appendChild(sentLabel);
+        sentRow.appendChild(dateSpan);
+        card.appendChild(sentRow);
+
+        const starsEl = document.createElement('div');
+        starsEl.style.fontSize = '11px';
+        starsEl.innerHTML = starsHtml(a.note);
+        card.appendChild(starsEl);
+
+        const commentEl = document.createElement('p');
+        commentEl.className = 'text-xs mt-2 leading-relaxed line-clamp-3';
+        commentEl.style.color = 'var(--text-secondary)';
+        commentEl.textContent = a.commentaire; // safe: textContent
+        card.appendChild(commentEl);
+
+        const authorEl = document.createElement('p');
+        authorEl.className = 'text-[10px] mt-2 font-bold';
+        authorEl.style.color = 'var(--text-muted)';
+        authorEl.textContent = '— ' + a.auteur; // safe: textContent
+        card.appendChild(authorEl);
+
+        avisRow.appendChild(card);
+      });
+
+      reviewsWrap.appendChild(avisRow);
+    } else {
+      const noRev = document.createElement('div');
+      noRev.className = 'px-4 pb-3 text-xs italic';
+      noRev.style.color = 'var(--text-muted)';
+      noRev.textContent = t('no_reviews');
+      reviewsWrap.appendChild(noRev);
+    }
+    el.appendChild(reviewsWrap);
+
+    // ── Review form toggle
+    const formWrap = document.createElement('div');
+    formWrap.className = 'mt-3 flex flex-col gap-2.5';
+
+    const leaveBtn = document.createElement('button');
+    leaveBtn.className = 'btn-secondary w-full rounded-xl py-2 text-xs font-bold transition-all duration-200';
+    leaveBtn.textContent = t('leave_review');
+    leaveBtn.onclick = () => toggleForm(doc.id);
+    formWrap.appendChild(leaveBtn);
+
+    // Form itself
+    const formDiv = document.createElement('div');
+    formDiv.className = 'rev-form hidden rev-form-inner rounded-xl p-4 mt-1';
+    formDiv.id = `form-${doc.id}`;
+
+    const formTitle = document.createElement('p');
+    formTitle.className = 'text-xs font-bold uppercase tracking-widest mb-3';
+    formTitle.style.color = 'var(--text-primary)';
+    formTitle.textContent = t('give_review');
+    formDiv.appendChild(formTitle);
+
+    const nameInput = document.createElement('input');
+    nameInput.type = 'text';
+    nameInput.id = `name-${doc.id}`;
+    nameInput.placeholder = t('name_ph');
+    nameInput.maxLength = 60;
+    nameInput.className = 'form-input w-full rounded-xl px-3.5 py-2.5 text-xs mb-3';
+    formDiv.appendChild(nameInput);
+
+    const starRow = document.createElement('div');
+    starRow.className = 'flex items-center gap-2 mb-3';
+    const starLabel = document.createElement('span');
+    starLabel.className = 'text-xs font-semibold';
+    starLabel.style.color = 'var(--text-secondary)';
+    starLabel.textContent = t('rating_lbl');
+    const starPick = document.createElement('div');
+    starPick.className = 'star-pick flex gap-1 cursor-pointer';
+    starPick.id = `stars-${doc.id}`;
+    starPick.dataset.val = '0';
+    for (let i = 1; i <= 5; i++) {
+      const s = document.createElement('span');
+      s.textContent = '★';
+      s.onclick = () => setStar(doc.id, i);
+      starPick.appendChild(s);
+    }
+    starRow.appendChild(starLabel);
+    starRow.appendChild(starPick);
+    formDiv.appendChild(starRow);
+
+    const textarea = document.createElement('textarea');
+    textarea.id = `txt-${doc.id}`;
+    textarea.rows = 3;
+    textarea.placeholder = t('comment_ph');
+    textarea.maxLength = 500;
+    textarea.className = 'form-input w-full rounded-xl p-3.5 text-xs resize-none mb-4';
+    formDiv.appendChild(textarea);
+
+    const btnRow = document.createElement('div');
+    btnRow.className = 'flex gap-2';
+    const publishBtn = document.createElement('button');
+    publishBtn.className = 'flex-1 bg-gradient-to-r from-violet-600 to-cyan-500 hover:from-violet-500 hover:to-cyan-400 text-white font-bold py-2.5 rounded-xl text-xs transition-all duration-200 shadow-md shadow-violet-600/10';
+    publishBtn.textContent = t('publish_btn');
+    publishBtn.onclick = () => submitAvis(doc.id);
+    const cancelBtn = document.createElement('button');
+    cancelBtn.className = 'btn-secondary flex-1 font-semibold py-2.5 rounded-xl text-xs transition-all duration-200';
+    cancelBtn.textContent = t('cancel_btn');
+    cancelBtn.onclick = () => toggleForm(doc.id);
+    btnRow.appendChild(publishBtn);
+    btnRow.appendChild(cancelBtn);
+    formDiv.appendChild(btnRow);
+
+    formWrap.appendChild(formDiv);
+    el.appendChild(formWrap);
+
+    // ── Divider
+    const div3 = document.createElement('div');
+    div3.className = 'my-4 border-t divider';
+    el.appendChild(div3);
+
+    // ── Action buttons
+    const actRow = document.createElement('div');
+    actRow.className = 'flex gap-3';
+
+    const callBtn = document.createElement('a');
+    callBtn.href = `tel:${doc.telephone}`;
+    callBtn.className = 'flex-1 inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-sm py-3.5 rounded-xl transition-all duration-200 shadow-lg shadow-emerald-600/15';
+    callBtn.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.07 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3 1.22h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 9a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 16z"/></svg>`;
+    callBtn.appendChild(document.createTextNode(t('call_btn')));
+    actRow.appendChild(callBtn);
+
+    const mapsBtn = document.createElement('a');
+    mapsBtn.href = mapsUrl;
+    mapsBtn.target = '_blank';
+    mapsBtn.rel = 'noopener noreferrer';
+    mapsBtn.className = 'btn-maps flex-1 inline-flex items-center justify-center gap-2 font-extrabold text-sm py-3.5 rounded-xl transition-all duration-200';
+    mapsBtn.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>`;
+    mapsBtn.appendChild(document.createTextNode(t('directions_btn')));
+    actRow.appendChild(mapsBtn);
+
+    el.appendChild(actRow);
+    return el;
+  }
+
+  /* ── Toggle review form ── */
+  function toggleForm(id) {
+    document.getElementById(`form-${id}`).classList.toggle('hidden');
+  }
+
+  /* ── Star selection ── */
+  function setStar(id, val) {
+    const zone = document.getElementById(`stars-${id}`);
+    zone.dataset.val = val;
+    zone.querySelectorAll('span').forEach((s, i) => s.classList.toggle('sel', i < val));
+  }
+
+  /* ── Submit review (with security checks) ── */
+  async function submitAvis(id) {
+    // Rate limit check
+    if (!canReview(id)) { showToast(t('toast_rate_limit')); return; }
+
+    const rawName = document.getElementById(`name-${id}`).value.trim();
+    const note    = parseInt(document.getElementById(`stars-${id}`).dataset.val || '0');
+    const rawTxt  = document.getElementById(`txt-${id}`).value.trim();
+
+    // Validation
+    if (!rawName)           { showToast(t('toast_name_req'));  return; }
+    if (!note)              { showToast(t('toast_star_req'));  return; }
+    if (rawTxt.length < 10) { showToast(t('toast_short_cmt')); return; }
+
+    // Sanitize
+    const name = sanitizeName(rawName);
+    const txt  = sanitizeComment(rawTxt);
+    const today = new Date().toISOString().slice(0, 10);
+
+    const newAvis = { medecin_id: id, auteur: name, note, commentaire: txt, date: today };
+
+    try {
+      const { error } = await supabaseDb.from('avis').insert([newAvis]);
+      if (error) throw error;
+      recordReview(id);
+      showToast(t('toast_review_ok'));
+    } catch(err) {
+      console.warn('Saving locally:', err);
+      if (!localAvis[id]) localAvis[id] = [];
+      localAvis[id].push({ auteur: name, note, commentaire: txt, date: today });
+      localStorage.setItem('tabibdz_avis', JSON.stringify(localAvis));
+      recordReview(id);
+      showToast(t('toast_review_local'));
+    }
+
+    // Reset form
+    document.getElementById(`name-${id}`).value = '';
+    document.getElementById(`stars-${id}`).dataset.val = '0';
+    document.getElementById(`stars-${id}`).querySelectorAll('span').forEach(s => s.classList.remove('sel'));
+    document.getElementById(`txt-${id}`).value = '';
+    toggleForm(id);
+
+    // Refresh cache and reload
+    sessionStorage.removeItem(CACHE_KEY);
+    await load();
+  }
+
+  /* ── Reset filters ── */
+  function resetAll() {
+    document.getElementById('q').value = '';
+    document.getElementById('clr').style.display = 'none';
+    activeW = 'Toutes'; activeS = 'Toutes';
+    gpsOn = false; userLat = userLng = null;
+    document.getElementById('gpsTxt').textContent = t('gps_btn');
+    document.getElementById('gpsBtn').classList.remove('active');
+    document.querySelectorAll('.chip').forEach((c, i) => c.classList.toggle('on', i === 0));
+    document.querySelectorAll('.schip').forEach((c, i) => c.classList.toggle('on', i === 0));
+    filter();
+  }
+
+  /* ── Toast ── */
+  function showToast(msg) {
+    const t2 = document.getElementById('toast');
+    t2.textContent = msg; // safe: textContent
+    t2.classList.add('show');
+    setTimeout(() => t2.classList.remove('show'), 3200);
+  }
+
+  /* ── Search input events ── */
+  const qEl = document.getElementById('q'), clrEl = document.getElementById('clr');
+  qEl.addEventListener('input', () => {
+    clrEl.style.display = qEl.value ? 'flex' : 'none';
+    filter();
+  });
+  clrEl.addEventListener('click', () => {
+    qEl.value = '';
+    clrEl.style.display = 'none';
+    filter();
+    qEl.focus();
+  });
+
+  /* ── Init ── */
+  applyLang();
+  load();
   </script>
 </body>
 </html>
