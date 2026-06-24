@@ -75,10 +75,19 @@
 
     /* ══════════ VISIONOS LIQUID GLASS SYSTEM (DARK MODE) ══════════ */
     [data-theme="dark"] body {
-      background: #060913 radial-gradient(circle at 10% 15%, rgba(79, 70, 229, 0.15) 0%, transparent 45%),
-                  radial-gradient(circle at 90% 85%, rgba(244, 63, 94, 0.15) 0%, transparent 45%),
-                  radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.1) 0%, transparent 40%) !important;
+      background-color: #060913 !important;
+      background-image: 
+        radial-gradient(circle at 15% 15%, rgba(79, 70, 229, 0.35) 0%, transparent 50%),
+        radial-gradient(circle at 85% 85%, rgba(244, 63, 94, 0.35) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.25) 0%, transparent 45%) !important;
       background-attachment: fixed !important;
+    }
+
+    [data-theme="dark"] .search-zone {
+      background: rgba(6, 9, 19, 0.6) !important;
+      backdrop-filter: blur(20px) saturate(140%) !important;
+      -webkit-backdrop-filter: blur(20px) saturate(140%) !important;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
     }
 
     [data-theme="dark"] .topbar,
