@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TabibDZ – Administration & Importation</title>
+  <title>TabibDZ – Administration & Tableau de Bord</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
@@ -47,112 +47,158 @@
           </svg>
         </div>
         <div>
-          <h1 class="text-3xl font-black tracking-tight">TabibDZ Admin</h1>
-          <p class="text-slate-400 text-sm font-medium mt-0.5">Collecte & Importation de Médecins (Supabase)</p>
+          <h1 class="text-3xl font-black tracking-tight">Console TabibDZ</h1>
+          <p class="text-slate-400 text-sm font-medium mt-0.5">Administration, Modération & Gestion de Base de Données</p>
         </div>
       </div>
-      <div>
-        <a href="index.html" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl border border-slate-700 bg-slate-800/50 hover:bg-slate-800 text-sm font-semibold transition-all">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      <div class="flex items-center gap-3">
+        <input type="password" id="adminPass" placeholder="Code Secret Administrateur" class="bg-slate-950 border border-slate-800 text-sm rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-cyan-500 w-44 md:w-56" />
+        <a href="index.html" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl border border-slate-700 bg-slate-80/50 hover:bg-slate-800 text-sm font-semibold transition-all">
           Voir le site
         </a>
       </div>
     </header>
 
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mt-8">
+    <!-- Tabs Header -->
+    <div class="flex flex-wrap gap-2 border-b border-slate-800 pb-4 mt-6">
+      <button onclick="switchTab('import')" id="tabBtn-import" class="tab-btn px-4 py-2.5 text-sm font-semibold rounded-xl bg-cyan-600 text-white transition-all">
+        📥 Importation & Scraping
+      </button>
+      <button onclick="switchTab('manage')" id="tabBtn-manage" class="tab-btn px-4 py-2.5 text-sm font-semibold rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700 transition-all">
+        🩺 Gestion des Données
+      </button>
+      <button onclick="switchTab('garde')" id="tabBtn-garde" class="tab-btn px-4 py-2.5 text-sm font-semibold rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700 transition-all">
+        🌙 Pharmacies de Garde
+      </button>
+    </div>
+
+    <!-- TAB CONTENTS -->
+    <div class="mt-8">
       
-      <!-- Left Panel: Instructions and Scraper Code -->
-      <div class="lg:col-span-5 space-y-6">
-        <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl">
-          <h2 class="text-xl font-bold text-slate-100 flex items-center gap-2 mb-4">
-            <span class="text-violet-400">1.</span> Scraping Google Maps
-          </h2>
-          <div class="text-slate-300 text-sm space-y-3">
-            <p>Pour collecter les médecins d'une spécialité et d'une ville spécifique en Algérie, procédez comme suit :</p>
-            <ol class="list-decimal list-inside space-y-2 text-slate-400">
-              <li>Ouvrez <a href="https://www.google.com/maps" target="_blank" class="text-cyan-400 underline hover:text-cyan-300">Google Maps</a> dans votre navigateur.</li>
-              <li>Recherchez une requête précise (ex: <code class="bg-slate-800 text-slate-200 px-1.5 py-0.5 rounded">pédiatre Batna</code> ou <code class="bg-slate-800 text-slate-200 px-1.5 py-0.5 rounded">cardiologue Alger</code>).</li>
-              <li>Ouvrez la console de développement (Appuyez sur <kbd class="bg-slate-800 px-1 rounded text-xs">F12</kbd> ou <kbd class="bg-slate-800 px-1 rounded text-xs">Ctrl+Maj+I</kbd>, puis onglet <strong>Console</strong>).</li>
-              <li>Copiez le script ci-dessous, collez-le dans la console et appuyez sur <kbd class="bg-slate-800 px-1 rounded text-xs">Entrée</kbd>.</li>
-              <li>Le script va s'exécuter et vous demander de confirmer la spécialité et la ville via des fenêtres pop-up.</li>
-              <li>Il fera ensuite défiler la liste automatiquement puis téléchargera le fichier JSON.</li>
-            </ol>
+      <!-- Tab 1: Import & Scraping (Original panels) -->
+      <div id="tab-import" class="tab-content grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <!-- Left Panel: Instructions and Scraper Code -->
+        <div class="lg:col-span-5 space-y-6">
+          <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl">
+            <h2 class="text-xl font-bold text-slate-100 flex items-center gap-2 mb-4">
+              <span class="text-violet-400">1.</span> Scraping Google Maps
+            </h2>
+            <div class="text-slate-300 text-sm space-y-3">
+              <p>Pour collecter les médecins d'une spécialité et d'une ville spécifique en Algérie, procédez comme suit :</p>
+              <ol class="list-decimal list-inside space-y-2 text-slate-400">
+                <li>Ouvrez <a href="https://www.google.com/maps" target="_blank" class="text-cyan-400 underline hover:text-cyan-300">Google Maps</a> dans votre navigateur.</li>
+                <li>Recherchez une requête précise (ex: <code class="bg-slate-800 text-slate-200 px-1.5 py-0.5 rounded">pédiatre Batna</code>).</li>
+                <li>Ouvrez la console de développement (Appuyez sur <kbd class="bg-slate-800 px-1 rounded text-xs">F12</kbd>).</li>
+                <li>Copiez le script ci-dessous, collez-le dans la console et appuyez sur <kbd class="bg-slate-800 px-1 rounded text-xs">Entrée</kbd>.</li>
+                <li>Le script téléchargera un fichier JSON structuré directement sur votre machine.</li>
+              </ol>
+            </div>
+
+            <div class="mt-5">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Script de Scraping</span>
+                <button onclick="copyScraperScript()" class="text-xs bg-violet-600 hover:bg-violet-500 text-white font-semibold px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                  Copier le script
+                </button>
+              </div>
+              <textarea id="scraperCode" readonly class="w-full h-44 bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs font-mono text-cyan-400/90 focus:outline-none resize-none custom-scroll"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Panel: Data Import and Logs -->
+        <div class="lg:col-span-7 space-y-6">
+          <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl">
+            <h2 class="text-xl font-bold text-slate-100 flex items-center gap-2 mb-4">
+              <span class="text-cyan-400">2.</span> Importation dans Supabase
+            </h2>
+
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-semibold text-slate-400 mb-2">Déposer ou coller le contenu du fichier JSON généré</label>
+                <textarea id="importJson" placeholder="Collez le contenu du fichier JSON ici..." class="w-full h-48 bg-slate-950 border border-slate-800 rounded-xl p-4 text-xs font-mono text-slate-300 focus:border-cyan-500 focus:outline-none resize-none custom-scroll"></textarea>
+              </div>
+
+              <div class="flex flex-col sm:flex-row gap-3">
+                <button onclick="analyseData()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-100 font-semibold px-5 py-3 rounded-xl transition-all">
+                  Analyse & Prévisualisation
+                </button>
+                <button id="btnImport" disabled onclick="startImport()" class="flex-1 bg-cyan-600 hover:bg-cyan-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold px-5 py-3 rounded-xl transition-all flex items-center justify-center gap-2">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+                  Importer dans la Base
+                </button>
+              </div>
+            </div>
           </div>
 
-          <div class="mt-5">
-            <div class="flex items-center justify-between mb-2">
-              <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Script de Scraping</span>
-              <button onclick="copyScraperScript()" class="text-xs bg-violet-600 hover:bg-violet-500 text-white font-semibold px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-                Copier le script
-              </button>
+          <!-- Progress and Logs -->
+          <div id="logSection" class="hidden bg-slate-900 border border-slate-800 p-6 rounded-2xl">
+            <h3 class="text-lg font-bold text-slate-200 mb-3 flex items-center gap-2">
+              <span>Rapport d'Importation</span>
+              <span id="importBadge" class="text-xs bg-slate-800 text-slate-300 px-2 py-0.5 rounded font-mono">En attente</span>
+            </h3>
+            
+            <div class="w-full bg-slate-950 rounded-full h-3 mb-4 overflow-hidden">
+              <div id="progressBar" class="bg-gradient-to-r from-violet-500 to-cyan-500 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
             </div>
-            <textarea id="scraperCode" readonly class="w-full h-44 bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs font-mono text-cyan-400/90 focus:outline-none resize-none custom-scroll"></textarea>
+
+            <div class="grid grid-cols-3 gap-4 mb-4">
+              <div class="bg-slate-950/50 border border-slate-800 p-3 rounded-xl text-center">
+                <p class="text-xs text-slate-400 font-medium">Succès (Ajoutés)</p>
+                <p id="cntAdded" class="text-xl font-bold text-emerald-400">0</p>
+              </div>
+              <div class="bg-slate-950/50 border border-slate-800 p-3 rounded-xl text-center">
+                <p class="text-xs text-slate-400 font-medium">Doublons (Ignorés)</p>
+                <p id="cntSkipped" class="text-xl font-bold text-amber-400">0</p>
+              </div>
+              <div class="bg-slate-950/50 border border-slate-800 p-3 rounded-xl text-center">
+                <p class="text-xs text-slate-400 font-medium">Erreurs</p>
+                <p id="cntErrors" class="text-xl font-bold text-red-400">0</p>
+              </div>
+            </div>
+
+            <div id="logs" class="h-44 bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs font-mono text-emerald-400/90 overflow-y-auto custom-scroll space-y-1"></div>
+          </div>
+
+          <!-- Preview Table -->
+          <div id="previewSection" class="hidden bg-slate-900 border border-slate-800 p-6 rounded-2xl">
+            <h3 class="text-lg font-bold text-slate-200 mb-3">Prévisualisation (<span id="previewCount">0</span>)</h3>
+            <div class="overflow-x-auto border border-slate-800 rounded-xl custom-scroll max-h-80">
+              <table class="w-full text-left text-xs">
+                <thead class="bg-slate-950 text-slate-400 uppercase tracking-wider font-semibold border-b border-slate-800">
+                  <tr>
+                    <th class="p-3">Nom</th>
+                    <th class="p-3">Spécialité</th>
+                    <th class="p-3">Ville</th>
+                    <th class="p-3">Téléphone</th>
+                    <th class="p-3">Adresse</th>
+                  </tr>
+                </thead>
+                <tbody id="previewBody" class="divide-y divide-slate-800/50 bg-slate-900/50"></tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- Right Panel: Data Import and Logs -->
-      <div class="lg:col-span-7 space-y-6">
+      <!-- Tab 2: Manage (List + edit/delete CRUD) -->
+      <div id="tab-manage" class="tab-content hidden space-y-6">
         <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl">
-          <h2 class="text-xl font-bold text-slate-100 flex items-center gap-2 mb-4">
-            <span class="text-cyan-400">2.</span> Importation dans Supabase
-          </h2>
-
-          <div class="space-y-4">
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
             <div>
-              <label class="block text-sm font-semibold text-slate-400 mb-2">Déposer ou coller le contenu du fichier JSON généré</label>
-              <textarea id="importJson" placeholder="Collez le contenu du fichier JSON ici..." class="w-full h-48 bg-slate-950 border border-slate-800 rounded-xl p-4 text-xs font-mono text-slate-300 focus:border-cyan-500 focus:outline-none resize-none custom-scroll"></textarea>
+              <h2 class="text-xl font-bold text-slate-100">Liste des Établissements</h2>
+              <p class="text-slate-400 text-xs mt-1">Recherchez, modifiez ou supprimez les fiches médicales en base.</p>
             </div>
-
-            <div class="flex flex-col sm:flex-row gap-3">
-              <button onclick="analyseData()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-100 font-semibold px-5 py-3 rounded-xl transition-all">
-                Analyse & Prévisualisation
-              </button>
-              <button id="btnImport" disabled onclick="startImport()" class="flex-1 bg-cyan-600 hover:bg-cyan-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold px-5 py-3 rounded-xl transition-all flex items-center justify-center gap-2">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
-                Importer dans la Base
+            <div class="flex gap-2 w-full sm:w-auto">
+              <input type="text" id="manageSearch" oninput="renderManageList()" placeholder="Rechercher par nom, ville, spécialité..." class="bg-slate-950 border border-slate-800 text-sm rounded-xl px-4 py-2 text-white focus:outline-none focus:border-cyan-500 w-full sm:w-64" />
+              <button onclick="loadManageList()" class="bg-slate-800 hover:bg-slate-700 text-white px-3 py-2 rounded-xl text-sm" title="Recharger la liste">
+                🔄
               </button>
             </div>
           </div>
-        </div>
-
-        <!-- Progress and Logs -->
-        <div id="logSection" class="hidden bg-slate-900 border border-slate-800 p-6 rounded-2xl">
-          <h3 class="text-lg font-bold text-slate-200 mb-3 flex items-center gap-2">
-            <span>Rapport d'Importation</span>
-            <span id="importBadge" class="text-xs bg-slate-800 text-slate-300 px-2 py-0.5 rounded font-mono">En attente</span>
-          </h3>
           
-          <!-- Progress bar -->
-          <div class="w-full bg-slate-950 rounded-full h-3 mb-4 overflow-hidden">
-            <div id="progressBar" class="bg-gradient-to-r from-violet-500 to-cyan-500 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
-          </div>
-
-          <div class="grid grid-cols-3 gap-4 mb-4">
-            <div class="bg-slate-950/50 border border-slate-800 p-3 rounded-xl text-center">
-              <p class="text-xs text-slate-400 font-medium">Succès (Ajoutés)</p>
-              <p id="cntAdded" class="text-xl font-bold text-emerald-400">0</p>
-            </div>
-            <div class="bg-slate-950/50 border border-slate-800 p-3 rounded-xl text-center">
-              <p class="text-xs text-slate-400 font-medium">Doublons (Ignorés)</p>
-              <p id="cntSkipped" class="text-xl font-bold text-amber-400">0</p>
-            </div>
-            <div class="bg-slate-950/50 border border-slate-800 p-3 rounded-xl text-center">
-              <p class="text-xs text-slate-400 font-medium">Erreurs</p>
-              <p id="cntErrors" class="text-xl font-bold text-red-400">0</p>
-            </div>
-          </div>
-
-          <div id="logs" class="h-44 bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs font-mono text-emerald-400/90 overflow-y-auto custom-scroll space-y-1">
-            <!-- Dynamic logs -->
-          </div>
-        </div>
-
-        <!-- Preview Table -->
-        <div id="previewSection" class="hidden bg-slate-900 border border-slate-800 p-6 rounded-2xl">
-          <h3 class="text-lg font-bold text-slate-200 mb-3">Prévisualisation (<span id="previewCount">0</span>)</h3>
-          <div class="overflow-x-auto border border-slate-800 rounded-xl custom-scroll max-h-80">
+          <div class="overflow-x-auto border border-slate-800 rounded-xl custom-scroll max-h-[500px]">
             <table class="w-full text-left text-xs">
               <thead class="bg-slate-950 text-slate-400 uppercase tracking-wider font-semibold border-b border-slate-800">
                 <tr>
@@ -160,24 +206,145 @@
                   <th class="p-3">Spécialité</th>
                   <th class="p-3">Ville</th>
                   <th class="p-3">Téléphone</th>
-                  <th class="p-3">Adresse</th>
-                  <th class="p-3">Position (GPS)</th>
+                  <th class="p-3">Tarif / RDV / Garde</th>
+                  <th class="p-3">Actions</th>
                 </tr>
               </thead>
-              <tbody id="previewBody" class="divide-y divide-slate-800/50 bg-slate-900/50">
-                <!-- Data rows -->
+              <tbody id="manageTableBody" class="divide-y divide-slate-800/50 bg-slate-900/50">
+                <tr>
+                  <td colspan="6" class="p-8 text-center text-slate-400 font-medium">Chargement des données...</td>
+                </tr>
               </tbody>
             </table>
           </div>
         </div>
+      </div>
 
+      <!-- Tab 3: Garde (Switchboard list only for pharmacies) -->
+      <div id="tab-garde" class="tab-content hidden space-y-6">
+        <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl">
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+            <div>
+              <h2 class="text-xl font-bold text-slate-100">Pharmacies de Garde</h2>
+              <p class="text-slate-400 text-xs mt-1">Cochez rapidement les pharmacies de garde actives pour cette semaine.</p>
+            </div>
+            <div class="flex gap-2 w-full sm:w-auto">
+              <input type="text" id="gardeSearch" oninput="renderGardeList()" placeholder="Rechercher une pharmacie..." class="bg-slate-950 border border-slate-800 text-sm rounded-xl px-4 py-2 text-white focus:outline-none focus:border-cyan-500 w-full sm:w-64" />
+              <button onclick="clearAllGardes()" class="bg-red-950 hover:bg-red-900 border border-red-800 text-red-200 text-xs font-semibold px-4 py-2 rounded-xl transition-all">
+                Tout Décocher
+              </button>
+            </div>
+          </div>
+          
+          <div class="overflow-x-auto border border-slate-800 rounded-xl custom-scroll max-h-[500px]">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-slate-950 text-slate-400 uppercase tracking-wider font-semibold border-b border-slate-800">
+                <tr>
+                  <th class="p-3">Pharmacie</th>
+                  <th class="p-3">Ville / Wilaya</th>
+                  <th class="p-3">Téléphone</th>
+                  <th class="p-3 text-center">Garde Active 🌙</th>
+                </tr>
+              </thead>
+              <tbody id="gardeTableBody" class="divide-y divide-slate-800/50 bg-slate-900/50">
+                <tr>
+                  <td colspan="4" class="p-8 text-center text-slate-400 font-medium">Chargement des pharmacies...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
 
     </div>
   </div>
 
+  <!-- EDIT MODAL -->
+  <div id="editModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-xl max-h-[90vh] flex flex-col overflow-hidden shadow-2xl">
+      <div class="p-4 border-b border-slate-800 flex justify-between items-center bg-slate-950/40">
+        <h3 class="text-base font-bold text-white">Modifier la fiche</h3>
+        <button onclick="closeEditModal()" class="text-slate-400 hover:text-white text-lg">✕</button>
+      </div>
+      <div class="p-6 overflow-y-auto space-y-4 custom-scroll text-sm">
+        
+        <!-- Photo -->
+        <div>
+          <label class="block text-xs font-bold text-slate-400 uppercase mb-2">Photo de cabinet</label>
+          <div class="flex items-center gap-4">
+            <img id="editPhotoPreview" src="" class="w-16 h-16 rounded-xl border border-slate-700 object-cover bg-slate-850" />
+            <input type="file" id="editPhotoInput" accept="image/*" class="hidden" onchange="previewEditPhoto(event)" />
+            <button onclick="document.getElementById('editPhotoInput').click()" class="bg-slate-800 hover:bg-slate-750 text-xs px-3 py-2 rounded-lg border border-slate-750 font-semibold transition-all">Choisir une image</button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Nom Complet</label>
+            <input type="text" id="editNom" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-cyan-500" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Spécialité / Catégorie</label>
+            <input type="text" id="editSpecialite" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-cyan-500" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Ville</label>
+            <input type="text" id="editVille" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-cyan-500" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Wilaya</label>
+            <input type="text" id="editWilaya" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-cyan-500" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Téléphone</label>
+            <input type="text" id="editTelephone" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-cyan-500" />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Adresse complète</label>
+          <input type="text" id="editAdresse" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-cyan-500" />
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Tarif de consultation (DA)</label>
+            <input type="number" id="editTarif" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-cyan-500" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Horaires d'ouverture</label>
+            <input type="text" id="editHoraires" placeholder="08:00 - 16:00" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-cyan-500" />
+          </div>
+        </div>
+
+        <!-- Options Checkboxes -->
+        <div class="flex flex-wrap gap-6 py-3 border-t border-b border-slate-800/40">
+          <label class="flex items-center gap-2 font-semibold text-slate-300 cursor-pointer">
+            <input type="checkbox" id="editGarde" class="w-4 h-4 accent-cyan-500" />
+            <span>Pharmacie de Garde 🌙</span>
+          </label>
+          <label class="flex items-center gap-2 font-semibold text-slate-300 cursor-pointer">
+            <input type="checkbox" id="editRdvEnabled" class="w-4 h-4 accent-cyan-500" />
+            <span>Prise de RDV en ligne 📅</span>
+          </label>
+          <label class="flex items-center gap-2 font-semibold text-slate-300 cursor-pointer">
+            <input type="checkbox" id="editDisponible" class="w-4 h-4 accent-cyan-500" />
+            <span>Disponible / Ouvert ✅</span>
+          </label>
+        </div>
+      </div>
+      <div class="p-4 border-t border-slate-800 bg-slate-950/40 flex justify-end gap-3">
+        <button onclick="closeEditModal()" class="px-4 py-2 border border-slate-700 bg-slate-850 hover:bg-slate-800 text-slate-200 text-xs font-bold rounded-xl transition-all">Annuler</button>
+        <button onclick="saveEdit()" class="px-5 py-2 bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-bold rounded-xl transition-all">Enregistrer</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Toast -->
-  <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-800 text-white border border-slate-700 px-5 py-3 rounded-xl text-sm font-semibold shadow-2xl transition-all duration-300 opacity-0 pointer-events-none"></div>
+  <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-800 text-white border border-slate-700 px-5 py-3 rounded-xl text-sm font-semibold shadow-2xl transition-all duration-300 opacity-0 pointer-events-none z-[999]"></div>
 
   <script>
     /* ── SUPABASE CLIENT ── */
@@ -186,10 +353,341 @@
     const supabaseDb = supabase.createClient(supabaseUrl, supabaseKey);
 
     let parsedData = [];
+    let dbItems = []; // Contains loaded doctors / clinics
+    let selectedItem = null;
+    let editBase64Photo = null;
+
+    // Secret code check
+    function checkPasscode() {
+      const code = document.getElementById('adminPass').value;
+      if (code !== 'Tabib2026') {
+        showToast("⚠️ Code secret incorrect ou manquant !", "error");
+        return false;
+      }
+      return true;
+    }
+
+    // Switch tab logic
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+      document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+
+      document.querySelectorAll('.tab-btn').forEach(b => {
+        b.classList.remove('bg-cyan-600', 'text-white');
+        b.classList.add('bg-slate-800', 'text-slate-300', 'hover:bg-slate-700');
+      });
+      const activeBtn = document.getElementById(`tabBtn-${tabId}`);
+      activeBtn.classList.remove('bg-slate-800', 'text-slate-300', 'hover:bg-slate-700');
+      activeBtn.classList.add('bg-cyan-600', 'text-white');
+
+      if (tabId === 'manage') {
+        loadManageList();
+      } else if (tabId === 'garde') {
+        loadGardeList();
+      }
+    }
+
+    // GET Category helper
+    function getCategory(item){
+      const s=(item.specialite||'').toLowerCase().trim();
+      if(s.includes('pharmacie')) return 'pharmacie';
+      if(s.includes('laboratoire')||s.includes('analyse')) return 'laboratoire';
+      if(s.includes('hôpital')||s.includes('hopital')||s.includes('clinique')) return 'hôpital';
+      return 'médecin';
+    }
+
+    // LOAD Manage List
+    async function loadManageList() {
+      const tbody = document.getElementById('manageTableBody');
+      tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-slate-400 font-medium">Chargement des données en cours...</td></tr>`;
+
+      try {
+        const { data, error } = await supabaseDb.from('medecins').select('*');
+        if (error) throw error;
+        dbItems = data || [];
+        renderManageList();
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-red-400 font-medium">Erreur Supabase : ${err.message}</td></tr>`;
+      }
+    }
+
+    // RENDER Manage List (filter by search)
+    function renderManageList() {
+      const q = document.getElementById('manageSearch').value.toLowerCase().trim();
+      let filtered = dbItems.slice();
+
+      if (q) {
+        filtered = filtered.filter(d => 
+          [d.nom, d.specialite, d.ville, d.wilaya, d.adresse, d.telephone].some(f => (f||'').toLowerCase().includes(q))
+        );
+      }
+
+      const tbody = document.getElementById('manageTableBody');
+      tbody.innerHTML = '';
+
+      if (!filtered.length) {
+        tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-slate-400 font-medium">Aucun résultat trouvé.</td></tr>`;
+        return;
+      }
+
+      filtered.forEach(d => {
+        const tr = document.createElement('tr');
+        tr.className = 'border-b border-slate-800 hover:bg-slate-800/30 transition-all';
+        
+        const badgeDetails = `
+          <div class="flex flex-col gap-1 font-semibold">
+            ${d.tarif ? `<span class="text-[10px] bg-emerald-950 text-emerald-300 border border-emerald-800 px-1.5 py-0.5 rounded w-max">💰 ${d.tarif} DA</span>` : ''}
+            ${d.rdv_enabled ? `<span class="text-[10px] bg-violet-950 text-violet-300 border border-violet-800 px-1.5 py-0.5 rounded w-max">📅 RDV Actif</span>` : ''}
+            ${d.garde ? `<span class="text-[10px] bg-cyan-950 text-cyan-300 border border-cyan-800 px-1.5 py-0.5 rounded w-max">🌙 De Garde</span>` : ''}
+            ${d.disponible === false ? `<span class="text-[10px] bg-red-950 text-red-300 border border-red-800 px-1.5 py-0.5 rounded w-max">🚫 Fermé</span>` : ''}
+          </div>
+        `;
+
+        tr.innerHTML = `
+          <td class="p-3 font-semibold text-slate-200">
+            <div class="flex items-center gap-3">
+              ${d.photo_url ? `<img src="${d.photo_url}" class="w-8 h-8 rounded-lg object-cover bg-slate-850" />` : `<div class="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center font-bold text-slate-500">🩺</div>`}
+              <span>${d.nom || '–'}</span>
+            </div>
+          </td>
+          <td class="p-3 text-violet-400">${d.specialite || '–'}</td>
+          <td class="p-3 text-cyan-400 font-semibold">${d.ville || '–'}, <span class="text-slate-400 text-[10px]">${d.wilaya || '–'}</span></td>
+          <td class="p-3 text-slate-300 font-mono">${d.telephone || '–'}</td>
+          <td class="p-3">${badgeDetails}</td>
+          <td class="p-3">
+            <div class="flex gap-2">
+              <button onclick="openEditModal(${d.id})" class="bg-cyan-650 hover:bg-cyan-600 border border-cyan-800 text-white text-xs font-semibold px-2.5 py-1.5 rounded-lg transition-all">
+                Modifier
+              </button>
+              <button onclick="deleteItem(${d.id})" class="bg-red-950 hover:bg-red-900 border border-red-800 text-red-200 text-xs font-semibold px-2.5 py-1.5 rounded-lg transition-all">
+                Supprimer
+              </button>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // OPEN EDIT MODAL
+    function openEditModal(id) {
+      selectedItem = dbItems.find(d => d.id === id);
+      if (!selectedItem) return;
+
+      editBase64Photo = selectedItem.photo_url || null;
+
+      const preview = document.getElementById('editPhotoPreview');
+      if (selectedItem.photo_url) {
+        preview.src = selectedItem.photo_url;
+      } else {
+        preview.src = '';
+      }
+
+      document.getElementById('editNom').value = selectedItem.nom || '';
+      document.getElementById('editSpecialite').value = selectedItem.specialite || '';
+      document.getElementById('editVille').value = selectedItem.ville || '';
+      document.getElementById('editWilaya').value = selectedItem.wilaya || '';
+      document.getElementById('editTelephone').value = selectedItem.telephone || '';
+      document.getElementById('editAdresse').value = selectedItem.adresse || '';
+      document.getElementById('editTarif').value = selectedItem.tarif || '';
+      document.getElementById('editHoraires').value = selectedItem.horaires || '08:00 - 16:00';
+
+      document.getElementById('editGarde').checked = selectedItem.garde || false;
+      document.getElementById('editRdvEnabled').checked = selectedItem.rdv_enabled || false;
+      document.getElementById('editDisponible').checked = selectedItem.disponible !== false;
+
+      // Show modal
+      document.getElementById('editModal').classList.remove('hidden');
+    }
+
+    function closeEditModal() {
+      document.getElementById('editModal').classList.add('hidden');
+      document.getElementById('editPhotoInput').value = '';
+    }
+
+    function previewEditPhoto(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      
+      if (file.size > 500 * 1024) {
+        showToast("⚠️ Image trop lourde. Maximum 500 Ko.", "error");
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        editBase64Photo = e.target.result;
+        document.getElementById('editPhotoPreview').src = editBase64Photo;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // SAVE EDIT
+    async function saveEdit() {
+      if (!checkPasscode()) return;
+      if (!selectedItem) return;
+
+      const payload = {
+        nom: document.getElementById('editNom').value.trim(),
+        specialite: document.getElementById('editSpecialite').value.trim(),
+        ville: document.getElementById('editVille').value.trim(),
+        wilaya: document.getElementById('editWilaya').value.trim(),
+        telephone: document.getElementById('editTelephone').value.trim(),
+        adresse: document.getElementById('editAdresse').value.trim(),
+        tarif: parseInt(document.getElementById('editTarif').value) || null,
+        horaires: document.getElementById('editHoraires').value.trim(),
+        garde: document.getElementById('editGarde').checked,
+        rdv_enabled: document.getElementById('editRdvEnabled').checked,
+        disponible: document.getElementById('editDisponible').checked,
+        photo_url: editBase64Photo
+      };
+
+      try {
+        const { error } = await supabaseDb
+          .from('medecins')
+          .update(payload)
+          .eq('id', selectedItem.id);
+
+        if (error) throw error;
+
+        showToast("✅ Modifications enregistrées avec succès !");
+        closeEditModal();
+        loadManageList();
+      } catch (err) {
+        showToast(`❌ Erreur d'enregistrement : ${err.message}`, "error");
+      }
+    }
+
+    // DELETE ITEM
+    async function deleteItem(id) {
+      if (!checkPasscode()) return;
+      if (!confirm("⚠️ Voulez-vous vraiment supprimer cet établissement de la base de données ?")) return;
+
+      try {
+        const { error } = await supabaseDb
+          .from('medecins')
+          .delete()
+          .eq('id', id);
+
+        if (error) throw error;
+
+        showToast("✅ Établissement supprimé avec succès !");
+        loadManageList();
+      } catch (err) {
+        showToast(`❌ Erreur de suppression : ${err.message}`, "error");
+      }
+    }
+
+    // LOAD Garde List
+    async function loadGardeList() {
+      const tbody = document.getElementById('gardeTableBody');
+      tbody.innerHTML = `<tr><td colspan="4" class="p-8 text-center text-slate-400 font-medium">Chargement des pharmacies...</td></tr>`;
+
+      try {
+        const { data, error } = await supabaseDb.from('medecins').select('*');
+        if (error) throw error;
+        dbItems = data || [];
+        renderGardeList();
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="4" class="p-8 text-center text-red-400 font-medium">Erreur Supabase : ${err.message}</td></tr>`;
+      }
+    }
+
+    // RENDER Garde list (filtered for pharmacies category)
+    function renderGardeList() {
+      const q = document.getElementById('gardeSearch').value.toLowerCase().trim();
+      let pharmacies = dbItems.filter(d => getCategory(d) === 'pharmacie');
+
+      if (q) {
+        pharmacies = pharmacies.filter(d => 
+          [d.nom, d.ville, d.wilaya, d.telephone].some(f => (f||'').toLowerCase().includes(q))
+        );
+      }
+
+      const tbody = document.getElementById('gardeTableBody');
+      tbody.innerHTML = '';
+
+      if (!pharmacies.length) {
+        tbody.innerHTML = `<tr><td colspan="4" class="p-8 text-center text-slate-400 font-medium">Aucune pharmacie trouvée.</td></tr>`;
+        return;
+      }
+
+      pharmacies.forEach(d => {
+        const tr = document.createElement('tr');
+        tr.className = 'border-b border-slate-800 hover:bg-slate-800/30 transition-all';
+        tr.innerHTML = `
+          <td class="p-3 font-semibold text-slate-200">
+            <div class="flex items-center gap-3">
+              <span>💊</span>
+              <span>${d.nom || '–'}</span>
+            </div>
+          </td>
+          <td class="p-3 text-cyan-400 font-semibold">${d.ville || '–'}, <span class="text-slate-400 text-[10px]">${d.wilaya || '–'}</span></td>
+          <td class="p-3 text-slate-300 font-mono">${d.telephone || '–'}</td>
+          <td class="p-3 text-center">
+            <input type="checkbox" ${d.garde ? 'checked' : ''} onchange="toggleGarde(${d.id}, this.checked)" class="w-5 h-5 accent-cyan-500 cursor-pointer" />
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // TOGGLE GARDE Checkbox
+    async function toggleGarde(id, checked) {
+      if (!checkPasscode()) {
+        loadGardeList(); // Revert check
+        return;
+      }
+
+      try {
+        const { error } = await supabaseDb
+          .from('medecins')
+          .update({ garde: checked })
+          .eq('id', id);
+
+        if (error) throw error;
+
+        // Update local item reference
+        const item = dbItems.find(d => d.id === id);
+        if (item) item.garde = checked;
+
+        showToast(`✅ Statut de garde mis à jour pour ${item ? item.nom : ''}`);
+      } catch (err) {
+        showToast(`❌ Erreur Supabase : ${err.message}`, "error");
+        loadGardeList(); // Revert check
+      }
+    }
+
+    // CLEAR ALL GARDES
+    async function clearAllGardes() {
+      if (!checkPasscode()) return;
+      if (!confirm("⚠️ Voulez-vous vraiment décocher TOUTES les pharmacies de garde actives ?")) return;
+
+      const pharms = dbItems.filter(d => getCategory(d) === 'pharmacie' && d.garde === true);
+      if (!pharms.length) {
+        showToast("Info : Aucune pharmacie n'est actuellement de garde.");
+        return;
+      }
+
+      try {
+        const ids = pharms.map(p => p.id);
+        const { error } = await supabaseDb
+          .from('medecins')
+          .update({ garde: false })
+          .in('id', ids);
+
+        if (error) throw error;
+
+        pharms.forEach(p => p.garde = false);
+        showToast("✅ Toutes les pharmacies ont été retirées de la garde.");
+        renderGardeList();
+      } catch (err) {
+        showToast(`❌ Erreur de réinitialisation : ${err.message}`, "error");
+      }
+    }
 
     // SCRAPER SCRIPT FOR GOOGLE MAPS
     const scraperScript = `async function scrapeGoogleMaps(specialite, wilaya) {
-  // Détection automatique du conteneur de défilement (feed)
   let feed = document.querySelector('div[role="feed"]');
   if (!feed) {
     const divs = document.querySelectorAll('div');
@@ -231,14 +729,13 @@
   console.log("Extraction des données...");
   const items = document.querySelectorAll('a[href*="/maps/place/"]');
   const results = [];
-  const phoneRegex = /(?:0|\\+213)\\s*[2-7](?:\\s*[0-9]){7,8}/;
+  const phoneRegex = /(?:0|\\\\+213)\\\\s*[2-7](?:\\\\s*[0-9]){7,8}/;
 
   items.forEach((item, index) => {
     try {
-      const nom = item.getAttribute('aria-label') || item.innerText.split('\\n')[0] || "Sans nom";
+      const nom = item.getAttribute('aria-label') || item.innerText.split('\\\\n')[0] || "Sans nom";
       const url = item.getAttribute('href') || "";
       
-      // Extraction lat/lng
       let lat = null, lng = null;
       const latLngMatch = url.match(/!3d([0-9.-]+)!4d([0-9.-]+)/);
       if (latLngMatch) {
@@ -252,23 +749,20 @@
         }
       }
 
-      // Recherche du conteneur parent direct du flux
       let card = item;
       while (card && card.parentElement !== feed) {
         card = card.parentElement;
       }
       
       const cardText = card ? card.innerText : "";
-      const lines = cardText.split('\\n').map(l => l.trim()).filter(Boolean);
+      const lines = cardText.split('\\\\n').map(l => l.trim()).filter(Boolean);
       
-      // Extraction téléphone algérien
       let telephone = "Non renseigné";
       const phoneMatch = cardText.match(phoneRegex);
       if (phoneMatch) {
-        telephone = phoneMatch[0].replace(/[\\s-]/g, '').replace('+213', '0');
+        telephone = phoneMatch[0].replace(/[\\\\s-]/g, '').replace('+213', '0');
       }
 
-      // Extraction Adresse
       let adresse = "Algérie";
       for (const line of lines) {
         if (line.includes('·')) {
@@ -285,7 +779,7 @@
         const addressLines = lines.filter(line => {
           if (line.includes(nom)) return false;
           if (phoneRegex.test(line)) return false;
-          if (line.match(/^[0-9.,\\s()]+$/)) return false;
+          if (line.match(/^[0-9.,\\\\s()]+$/)) return false;
           if (excludeKeywords.some(kw => line.toLowerCase().includes(kw))) return false;
           return true;
         });
@@ -294,10 +788,9 @@
         }
       }
 
-      // Extraction de la note
       let rating = null;
       for (const line of lines) {
-        const match = line.match(/^([2-5][.,][0-9])\\s*\\(([0-9]+)\\)$/);
+        const match = line.match(/^([2-5][.,][0-9])\\\\s*\\\\(([0-9]+)\\\\)$/);
         if (match) {
           rating = parseFloat(match[1].replace(',', '.'));
           break;
@@ -325,7 +818,6 @@
 
   console.log("Extraction terminée : " + results.length + " médecins extraits !");
   
-  // Téléchargement du JSON
   const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(results, null, 2));
   const dlAnchor = document.createElement('a');
   dlAnchor.setAttribute("href", dataStr);
@@ -336,17 +828,7 @@
   
   alert("Succès ! " + results.length + " médecins ont été extraits. Le fichier JSON a été téléchargé.");
 }
-
-// Lancement automatique du prompt
-(async () => {
-  const spec = prompt("Entrez la spécialité (ex: Pédiatre) :", "Pédiatre");
-  const wil = prompt("Entrez la wilaya / ville (ex: Batna) :", "Batna");
-  if (spec && wil) {
-    await scrapeGoogleMaps(spec, wil);
-  } else {
-    console.log("Scraping annulé.");
-  }
-})();`;
+scrapeGoogleMaps(prompt("Entrez la spécialité (ex: Pédiatre) :", "Pédiatre"), prompt("Entrez la wilaya / ville (ex: Batna) :", "Batna"));`;
 
     // Fill script in textarea
     document.getElementById('scraperCode').value = scraperScript;
@@ -355,7 +837,7 @@
     function showToast(msg, type = 'success') {
       const t = document.getElementById('toast');
       t.textContent = msg;
-      t.className = `fixed bottom-6 left-1/2 -translate-x-1/2 px-5 py-3 rounded-xl text-sm font-semibold shadow-2xl transition-all duration-300 opacity-100 z-50 ${
+      t.className = `fixed bottom-6 left-1/2 -translate-x-1/2 px-5 py-3 rounded-xl text-sm font-semibold shadow-2xl transition-all duration-300 opacity-100 z-[9999] ${
         type === 'error' ? 'bg-red-950 text-red-200 border-red-800' : 'bg-slate-800 text-white border-slate-700'
       }`;
       setTimeout(() => {
@@ -394,7 +876,7 @@
         // Build preview table
         const tbody = document.getElementById('previewBody');
         tbody.innerHTML = '';
-        parsedData.forEach(d => {
+        parsedData.slice(0, 10).forEach(d => {
           const tr = document.createElement('tr');
           tr.className = 'border-b border-slate-800 hover:bg-slate-800/30 transition-all';
           tr.innerHTML = `
@@ -403,14 +885,13 @@
             <td class="p-3 text-cyan-400 font-semibold">${d.ville || '–'}</td>
             <td class="p-3 text-slate-300 font-mono">${d.telephone || '–'}</td>
             <td class="p-3 text-slate-400 max-w-xs truncate">${d.adresse || '–'}</td>
-            <td class="p-3 text-slate-400 font-mono">${d.lat && d.lng ? `${d.lat.toFixed(4)}, ${d.lng.toFixed(4)}` : '–'}</td>
           `;
           tbody.appendChild(tr);
         });
 
         document.getElementById('previewSection').classList.remove('hidden');
         document.getElementById('btnImport').removeAttribute('disabled');
-        showToast(`Analyse réussie : ${parsedData.length} médecins trouvés.`);
+        showToast(`Analyse réussie : ${parsedData.length} fiches trouvées.`);
       } catch (err) {
         showToast("Erreur de format JSON. Vérifiez la syntaxe.", "error");
       }
@@ -418,6 +899,7 @@
 
     // Import loop
     async function startImport() {
+      if (!checkPasscode()) return;
       if (!parsedData.length) return;
 
       document.getElementById('logSection').classList.remove('hidden');
@@ -444,7 +926,7 @@
         logDiv.scrollTop = logDiv.scrollHeight;
       };
 
-      addLog("🚀 Démarrage de l'importation de " + total + " médecins...");
+      addLog("🚀 Démarrage de l'importation de " + total + " fiches...");
 
       for (let i = 0; i < total; i++) {
         const m = parsedData[i];
@@ -524,7 +1006,7 @@
           addLog(`[!] Erreur sur ${m.nom || 'Inconnu'} : ${error.message}`, 'error');
         }
 
-        // Wait 100ms between calls to avoid API rate limit
+        // Wait 100ms between calls
         await new Promise(r => setTimeout(r, 100));
       }
 

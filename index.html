@@ -641,7 +641,7 @@
   <div id="progress-bar"></div>
 
   <!-- ══════════ TOP BAR ══════════ -->
-  <header class="topbar">
+  <header class="topbar" style="position: relative;">
     <div class="topbar-logo-wrap">
       <div class="logo-icon">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -653,6 +653,30 @@
         <div id="tagline" class="logo-sub">Dossier Santé Algérie</div>
       </div>
     </div>
+    
+    <!-- Admin & Notif controls -->
+    <a href="admin.html" class="ctrl-btn" title="Administration">
+      <span>⚙️</span>
+    </a>
+    
+    <div style="position: relative; display: inline-block;">
+      <button id="notifBtn" onclick="toggleNotifs()" class="ctrl-btn" style="position: relative;">
+        <span>🔔</span>
+        <span id="notifDot" style="display:none; position:absolute; top:-2px; right:-2px; width:8px; height:8px; background:var(--red); border-radius:50%; border:1.5px solid var(--surface);"></span>
+      </button>
+      
+      <!-- Notifications Dropdown Box -->
+      <div id="notifDropdown" style="display:none; position:absolute; right:0; top:42px; width:290px; background:var(--surface); border:1px solid var(--border); border-radius:var(--r); box-shadow:var(--shadow); z-index:100; overflow:hidden;">
+        <div style="padding:10px 12px; border-bottom:1px solid var(--border-light); font-size:11px; font-weight:700; text-transform:uppercase; color:var(--text-secondary); display:flex; justify-content:between; align-items:center;">
+          <span class="i18n" data-key="notif_title">Nouveautés locales</span>
+          <button onclick="clearNotifs()" style="background:transparent; border:none; color:var(--accent2); font-size:10px; cursor:pointer; font-weight:700; margin-inline-start:auto;" class="i18n" data-key="notif_clear">Effacer</button>
+        </div>
+        <div id="notifItems" style="max-height:240px; overflow-y:auto; font-size:12px;" class="custom-scroll">
+          <div style="padding:16px; text-align:center; color:var(--text-muted);" class="i18n" data-key="notif_empty">Aucune nouvelle alerte.</div>
+        </div>
+      </div>
+    </div>
+
     <button id="langBtn" onclick="toggleLang()" class="ctrl-btn">
       <span>🌐</span><span id="langLabel">عربي</span>
     </button>
@@ -718,6 +742,12 @@
           <div class="filter-group" id="sbar_container">
             <p class="sec-label i18n" data-key="filter_spec">Spécialité</p>
             <div class="chips-row" id="sbar"></div>
+          </div>
+          <div class="filter-group" id="garde_container" style="display:none; flex-direction:row; align-items:center; gap:8px; padding-top:2px;">
+            <label style="display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:700; color:var(--text-secondary); cursor:pointer;">
+              <input type="checkbox" id="gardeFilter" onchange="filter()" style="width:14px; height:14px; accent-color:var(--accent);" />
+              <span class="i18n" data-key="filter_garde">Pharmacies de garde uniquement</span>
+            </label>
           </div>
         </div>
       </div>
@@ -924,31 +954,22 @@
             <input type="time" id="claimEnd" value="16:00" class="form-input" style="width:100%;padding:6px 10px;font-size:13px;" />
           </div>
         </div>
-        
-        <!-- Action Buttons -->
-        <div style="display:flex;gap:8px;margin-top:8px;">
-          <button onclick="saveClaim()" class="btn-publish" style="padding:10px 0;font-size:13px;flex:1;"><span class="i18n" data-key="claim_save">Enregistrer</span></button>
-          <button onclick="closeClaimModal()" class="btn-cancel" style="padding:10px 0;font-size:13px;flex:1;"><span class="i18n" data-key="claim_cancel">Annuler</span></button>
+
+        <!-- Pharmacy Garde checkbox (shown only for pharmacies) -->
+        <div id="claimGardeContainer" style="display:none; align-items:center; gap:8px; padding-top:4px;">
+          <label style="display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:700; color:var(--text-secondary); cursor:pointer;">
+            <input type="checkbox" id="claimGarde" style="width:14px; height:14px; accent-color:var(--accent);" /> <span class="i18n" data-key="claim_garde_label">Pharmacie de garde cette semaine</span>
+          </label>
         </div>
+      </div>
+      <div style="padding:12px 16px; border-top:1px solid var(--border-light); display:flex; justify-content:flex-end; gap:8px; background:var(--surface2);">
+        <button onclick="closeClaimModal()" class="ctrl-btn i18n" data-key="claim_cancel">Annuler</button>
+        <button onclick="saveClaim()" class="btn-publish i18n" data-key="claim_save" style="padding:6px 14px; font-size:12px;">Enregistrer</button>
       </div>
     </div>
   </div>
 
-  <!-- TOAST -->
-  <div class="toast" id="toast"></div>
-
   <script>
-  /* ══════════ SECURITY ══════════ */
-  function sanitizeName(s)    { return s.replace(/[<>{}()\[\]\\\/;=]/g,'').slice(0,60).trim(); }
-  function sanitizeComment(s) { return s.replace(/[<>{}\\]/g,'').slice(0,500).trim(); }
-  const sessionReviews = JSON.parse(sessionStorage.getItem('tabibdz_session_rev') || '{}');
-  function canReview(id)  { return (sessionReviews[id]||0) < 3; }
-  function recordReview(id) {
-    sessionReviews[id] = (sessionReviews[id]||0)+1;
-    sessionStorage.setItem('tabibdz_session_rev', JSON.stringify(sessionReviews));
-  }
-
-  /* ══════════ TRANSLATIONS ══════════ */
   const LANGS = {
     fr: {
       cat_medecin:'Médecins', cat_pharmacie:'Pharmacies', cat_labo:'Labos', cat_hopital:'Hôpitaux',
@@ -999,6 +1020,16 @@
       day_dim_short:'Dim', day_lun_short:'Lun', day_mar_short:'Mar', day_mer_short:'Mer', day_jeu_short:'Jeu', day_ven_short:'Ven', day_sam_short:'Sam',
       toast_claim_ok:'✅ Profil mis à jour avec succès !',
       toast_photo_large:'⚠️ L\'image dépasse 500 Ko. Veuillez en choisir une plus petite.',
+
+      filter_garde:'Pharmacies de garde uniquement',
+      garde_lbl:'De Garde',
+      claim_garde_label:'Pharmacie de garde cette semaine',
+      notif_title:'Nouveautés locales',
+      notif_clear:'Effacer',
+      notif_empty:'Aucune nouvelle alerte.',
+      notif_new_doc:(nom, city)=>`Nouveau praticien : ${nom} a ouvert à ${city} !`,
+      notif_new_lab:(nom, city)=>`Nouveau laboratoire : ${nom} disponible à ${city} !`,
+      toast_notif_granted:'🔔 Notifications activées !',
     },
     ar: {
       cat_medecin:'أطباء', cat_pharmacie:'صيدليات', cat_labo:'مخابر', cat_hopital:'مستشفيات',
@@ -1006,7 +1037,7 @@
       filter_wilaya:'الولاية', filter_spec:'التخصص',
       loading:'جاري التحميل...', no_result:'لا توجد نتائج',
       stats_found:(n,cat,open,gps)=>`${n} ${cat} · ${open} مفتوح${gps?' · حسب القرب':''}`,
-      empty_title:'لا توجد نتائج', empty_desc:'حاول تعديل البحث أو إعادة ضبط الفلاتر.',
+      empty_title:'لا توجد نتائج', empty_desc:'حاول تعديل البحث أو إعادة ضبط الفلاتer.',
       reset_btn:'إعادة ضبط', leave_review:'✏️ اترك تقييماً',
       give_review:'رأيك', name_ph:'اسمك (مثال: فاطمة ب.)', rating_lbl:'التقييم:',
       comment_ph:'اكتب تعليقك...', publish_btn:'نشر', cancel_btn:'إلغاء',
@@ -1016,6 +1047,51 @@
       pos_lbl:'إيجابي', neu_lbl:'محايد', neg_lbl:'سلبي',
       all_lbl:'الكل', tagline:'الدليل الصحي الجزائري',
       footer_note:'البيانات لأغراض إعلامية فقط.',
+      toast_no_gps:'GPS غير متاح', toast_gps_ok:'📍 تم تحديد الموقع',
+      toast_gps_err:'الموقع غير متاح', toast_review_ok:'✅ شكراً على تقييمك!',
+      toast_review_local:'✅ تم حفظ التقييم محلياً', toast_name_req:'⚠️ أدخل اسمك',
+      toast_star_req:'⚠️ اختر التقييم', toast_short_cmt:'⚠️ التعليق قصير جداً',
+      toast_rate_limit:'⚠️ حد 3 تقييمات', loading_cache:'⚡ البيانات من الذاكرة المؤقتة',
+      cat_label_med:'طبيب', cat_label_pha:'صيدلية', cat_label_lab:'مخبر', cat_label_hop:'مستشفى',
+      
+      view_map:'خريطة', view_list:'قائمة',
+      your_position:'موقعك الحالي',
+      rdv_btn:'حجز موعد',
+      rdv_select_date:'١. اختر التاريخ:',
+      rdv_select_time:'٢. الأوقات المتاحة:',
+      rdv_patient_name:'الاسم:',
+      rdv_patient_phone:'رقم الهاتف:',
+      rdv_patient_motif:'السبب (اختياري):',
+      rdv_confirm_btn:(slot)=>`تأكيد الموعد الساعة ${slot}`,
+      toast_rdv_ok:'✅ تم حجز الموعد بنجاح!',
+      toast_rdv_fields:'⚠️ يرجى إدخال الاسم ورقم الهاتف',
+      claim_btn:'✅ أنا هذا الطبيب',
+      claim_title:'تأكيد ملكية الملف الشخصي',
+      claim_desc:'قم بتحديث معلوماتك المهنية (الأسعار، الأوقات، الصورة) لإثراء ملفك التعريفي العام.',
+      claim_photo:'صورة العيادة أو الشخصية:',
+      claim_choose_photo:'اختر صورة',
+      claim_photo_size:'JPG/PNG فقط. الحد الأقصى 500 كيلوبايت.',
+      claim_tarif:'سعر الفحص (دينار جزائري):',
+      claim_days:'أيام العمل:',
+      claim_hour_start:'وقت البدء:',
+      claim_hour_end:'وقت الانتهاء:',
+      claim_save:'حفظ التعديلات',
+      claim_cancel:'إلغاء',
+      day_dim_short:'أحد', day_lun_short:'اثنين', day_mar_short:'ثلاثاء', day_mer_short:'أربعاء', day_jeu_short:'خميس', day_ven_short:'جمعة', day_sam_short:'سبت',
+      toast_claim_ok:'✅ تم تحديث ملفك الشخصي بنجاح!',
+      toast_photo_large:'⚠️ حجم الصورة يتجاوز 500 كيلوبايت. يرجى اختيار صورة أصغر.',
+
+      filter_garde:'صيدليات الحراسة فقط',
+      garde_lbl:'حراسة',
+      claim_garde_label:'صيدلية حراسة هذا الأسبوع',
+      notif_title:'تنبيهات جديدة',
+      notif_clear:'مسح الكل',
+      notif_empty:'لا توجد تنبيهات جديدة.',
+      notif_new_doc:(nom, city)=>`طبيب جديد: تم افتتاح عيادة ${nom} في ${city}!`,
+      notif_new_lab:(nom, city)=>`مخبر جديد: يتوفر مختبر ${nom} في ${city}!`,
+      toast_notif_granted:'🔔 تم تفعيل التنبيهات!',
+    }
+  };لأغراض إعلامية فقط.',
       toast_no_gps:'GPS غير متاح', toast_gps_ok:'📍 تم تحديد الموقع',
       toast_gps_err:'الموقع غير متاح', toast_review_ok:'✅ شكراً على تقييمك!',
       toast_review_local:'✅ تم حفظ التقييم محلياً', toast_name_req:'⚠️ أدخل اسمك',
@@ -1164,7 +1240,9 @@
       ALL=cached;
       buildWChips();
       buildSChips();
+      applyHashRouting();
       filter();
+      checkForNewNotifications();
       doneProgress();
       showToast(t('loading_cache'));
       autoRequestGPS();
@@ -1182,7 +1260,11 @@
         const docsWithOverrides = applyLocalProfileOverrides(data);
         ALL=docsWithOverrides;
         saveToCache(data);
-        buildWChips(); buildSChips(); filter(); doneProgress(); return;
+        buildWChips(); buildSChips(); 
+        applyHashRouting();
+        filter();
+        checkForNewNotifications();
+        doneProgress(); return;
       }
     }catch(e){ console.warn('Supabase:',e.message); }
     try{
@@ -1194,7 +1276,11 @@
     catch(e){
       ALL=applyLocalProfileOverrides(FB);
     }
-    buildWChips(); buildSChips(); filter(); doneProgress();
+    buildWChips(); buildSChips(); 
+    applyHashRouting();
+    filter();
+    checkForNewNotifications();
+    doneProgress();
   }
 
   /* ══════════ CATEGORIES ══════════ */
@@ -1207,6 +1293,11 @@
   }
   function setCategory(cat){
     activeCategory=cat; activeS='Toutes';
+    // Reset garde filter check if we leave pharmacie
+    if (cat !== 'pharmacie') {
+      const gf = document.getElementById('gardeFilter');
+      if (gf) gf.checked = false;
+    }
     // Desktop sidebar
     document.querySelectorAll('.cat-tab').forEach(b=>b.classList.toggle('active',b.dataset.cat===cat));
     // Mobile bottom nav
@@ -1214,6 +1305,14 @@
     // Spec filter visibility
     const sb=document.getElementById('sbar_container');
     if(cat==='médecin'){ sb.style.display=''; buildSChips(); } else sb.style.display='none';
+    
+    // Garde filter visibility
+    const gb=document.getElementById('garde_container');
+    if(gb) {
+      gb.style.display = cat === 'pharmacie' ? 'flex' : 'none';
+    }
+    
+    updateHash();
     filter();
   }
 
@@ -1308,6 +1407,15 @@
     let res=ALL.slice().filter(d=>getCategory(d)===activeCategory);
     if(activeW!=='Toutes') res=res.filter(d=>d.wilaya===activeW);
     if(activeCategory==='médecin'&&activeS!=='Toutes') res=res.filter(d=>d.specialite===activeS);
+    
+    // Garde filter
+    if(activeCategory==='pharmacie') {
+      const gf = document.getElementById('gardeFilter');
+      if (gf && gf.checked) {
+        res = res.filter(d => d.garde === true);
+      }
+    }
+    
     if(q) res=res.filter(d=>[d.nom,d.specialite,d.ville,d.wilaya,d.adresse].some(f=>(f||'').toLowerCase().includes(q)));
     if(gpsOn&&userLat!==null){ res.forEach(d=>d._dist=dist(userLat,userLng,d.lat,d.lng)); res.sort((a,b)=>a._dist-b._dist); }
     else { res.sort((a,b)=>(isOpen(a)?0:1)-(isOpen(b)?0:1)||a.nom.localeCompare(b.nom)); }
@@ -1373,13 +1481,25 @@
     const ne=document.createElement('div');
     ne.style.cssText='font-size:14px;font-weight:800;color:var(--text-primary);line-height:1.3;';
     ne.textContent=doc.nom; nr.appendChild(ne);
+    
+    const badgesWrap = document.createElement('div');
+    badgesWrap.style.cssText = 'display:flex;align-items:center;gap:4px;';
+    
     const sb=document.createElement('span');
     sb.style.cssText='display:inline-flex;align-items:center;gap:3px;padding:3px 7px;border-radius:var(--r2);font-size:10px;font-weight:700;flex-shrink:0;';
     sb.className=open?'badge-open':'badge-closed';
     const dot=document.createElement('span');
     dot.style.cssText=`width:5px;height:5px;border-radius:50%;background:${open?'var(--green)':'var(--text-muted)'};${open?'animation:pulse 2s infinite':''}`;
     sb.appendChild(dot); sb.appendChild(document.createTextNode(open?t('open_lbl'):t('closed_lbl')));
-    nr.appendChild(sb); info.appendChild(nr);
+    badgesWrap.appendChild(sb);
+    
+    if (getCategory(doc) === 'pharmacie' && doc.garde === true) {
+      const gb = document.createElement('span');
+      gb.style.cssText = 'display:inline-flex;align-items:center;gap:3px;padding:3px 7px;border-radius:var(--r2);font-size:10px;font-weight:700;flex-shrink:0;background:rgba(14,165,233,0.12);color:var(--accent2);border:1px solid rgba(14,165,233,0.25);';
+      gb.textContent = `🌙 ${t('garde_lbl')}`;
+      badgesWrap.appendChild(gb);
+    }
+    nr.appendChild(badgesWrap); info.appendChild(nr);
 
     /* Spec + Tarif row */
     const specRow=document.createElement('div');
@@ -1478,10 +1598,11 @@
     fw.style.cssText='padding:9px 14px;border-top:1px solid var(--border-light);display:flex;gap:8px;';
     const lb=document.createElement('button'); lb.className='btn-review'; lb.style.flex='1'; lb.textContent=t('leave_review'); lb.onclick=()=>toggleForm(doc.id); fw.appendChild(lb);
     
-    if (getCategory(doc) === 'médecin') {
+    if (getCategory(doc) === 'médecin' || getCategory(doc) === 'pharmacie') {
       const cb_claim=document.createElement('button');
       cb_claim.className='btn-review'; cb_claim.style.cssText='flex:1;border-color:var(--accent2);color:var(--accent2);';
-      cb_claim.textContent=t('claim_btn'); cb_claim.onclick=()=>openClaimModal(doc);
+      cb_claim.textContent = getCategory(doc) === 'pharmacie' ? (currentLang === 'ar' ? '✅ أنا هذه الصيدلية' : '✅ Je suis cette pharmacie') : t('claim_btn');
+      cb_claim.onclick=()=>openClaimModal(doc);
       fw.appendChild(cb_claim);
     }
     
@@ -1659,7 +1780,8 @@
       if (!doc.lat || !doc.lng) return;
       
       const openState = isOpen(doc);
-      const markerColor = openState ? 'var(--green)' : 'var(--red)';
+      const isGarde = (getCategory(doc) === 'pharmacie' && doc.garde === true);
+      const markerColor = isGarde ? 'var(--accent2)' : (openState ? 'var(--green)' : 'var(--red)');
       const markerHtml = `
         <div style="background:${markerColor};width:16px;height:16px;border:3px solid #fff;border-radius:50%;box-shadow:0 2px 5px rgba(0,0,0,0.25);"></div>
       `;
@@ -1682,10 +1804,12 @@
         `;
       }
       
+      const gardeBadge = isGarde ? `<span style="display:inline-block;padding:2px 6px;border-radius:3px;font-size:9px;font-weight:700;background:rgba(14,165,233,0.15);color:var(--accent2);margin-top:2px;">🌙 ${t('garde_lbl')}</span>` : '';
+      
       const popupContent = `
         <div class="map-popup" style="font-family:'Inter', sans-serif;min-width:180px;color:var(--text-primary);padding:2px;">
           <h4 style="margin:0 0 3px 0;font-size:13px;font-weight:800;color:var(--text-primary);line-height:1.3;">${doc.nom}</h4>
-          <div style="font-size:10px;font-weight:700;color:var(--accent);">${doc.specialite}</div>
+          <div style="font-size:10px;font-weight:700;color:var(--accent);">${doc.specialite} ${gardeBadge}</div>
           ${hasTarif}
           <div style="font-size:11px;color:var(--text-secondary);margin:6px 0 8px 0;line-height:1.3;">📍 ${doc.ville}, ${doc.wilaya}</div>
           <div style="display:flex;gap:5px;">
@@ -1924,6 +2048,16 @@
       document.getElementById('claimEnd').value = '16:00';
     }
     
+    const isPharm = getCategory(doc) === 'pharmacie';
+    const gc = document.getElementById('claimGardeContainer');
+    if (gc) {
+      gc.style.display = isPharm ? 'flex' : 'none';
+    }
+    const gCheck = document.getElementById('claimGarde');
+    if (gCheck) {
+      gCheck.checked = doc.garde || false;
+    }
+    
     document.getElementById('claimModal').style.display = 'flex';
   }
 
@@ -1957,6 +2091,7 @@
     const tarif = parseInt(document.getElementById('claimTarif').value) || null;
     const startTime = document.getElementById('claimStart').value;
     const endTime = document.getElementById('claimEnd').value;
+    const garde = document.getElementById('claimGarde') ? document.getElementById('claimGarde').checked : false;
     
     const jours = [];
     if (document.getElementById('day-dim').checked) jours.push('Dim');
@@ -1976,6 +2111,7 @@
       ALL[index].jours = jours;
       ALL[index].horaires = horaires;
       ALL[index].rdv_enabled = true;
+      ALL[index].garde = garde;
     }
     
     const localProfiles = JSON.parse(localStorage.getItem('tabibdz_profiles') || '{}');
@@ -1984,7 +2120,8 @@
       tarif,
       jours,
       horaires,
-      rdv_enabled: true
+      rdv_enabled: true,
+      garde
     };
     localStorage.setItem('tabibdz_profiles', JSON.stringify(localProfiles));
     
@@ -1994,7 +2131,8 @@
         tarif,
         jours,
         horaires,
-        rdv_enabled: true
+        rdv_enabled: true,
+        garde
       }).eq('id', selectedDoc.id);
     } catch (e) {
       console.warn('Supabase profile update skipped:', e.message);
@@ -2010,8 +2148,257 @@
   qEl.addEventListener('input',()=>{clrEl.style.display=qEl.value?'flex':'none';filter();});
   clrEl.addEventListener('click',()=>{qEl.value='';clrEl.style.display='none';filter();qEl.focus();});
 
+  /* ══════════ NOTIFICATIONS ══════════ */
+  let notifications = [];
+
+  function initNotifications() {
+    document.addEventListener('click', (e) => {
+      const dropdown = document.getElementById('notifDropdown');
+      const btn = document.getElementById('notifBtn');
+      if (dropdown && btn && !btn.contains(e.target) && !dropdown.contains(e.target)) {
+        dropdown.style.display = 'none';
+      }
+    });
+  }
+
+  function toggleNotifs() {
+    const dropdown = document.getElementById('notifDropdown');
+    if (dropdown.style.display === 'none' || !dropdown.style.display) {
+      dropdown.style.display = 'block';
+      if (window.Notification && Notification.permission === 'default') {
+        Notification.requestPermission().then(permission => {
+          if (permission === 'granted') {
+            showToast(t('toast_notif_granted'));
+          }
+        });
+      }
+      document.getElementById('notifDot').style.display = 'none';
+    } else {
+      dropdown.style.display = 'none';
+    }
+  }
+
+  function clearNotifs() {
+    localStorage.setItem('tabibdz_cleared_notifs', 'true');
+    localStorage.setItem('tabibdz_cleared_ts', Date.now().toString());
+    notifications = [];
+    renderNotifications();
+  }
+
+  function renderNotifications() {
+    const container = document.getElementById('notifItems');
+    if (!container) return;
+    container.innerHTML = '';
+    
+    if (notifications.length === 0) {
+      container.innerHTML = `<div style="padding:16px; text-align:center; color:var(--text-muted);" class="i18n" data-key="notif_empty">${t('notif_empty')}</div>`;
+      document.getElementById('notifDot').style.display = 'none';
+      return;
+    }
+    
+    notifications.forEach(item => {
+      const div = document.createElement('div');
+      div.style.cssText = 'padding:10px 12px; border-bottom:1px solid var(--border-light); cursor:pointer; transition:background 0.15s;';
+      div.className = 'hover-bg';
+      
+      const isDoc = getCategory(item) === 'médecin';
+      const text = isDoc ? t('notif_new_doc', item.nom, item.ville) : t('notif_new_lab', item.nom, item.ville);
+      
+      const timeSpan = document.createElement('div');
+      timeSpan.style.cssText = 'font-size:9px; color:var(--text-muted); margin-top:3px;';
+      const dateStr = item.created_at ? new Date(item.created_at).toLocaleDateString() : 'Nouveau';
+      timeSpan.textContent = dateStr;
+      
+      div.innerHTML = `<div style="font-weight:600; color:var(--text-primary); line-height:1.4;">${text}</div>`;
+      div.appendChild(timeSpan);
+      
+      div.onclick = () => {
+        activeCategory = getCategory(item);
+        activeW = item.wilaya;
+        if (activeCategory === 'médecin') {
+          activeS = item.specialite;
+        }
+        document.getElementById('q').value = item.nom;
+        clrEl.style.display = 'flex';
+        updateUIChips();
+        updateHash();
+        filter();
+        document.getElementById('notifDropdown').style.display = 'none';
+      };
+      
+      container.appendChild(div);
+    });
+  }
+
+  function checkForNewNotifications() {
+    if (!ALL || ALL.length === 0) return;
+    
+    const sorted = ALL.slice().sort((a, b) => {
+      const dateA = a.created_at ? new Date(a.created_at) : new Date(0);
+      const dateB = b.created_at ? new Date(b.created_at) : new Date(0);
+      return dateB - dateA || b.id - a.id;
+    });
+    
+    const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
+    let candidates = sorted.filter(item => {
+      const date = item.created_at ? new Date(item.created_at) : new Date(0);
+      return date.getTime() > thirtyDaysAgo;
+    });
+    
+    if (candidates.length === 0) {
+      candidates = sorted.slice(0, 3);
+    }
+    
+    const isCleared = localStorage.getItem('tabibdz_cleared_notifs');
+    if (isCleared) {
+      const clearTime = parseInt(localStorage.getItem('tabibdz_cleared_ts') || '0');
+      candidates = candidates.filter(item => {
+        const itemTime = item.created_at ? new Date(item.created_at).getTime() : 0;
+        return itemTime > clearTime;
+      });
+    }
+    
+    let filteredNotifs = candidates;
+    if (activeW && activeW !== 'Toutes') {
+      filteredNotifs = candidates.filter(item => item.wilaya === activeW);
+    }
+    
+    const lastSeenId = parseInt(localStorage.getItem('tabibdz_last_seen_notif_id') || '0');
+    if (filteredNotifs.length > 0) {
+      const newest = filteredNotifs[0];
+      if (newest.id > lastSeenId) {
+        triggerBrowserNotification(newest);
+        localStorage.setItem('tabibdz_last_seen_notif_id', newest.id.toString());
+        document.getElementById('notifDot').style.display = 'block';
+      }
+    }
+    
+    notifications = filteredNotifs;
+    renderNotifications();
+  }
+
+  function triggerBrowserNotification(item) {
+    if (!window.Notification || Notification.permission !== 'granted') return;
+    
+    const isDoc = getCategory(item) === 'médecin';
+    const title = "Nouveauté TabibDZ 🔔";
+    const body = isDoc ? t('notif_new_doc', item.nom, item.ville) : t('notif_new_lab', item.nom, item.ville);
+    
+    new Notification(title, {
+      body: body,
+      icon: item.photo_url || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(item.nom)
+    });
+  }
+
+  /* ══════════ SEO HASH ROUTING ══════════ */
+  function applyHashRouting() {
+    const hash = window.location.hash;
+    if (!hash || !hash.startsWith('#/')) return;
+    
+    const parts = hash.slice(2).split('/').map(p => decodeURIComponent(p).trim());
+    if (parts.length === 0 || !parts[0]) return;
+    
+    const catRaw = parts[0].toLowerCase();
+    let cat = 'médecin';
+    if (catRaw.startsWith('ph')) cat = 'pharmacie';
+    else if (catRaw.startsWith('lab')) cat = 'laboratoire';
+    else if (catRaw.startsWith('hop') || catRaw.startsWith('hôp')) cat = 'hôpital';
+    
+    activeCategory = cat;
+    
+    let wilaya = 'Toutes';
+    if (parts.length > 1 && parts[1]) {
+      const ws = [...new Set(ALL.map(d => d.wilaya))];
+      const matchedW = ws.find(w => w.toLowerCase() === parts[1].toLowerCase());
+      if (matchedW) {
+        wilaya = matchedW;
+      }
+    }
+    activeW = wilaya;
+    
+    let spec = 'Toutes';
+    if (cat === 'médecin' && parts.length > 2 && parts[2]) {
+      const docs = ALL.filter(d => getCategory(d) === 'médecin');
+      const ss = [...new Set(docs.map(d => d.specialite))];
+      const matchedS = ss.find(s => s.toLowerCase() === parts[2].toLowerCase());
+      if (matchedS) {
+        spec = matchedS;
+      }
+    }
+    activeS = spec;
+    
+    updateUIChips();
+    updateSEOMeta();
+  }
+
+  function updateHash() {
+    let hashParts = [];
+    if (activeCategory) {
+      let catUrl = activeCategory === 'médecin' ? 'medecin' : activeCategory === 'pharmacie' ? 'pharmacie' : activeCategory === 'laboratoire' ? 'laboratoire' : 'hopital';
+      hashParts.push(catUrl);
+    }
+    if (activeW && activeW !== 'Toutes') {
+      hashParts.push(encodeURIComponent(activeW));
+    }
+    if (activeCategory === 'médecin' && activeS && activeS !== 'Toutes') {
+      hashParts.push(encodeURIComponent(activeS));
+    }
+    const newHash = hashParts.length ? '#/' + hashParts.join('/') : '';
+    if (window.location.hash !== newHash) {
+      history.replaceState(null, null, newHash || ' ');
+    }
+    updateSEOMeta();
+  }
+
+  function updateSEOMeta() {
+    let title = "TabibDZ – Annuaire Médical & Santé d'Algérie";
+    let description = "Trouvez facilement un médecin, une pharmacie de garde, un laboratoire ou un hôpital à proximité en Algérie.";
+    
+    const catText = activeCategory === 'médecin' ? 'Médecins' : activeCategory === 'pharmacie' ? 'Pharmacies' : activeCategory === 'laboratoire' ? 'Laboratoires' : 'Hôpitaux';
+    const wilayaText = (activeW && activeW !== 'Toutes') ? ` à ${activeW}` : ' en Algérie';
+    
+    if (activeCategory === 'médecin') {
+      const specText = (activeS && activeS !== 'Toutes') ? activeS : 'Médecins';
+      title = `${specText}${wilayaText} – TabibDZ`;
+      description = `Trouvez les meilleurs ${specText.toLowerCase()}${wilayaText}. Adresses, numéros de téléphone, avis patients et prise de rendez-vous en ligne.`;
+    } else if (activeCategory === 'pharmacie') {
+      title = `${catText}${wilayaText} – TabibDZ`;
+      description = `Trouvez une pharmacie${wilayaText}. Horaires d'ouverture, coordonnées et pharmacies de garde cette semaine.`;
+    } else {
+      title = `${catText}${wilayaText} – TabibDZ`;
+      description = `Trouvez un ${activeCategory}${wilayaText}. Coordonnées, horaires d'ouverture et services médicaux.`;
+    }
+    
+    document.title = title;
+    const metaDesc = document.querySelector('meta[name="description"]');
+    if (metaDesc) {
+      metaDesc.setAttribute('content', description);
+    }
+  }
+
+  function updateUIChips() {
+    document.querySelectorAll('.cat-tab').forEach(b => b.classList.toggle('active', b.dataset.cat === activeCategory));
+    document.querySelectorAll('.mnav-btn').forEach(b => b.classList.toggle('active', b.dataset.cat === activeCategory));
+    
+    const sb = document.getElementById('sbar_container');
+    if (activeCategory === 'médecin') {
+      sb.style.display = '';
+      buildSChips();
+    } else {
+      sb.style.display = 'none';
+    }
+    
+    buildWChips();
+  }
+
+  window.addEventListener('hashchange', () => {
+    applyHashRouting();
+    filter();
+  });
+
   /* ══════════ INIT ══════════ */
   applyLang();
+  initNotifications();
   load();
   </script>
 </body>
