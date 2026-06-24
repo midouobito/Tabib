@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://viabbtrtusufxbuhxypb.supabase.co https://cdn.tailwindcss.com https://cdn.jsdelivr.net https://fonts.googleapis.com https://fonts.gstatic.com https://ui-avatars.com; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://ui-avatars.com; connect-src 'self' https://viabbtrtusufxbuhxypb.supabase.co;">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://viabbtrtusufxbuhxypb.supabase.co https://cdn.tailwindcss.com https://cdn.jsdelivr.net https://fonts.googleapis.com https://fonts.gstatic.com https://ui-avatars.com https://unpkg.com; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdn.jsdelivr.net https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com https://cdn.jsdelivr.net; font-src https://fonts.gstatic.com; img-src 'self' data: https://ui-avatars.com https://unpkg.com https://*.tile.openstreetmap.org; connect-src 'self' https://viabbtrtusufxbuhxypb.supabase.co;">
   <meta name="description" content="TabibDZ – Annuaire médical d'Algérie : médecins, pharmacies, laboratoires et hôpitaux."/>
   <title>TabibDZ – Annuaire Médical &amp; Santé d'Algérie</title>
   <script src="https://cdn.tailwindcss.com"></script>
@@ -11,6 +11,15 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Leaflet Map library -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- Flatpickr booking calendar -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ar.js"></script>
   <style>
     /* ══════════ TOKENS ══════════ */
     :root {
@@ -492,6 +501,139 @@
       0%,100% { opacity: 1; }
       50%      { opacity: 0.5; }
     }
+
+    /* ── Map View styling ── */
+    #mapView {
+      height: 550px;
+      border-radius: var(--r);
+      border: 1px solid var(--border);
+      margin: 14px 16px;
+      display: none;
+      z-index: 10;
+    }
+    @media (max-width: 767px) {
+      #mapView {
+        height: 380px;
+        margin: 10px 12px;
+      }
+    }
+
+    /* ── Dark Mode Leaflet support ── */
+    [data-theme="dark"] .leaflet-tile-container {
+      filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
+    }
+    [data-theme="dark"] .leaflet-container {
+      background: var(--bg2) !important;
+    }
+    [data-theme="dark"] .leaflet-popup-content-wrapper {
+      background: var(--surface) !important;
+      color: var(--text-primary) !important;
+      box-shadow: var(--shadow) !important;
+      border: 1px solid var(--border) !important;
+      border-radius: var(--r) !important;
+    }
+    [data-theme="dark"] .leaflet-popup-tip {
+      background: var(--surface) !important;
+      border: 1px solid var(--border) !important;
+    }
+    .leaflet-popup-close-button {
+      color: var(--text-muted) !important;
+    }
+    .map-popup a:hover {
+      opacity: 0.9;
+    }
+
+    /* ── Modals & Dialogs ── */
+    .modal-overlay {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.5); z-index: 1000;
+      display: none; align-items: center; justify-content: center;
+      padding: 16px;
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+    }
+    .modal-content {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      box-shadow: var(--shadow);
+      width: 100%; max-width: 440px;
+      display: flex; flex-direction: column;
+      animation: modalShow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      overflow: hidden;
+    }
+    @keyframes modalShow {
+      from { transform: scale(0.95); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+    .modal-header {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border-light);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .modal-close-btn {
+      background: transparent; border: none; font-size: 16px;
+      color: var(--text-muted); cursor: pointer; padding: 4px;
+      line-height: 1; display: flex; align-items: center; justify-content: center;
+      transition: color 0.15s;
+    }
+    .modal-close-btn:hover { color: var(--text-primary); }
+    .modal-body {
+      padding: 16px;
+    }
+    .form-label {
+      display: block; font-size: 11px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.05em;
+      color: var(--text-secondary); margin-bottom: 6px;
+    }
+    [dir="rtl"] .form-label {
+      text-align: right;
+    }
+    .slots-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;
+      margin-bottom: 12px;
+    }
+    .slot-btn {
+      padding: 8px 4px; border: 1px solid var(--border);
+      background: var(--surface2); border-radius: var(--r2);
+      font-size: 12px; font-weight: 700; color: var(--text-secondary);
+      cursor: pointer; text-align: center; transition: all 0.15s;
+    }
+    .slot-btn:hover { border-color: var(--accent); color: var(--text-primary); }
+    .slot-btn.selected { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .slot-btn.disabled { opacity: 0.4; cursor: not-allowed; text-decoration: line-through; }
+
+    /* Flatpickr Custom styles to match theme */
+    .flatpickr-calendar {
+      background: var(--surface) !important;
+      border: 1px solid var(--border) !important;
+      box-shadow: var(--shadow-sm) !important;
+      border-radius: var(--r) !important;
+      font-family: inherit !important;
+    }
+    .flatpickr-day.selected, .flatpickr-day.selected:hover {
+      background: var(--accent) !important;
+      border-color: var(--accent) !important;
+    }
+    .flatpickr-day.today {
+      border-color: var(--accent2) !important;
+    }
+    .flatpickr-day {
+      color: var(--text-primary) !important;
+    }
+    .flatpickr-day.flatpickr-disabled, .flatpickr-day.flatpickr-disabled:hover {
+      color: var(--text-muted) !important;
+      background: transparent !important;
+    }
+    .flatpickr-months .flatpickr-month, 
+    .flatpickr-months .flatpickr-prev-month, 
+    .flatpickr-months .flatpickr-next-month {
+      color: var(--text-primary) !important;
+      fill: var(--text-primary) !important;
+    }
+    .flatpickr-weekday {
+      color: var(--text-secondary) !important;
+    }
   </style>
 </head>
 <body>
@@ -582,10 +724,14 @@
 
       <!-- STATS -->
       <div class="stat-bar">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.2">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.2" style="flex-shrink:0;">
           <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
         </svg>
-        <span id="statsTxt" class="i18n" data-key="loading">Chargement...</span>
+        <span id="statsTxt" class="i18n" data-key="loading" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Chargement...</span>
+        
+        <button id="viewToggleBtn" onclick="toggleView()" class="ctrl-btn" style="margin-inline-start: auto; display: inline-flex; align-items: center; gap: 4px;">
+          <span id="viewToggleIcon">🗺️</span> <span id="viewToggleTxt" class="i18n" data-key="view_map">Carte</span>
+        </button>
       </div>
 
       <!-- CARDS LIST -->
@@ -623,6 +769,9 @@
           </div>
         </div>
       </div>
+
+      <!-- MAP VIEW -->
+      <div id="mapView"></div>
 
       <!-- EMPTY STATE -->
       <div id="empty" class="empty-box" style="margin:0 16px;">
@@ -662,6 +811,129 @@
     </div>
   </nav>
 
+  <!-- 📅 RDV MODAL -->
+  <div id="rdvModal" class="modal-overlay" onclick="if(event.target===this) closeRdvModal()">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="rdvDocName" style="font-size:14px;font-weight:800;color:var(--text-primary);">Prendre RDV</h3>
+        <button onclick="closeRdvModal()" class="modal-close-btn">✕</button>
+      </div>
+      <div class="modal-body" style="display:flex;flex-direction:column;gap:12px;max-height:calc(100dvh - 140px);overflow-y:auto;">
+        <div>
+          <label class="form-label i18n" data-key="rdv_select_date">1. Choisir une date</label>
+          <div id="rdvCalendar" style="display: flex; justify-content: center;"></div>
+        </div>
+        
+        <div id="slotsContainer" style="display:none;">
+          <label class="form-label i18n" data-key="rdv_select_time">2. Créneaux disponibles</label>
+          <div id="rdvSlots" class="slots-grid"></div>
+        </div>
+        
+        <div id="rdvForm" style="display:none;flex-direction:column;gap:8px;">
+          <div>
+            <label class="form-label i18n" data-key="rdv_patient_name">Votre nom</label>
+            <input id="rdvName" type="text" placeholder="..." class="form-input" style="width:100%;padding:8px 12px;font-size:13px;" />
+          </div>
+          <div>
+            <label class="form-label i18n" data-key="rdv_patient_phone">Votre numéro de téléphone</label>
+            <input id="rdvPhone" type="tel" placeholder="05xxxxxxxx" class="form-input" style="width:100%;padding:8px 12px;font-size:13px;" />
+          </div>
+          <div>
+            <label class="form-label i18n" data-key="rdv_patient_motif">Motif de consultation (optionnel)</label>
+            <textarea id="rdvMotif" rows="2" placeholder="..." class="form-input" style="width:100%;padding:8px 12px;font-size:13px;resize:none;"></textarea>
+          </div>
+          
+          <button id="btnConfirmRdv" onclick="confirmRdv()" class="btn-publish" style="padding:10px 0;font-size:13px;margin-top:6px;width:100%;">
+            Confirmer
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ✅ CLAIM MODAL -->
+  <div id="claimModal" class="modal-overlay" onclick="if(event.target===this) closeClaimModal()">
+    <div class="modal-content" style="max-width: 460px;">
+      <div class="modal-header">
+        <h3 class="i18n" data-key="claim_title" style="font-size:14px;font-weight:800;color:var(--text-primary);">Revendiquer le profil</h3>
+        <button onclick="closeClaimModal()" class="modal-close-btn">✕</button>
+      </div>
+      <div class="modal-body" style="display:flex;flex-direction:column;gap:12px;max-height:calc(100dvh - 140px);overflow-y:auto;">
+        <p style="font-size:11px;color:var(--text-secondary);line-height:1.5;" class="i18n" data-key="claim_desc">
+          Mettez à jour vos informations professionnelles. Ces changements s'appliqueront immédiatement à votre fiche.
+        </p>
+        
+        <!-- Photo Upload -->
+        <div>
+          <label class="form-label i18n" data-key="claim_photo">Photo du cabinet ou de profil</label>
+          <div style="display:flex;align-items:center;gap:12px;margin-top:4px;">
+            <img id="claimPhotoPreview" src="" class="doc-photo" style="display:none;" />
+            <div id="claimPhotoPlaceholder" class="doc-photo" style="display:flex;align-items:center;justify-content:center;background:var(--bg2);color:var(--text-muted);font-weight:700;font-size:20px;">🩺</div>
+            <div style="flex:1;">
+              <input type="file" id="claimPhotoInput" accept="image/*" style="display:none;" onchange="previewClaimPhoto(event)" />
+              <button onclick="document.getElementById('claimPhotoInput').click()" class="ctrl-btn">
+                <span>📸</span> <span class="i18n" data-key="claim_choose_photo">Choisir une image</span>
+              </button>
+              <div style="font-size:10px;color:var(--text-muted);margin-top:4px;" class="i18n" data-key="claim_photo_size">Format JPG/PNG, Max 500KB</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Tarif -->
+        <div>
+          <label class="form-label i18n" data-key="claim_tarif">Tarif de consultation (DA)</label>
+          <input type="number" id="claimTarif" placeholder="ex: 1500" class="form-input" style="width:100%;padding:8px 12px;font-size:13px;" min="0" max="15000" />
+        </div>
+        
+        <!-- Jours de consultation -->
+        <div>
+          <label class="form-label i18n" data-key="claim_days">Jours d'ouverture</label>
+          <div style="display:grid;grid-template-columns:repeat(4, 1fr);gap:8px;margin-top:4px;background:var(--surface2);padding:10px;border-radius:var(--r2);border:1px solid var(--border-light);">
+            <label style="display:flex;align-items:center;gap:4px;font-size:11px;font-weight:600;color:var(--text-secondary);cursor:pointer;">
+              <input type="checkbox" id="day-dim" value="Dim" checked /> <span class="i18n" data-key="day_dim_short">Dim</span>
+            </label>
+            <label style="display:flex;align-items:center;gap:4px;font-size:11px;font-weight:600;color:var(--text-secondary);cursor:pointer;">
+              <input type="checkbox" id="day-lun" value="Lun" checked /> <span class="i18n" data-key="day_lun_short">Lun</span>
+            </label>
+            <label style="display:flex;align-items:center;gap:4px;font-size:11px;font-weight:600;color:var(--text-secondary);cursor:pointer;">
+              <input type="checkbox" id="day-mar" value="Mar" checked /> <span class="i18n" data-key="day_mar_short">Mar</span>
+            </label>
+            <label style="display:flex;align-items:center;gap:4px;font-size:11px;font-weight:600;color:var(--text-secondary);cursor:pointer;">
+              <input type="checkbox" id="day-mer" value="Mer" checked /> <span class="i18n" data-key="day_mer_short">Mer</span>
+            </label>
+            <label style="display:flex;align-items:center;gap:4px;font-size:11px;font-weight:600;color:var(--text-secondary);cursor:pointer;">
+              <input type="checkbox" id="day-jeu" value="Jeu" checked /> <span class="i18n" data-key="day_jeu_short">Jeu</span>
+            </label>
+            <label style="display:flex;align-items:center;gap:4px;font-size:11px;font-weight:600;color:var(--text-secondary);cursor:pointer;">
+              <input type="checkbox" id="day-ven" value="Ven" /> <span class="i18n" data-key="day_ven_short">Ven</span>
+            </label>
+            <label style="display:flex;align-items:center;gap:4px;font-size:11px;font-weight:600;color:var(--text-secondary);cursor:pointer;">
+              <input type="checkbox" id="day-sam" value="Sam" /> <span class="i18n" data-key="day_sam_short">Sam</span>
+            </label>
+          </div>
+        </div>
+        
+        <!-- Horaires -->
+        <div style="display:flex;gap:8px;">
+          <div style="flex:1;">
+            <label class="form-label i18n" data-key="claim_hour_start">Heure début</label>
+            <input type="time" id="claimStart" value="08:00" class="form-input" style="width:100%;padding:6px 10px;font-size:13px;" />
+          </div>
+          <div style="flex:1;">
+            <label class="form-label i18n" data-key="claim_hour_end">Heure fin</label>
+            <input type="time" id="claimEnd" value="16:00" class="form-input" style="width:100%;padding:6px 10px;font-size:13px;" />
+          </div>
+        </div>
+        
+        <!-- Action Buttons -->
+        <div style="display:flex;gap:8px;margin-top:8px;">
+          <button onclick="saveClaim()" class="btn-publish" style="padding:10px 0;font-size:13px;flex:1;"><span class="i18n" data-key="claim_save">Enregistrer</span></button>
+          <button onclick="closeClaimModal()" class="btn-cancel" style="padding:10px 0;font-size:13px;flex:1;"><span class="i18n" data-key="claim_cancel">Annuler</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- TOAST -->
   <div class="toast" id="toast"></div>
 
@@ -700,6 +972,33 @@
       toast_star_req:'⚠️ Choisissez une note', toast_short_cmt:'⚠️ Commentaire trop court',
       toast_rate_limit:'⚠️ Limite de 3 avis atteinte', loading_cache:'⚡ Données depuis le cache',
       cat_label_med:'médecin', cat_label_pha:'pharmacie', cat_label_lab:'laboratoire', cat_label_hop:'hôpital',
+      
+      view_map:'Carte', view_list:'Liste',
+      your_position:'Votre position',
+      rdv_btn:'Prendre RDV',
+      rdv_select_date:'1. Choisir une date :',
+      rdv_select_time:'2. Créneaux disponibles :',
+      rdv_patient_name:'Votre nom :',
+      rdv_patient_phone:'Votre téléphone :',
+      rdv_patient_motif:'Motif de consultation (optionnel) :',
+      rdv_confirm_btn:(slot)=>`Confirmer pour ${slot}`,
+      toast_rdv_ok:'✅ Rendez-vous réservé avec succès !',
+      toast_rdv_fields:'⚠️ Veuillez remplir votre nom et téléphone',
+      claim_btn:'✅ Je suis ce médecin',
+      claim_title:'Revendiquer le profil',
+      claim_desc:'Mettez à jour vos informations professionnelles (tarifs, horaires, photo) pour enrichir votre fiche publique.',
+      claim_photo:'Photo du cabinet ou de profil :',
+      claim_choose_photo:'Choisir une photo',
+      claim_photo_size:'JPG/PNG uniquement. Max 500 Ko.',
+      claim_tarif:'Tarif de consultation (DA) :',
+      claim_days:'Jours de consultation :',
+      claim_hour_start:'Heure de début :',
+      claim_hour_end:'Heure de fin :',
+      claim_save:'Enregistrer',
+      claim_cancel:'Annuler',
+      day_dim_short:'Dim', day_lun_short:'Lun', day_mar_short:'Mar', day_mer_short:'Mer', day_jeu_short:'Jeu', day_ven_short:'Ven', day_sam_short:'Sam',
+      toast_claim_ok:'✅ Profil mis à jour avec succès !',
+      toast_photo_large:'⚠️ L\'image dépasse 500 Ko. Veuillez en choisir une plus petite.',
     },
     ar: {
       cat_medecin:'أطباء', cat_pharmacie:'صيدليات', cat_labo:'مخابر', cat_hopital:'مستشفيات',
@@ -723,6 +1022,33 @@
       toast_star_req:'⚠️ اختر التقييم', toast_short_cmt:'⚠️ التعليق قصير جداً',
       toast_rate_limit:'⚠️ حد 3 تقييمات', loading_cache:'⚡ البيانات من الذاكرة المؤقتة',
       cat_label_med:'طبيب', cat_label_pha:'صيدلية', cat_label_lab:'مخبر', cat_label_hop:'مستشفى',
+      
+      view_map:'خريطة', view_list:'قائمة',
+      your_position:'موقعك الحالي',
+      rdv_btn:'حجز موعد',
+      rdv_select_date:'١. اختر التاريخ:',
+      rdv_select_time:'٢. الأوقات المتاحة:',
+      rdv_patient_name:'الاسم:',
+      rdv_patient_phone:'رقم الهاتف:',
+      rdv_patient_motif:'السبب (اختياري):',
+      rdv_confirm_btn:(slot)=>`تأكيد الموعد الساعة ${slot}`,
+      toast_rdv_ok:'✅ تم حجز الموعد بنجاح!',
+      toast_rdv_fields:'⚠️ يرجى إدخال الاسم ورقم الهاتف',
+      claim_btn:'✅ أنا هذا الطبيب',
+      claim_title:'تأكيد ملكية الملف الشخصي',
+      claim_desc:'قم بتحديث معلوماتك المهنية (الأسعار، الأوقات، الصورة) لإثراء ملفك التعريفي العام.',
+      claim_photo:'صورة العيادة أو الشخصية:',
+      claim_choose_photo:'اختر صورة',
+      claim_photo_size:'JPG/PNG فقط. الحد الأقصى 500 كيلوبايت.',
+      claim_tarif:'سعر الفحص (دينار جزائري):',
+      claim_days:'أيام العمل:',
+      claim_hour_start:'وقت البدء:',
+      claim_hour_end:'وقت الانتهاء:',
+      claim_save:'حفظ التعديلات',
+      claim_cancel:'إلغاء',
+      day_dim_short:'أحد', day_lun_short:'اثنين', day_mar_short:'ثلاثاء', day_mer_short:'أربعاء', day_jeu_short:'خميس', day_ven_short:'جمعة', day_sam_short:'سبت',
+      toast_claim_ok:'✅ تم تحديث ملفك الشخصي بنجاح!',
+      toast_photo_large:'⚠️ حجم الصورة يتجاوز 500 كيلوبايت. يرجى اختيار صورة أصغر.',
     }
   };
 
@@ -773,17 +1099,19 @@
   let ALL=[], activeCategory='médecin', activeW='Toutes', activeS='Toutes';
   let userLat=null, userLng=null, gpsOn=false;
   let localAvis = JSON.parse(localStorage.getItem('tabibdz_avis')||'{}');
+  let currentView = 'list';
+  let currentFilteredDocs = [];
 
   const supabaseUrl='https://viabbtrtusufxbuhxypb.supabase.co';
   const supabaseKey='sb_publishable_i2E9hvP2PfkSsrYauszvCw_GO7BhNeP';
   const supabaseDb=supabase.createClient(supabaseUrl, supabaseKey);
 
   const FB=[
-    {id:1,nom:"Dr. Benali Ahmed",specialite:"Ophtalmologue",ville:"Ain Touta",wilaya:"Batna",adresse:"Rue principale, bâtiment X",telephone:"0550123456",horaires:"08:00 - 16:00",jours:["Dim","Lun","Mar","Mer","Jeu"],disponible:true,lat:35.4167,lng:5.8833,
+    {id:1,nom:"Dr. Benali Ahmed",specialite:"Ophtalmologue",ville:"Ain Touta",wilaya:"Batna",adresse:"Rue principale, bâtiment X",telephone:"0550123456",horaires:"08:00 - 16:00",jours:["Dim","Lun","Mar","Mer","Jeu"],disponible:true,lat:35.4167,lng:5.8833,tarif:1500,rdv_enabled:true,
       avis:[{auteur:"Fatima B.",note:5,commentaire:"Très bon médecin, très à l'écoute.",date:"2025-05-10"},{auteur:"Karim M.",note:4,commentaire:"Bon docteur, attente un peu longue.",date:"2025-04-22"},{auteur:"Nadia R.",note:2,commentaire:"Cabinet mal organisé, j'ai attendu 2h.",date:"2025-03-15"}]},
-    {id:2,nom:"Dr. Mansouri Djamila",specialite:"Pédiatre",ville:"Batna",wilaya:"Batna",adresse:"Cité 1200 logements",telephone:"0661987654",horaires:"09:00 - 17:00",jours:["Sam","Dim","Lun","Mar","Mer","Jeu"],disponible:true,lat:35.5555,lng:6.1667,
+    {id:2,nom:"Dr. Mansouri Djamila",specialite:"Pédiatre",ville:"Batna",wilaya:"Batna",adresse:"Cité 1200 logements",telephone:"0661987654",horaires:"09:00 - 17:00",jours:["Sam","Dim","Lun","Mar","Mer","Jeu"],disponible:true,lat:35.5555,lng:6.1667,tarif:1200,rdv_enabled:true,
       avis:[{auteur:"Amira K.",note:5,commentaire:"Parfaite avec les enfants, très douce.",date:"2025-05-18"},{auteur:"Yacine D.",note:5,commentaire:"Je recommande vivement.",date:"2025-05-01"},{auteur:"Samira L.",note:3,commentaire:"Bien mais difficile à joindre.",date:"2025-04-10"}]},
-    {id:3,nom:"Dr. Hadjadj Karim",specialite:"Cardiologue",ville:"Batna",wilaya:"Batna",adresse:"Rue Mostefa Ben Boulaïd",telephone:"0770445566",horaires:"08:30 - 15:30",jours:["Dim","Lun","Mar","Mer","Jeu"],disponible:false,lat:35.5600,lng:6.1700,
+    {id:3,nom:"Dr. Hadjadj Karim",specialite:"Cardiologue",ville:"Batna",wilaya:"Batna",adresse:"Rue Mostefa Ben Boulaïd",telephone:"0770445566",horaires:"08:30 - 15:30",jours:["Dim","Lun","Mar","Mer","Jeu"],disponible:false,lat:35.5600,lng:6.1700,tarif:2000,rdv_enabled:true,
       avis:[{auteur:"Hassan B.",note:5,commentaire:"Excellent cardiologue, diagnostic précis.",date:"2025-05-20"},{auteur:"Meriem O.",note:1,commentaire:"Fermé sans prévenir, déplacement pour rien.",date:"2025-04-30"}]},
     {id:4,nom:"Pharmacie de Garde Batna",specialite:"Pharmacie",ville:"Batna",wilaya:"Batna",adresse:"Avenue de l'Indépendance",telephone:"033801234",horaires:"00:00 - 24:00",jours:["Sam","Dim","Lun","Mar","Mer","Jeu","Ven"],disponible:true,lat:35.5500,lng:6.1600,avis:[]},
     {id:5,nom:"Laboratoire d'analyses médicales Mila",specialite:"Laboratoire",ville:"Mila",wilaya:"Mila",adresse:"Cité des Fleurs",telephone:"031567890",horaires:"07:30 - 16:30",jours:["Dim","Lun","Mar","Mer","Jeu"],disponible:true,lat:36.4500,lng:6.2600,avis:[]}
@@ -802,11 +1130,25 @@
 
   /* ══════════ DATA LOADING ══════════ */
   const CACHE_KEY='tabibdz_data', CACHE_TIME='tabibdz_data_ts', CACHE_TTL=30*60*1000;
+
+  function applyLocalProfileOverrides(docs) {
+    const localProfiles = JSON.parse(localStorage.getItem('tabibdz_profiles') || '{}');
+    return docs.map(d => {
+      if (localProfiles[d.id]) {
+        return { ...d, ...localProfiles[d.id] };
+      }
+      return d;
+    });
+  }
+
   function loadFromCache(){
     try{
       const ts=parseInt(sessionStorage.getItem(CACHE_TIME)||'0');
       const d=sessionStorage.getItem(CACHE_KEY);
-      if(d && Date.now()-ts<CACHE_TTL) return JSON.parse(d);
+      if(d && Date.now()-ts<CACHE_TTL) {
+        const parsed = JSON.parse(d);
+        return applyLocalProfileOverrides(parsed);
+      }
     }catch(e){}
     return null;
   }
@@ -818,17 +1160,40 @@
   async function load(){
     startProgress();
     const cached=loadFromCache();
-    if(cached){ ALL=cached; buildWChips(); buildSChips(); filter(); doneProgress(); showToast(t('loading_cache')); refreshFromNetwork(); return; }
+    if(cached){
+      ALL=cached;
+      buildWChips();
+      buildSChips();
+      filter();
+      doneProgress();
+      showToast(t('loading_cache'));
+      autoRequestGPS();
+      refreshFromNetwork();
+      return;
+    }
     await refreshFromNetwork();
+    autoRequestGPS();
   }
   async function refreshFromNetwork(){
     try{
       const {data,error}=await withTimeout(supabaseDb.from('medecins').select('*, avis(*)'),6000);
       if(error) throw error;
-      if(data&&data.length>0){ ALL=data; saveToCache(data); buildWChips(); buildSChips(); filter(); doneProgress(); return; }
+      if(data&&data.length>0){
+        const docsWithOverrides = applyLocalProfileOverrides(data);
+        ALL=docsWithOverrides;
+        saveToCache(data);
+        buildWChips(); buildSChips(); filter(); doneProgress(); return;
+      }
     }catch(e){ console.warn('Supabase:',e.message); }
-    try{ const r=await fetch('medecins.json'); if(!r.ok) throw 0; ALL=await r.json(); saveToCache(ALL); }
-    catch(e){ ALL=FB; }
+    try{
+      const r=await fetch('medecins.json'); if(!r.ok) throw 0;
+      const data = await r.json();
+      ALL=applyLocalProfileOverrides(data);
+      saveToCache(data);
+    }
+    catch(e){
+      ALL=applyLocalProfileOverrides(FB);
+    }
     buildWChips(); buildSChips(); filter(); doneProgress();
   }
 
@@ -866,15 +1231,41 @@
   function dist(a,b,c,e){ const R=6371,dL=(c-a)*Math.PI/180,dG=(e-b)*Math.PI/180,x=Math.sin(dL/2)**2+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(dG/2)**2; return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x)); }
   function fmtD(k){ return k<1?`${Math.round(k*1000)} m`:`${k.toFixed(1)} km`; }
 
+  function autoRequestGPS() {
+    const pref = localStorage.getItem('tabibdz_gps_pref');
+    if (pref === 'denied') return;
+    if (!navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(p => {
+      userLat = p.coords.latitude;
+      userLng = p.coords.longitude;
+      gpsOn = true;
+      localStorage.setItem('tabibdz_gps_pref', 'allowed');
+      document.getElementById('gpsTxt').textContent = t('gps_sorted');
+      document.getElementById('gpsBtn').classList.add('active');
+      filter();
+    }, err => {
+      if (err.code === err.PERMISSION_DENIED) {
+        localStorage.setItem('tabibdz_gps_pref', 'denied');
+      }
+    }, { timeout: 8000 });
+  }
+
   function requestGPS(){
     if(!navigator.geolocation){ showToast(t('toast_no_gps')); return; }
     document.getElementById('gpsTxt').textContent=t('gps_locating');
     navigator.geolocation.getCurrentPosition(p=>{
       userLat=p.coords.latitude; userLng=p.coords.longitude; gpsOn=true;
+      localStorage.setItem('tabibdz_gps_pref', 'allowed');
       document.getElementById('gpsTxt').textContent=t('gps_sorted');
       document.getElementById('gpsBtn').classList.add('active');
       showToast(t('toast_gps_ok')); filter();
-    },()=>{ document.getElementById('gpsTxt').textContent=t('gps_btn'); showToast(t('toast_gps_err')); },{timeout:8000});
+    },err=>{
+      document.getElementById('gpsTxt').textContent=t('gps_btn');
+      showToast(t('toast_gps_err'));
+      if (err.code === err.PERMISSION_DENIED) {
+        localStorage.setItem('tabibdz_gps_pref', 'denied');
+      }
+    },{timeout:8000});
   }
 
   function starsHtml(n){ let h='<span style="display:inline-flex;gap:1px;font-size:12px;color:var(--amber);">'; for(let i=1;i<=5;i++) h+=`<span style="opacity:${i<=n?1:0.2}">★</span>`; return h+'</span>'; }
@@ -920,7 +1311,13 @@
     if(q) res=res.filter(d=>[d.nom,d.specialite,d.ville,d.wilaya,d.adresse].some(f=>(f||'').toLowerCase().includes(q)));
     if(gpsOn&&userLat!==null){ res.forEach(d=>d._dist=dist(userLat,userLng,d.lat,d.lng)); res.sort((a,b)=>a._dist-b._dist); }
     else { res.sort((a,b)=>(isOpen(a)?0:1)-(isOpen(b)?0:1)||a.nom.localeCompare(b.nom)); }
-    render(res);
+    
+    currentFilteredDocs = res;
+    if (currentView === 'map') {
+      renderMap(res);
+    } else {
+      render(res);
+    }
   }
 
   function render(docs){
@@ -955,7 +1352,7 @@
 
     /* Photo */
     const photo=document.createElement('img');
-    photo.src=getAvatarUrl(doc.nom,doc.specialite); photo.alt=doc.nom;
+    photo.src=doc.photo_url || getAvatarUrl(doc.nom,doc.specialite); photo.alt=doc.nom;
     photo.className='doc-photo'; photo.loading='lazy';
     photo.onerror=function(){
       const fb=document.createElement('div');
@@ -984,9 +1381,19 @@
     sb.appendChild(dot); sb.appendChild(document.createTextNode(open?t('open_lbl'):t('closed_lbl')));
     nr.appendChild(sb); info.appendChild(nr);
 
-    /* Spec */
+    /* Spec + Tarif row */
+    const specRow=document.createElement('div');
+    specRow.style.cssText='display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:2px;';
     const spec=document.createElement('span'); spec.className='spec-badge';
-    spec.textContent=doc.specialite; info.appendChild(spec);
+    spec.textContent=doc.specialite; specRow.appendChild(spec);
+    
+    if (doc.tarif) {
+      const tb=document.createElement('span');
+      tb.style.cssText='display:inline-block;padding:2px 7px;border-radius:var(--r2);font-size:11px;font-weight:700;background:rgba(22,163,74,0.08);color:var(--green);border:1px solid rgba(22,163,74,0.15);';
+      tb.textContent=`💰 ${doc.tarif} DA`;
+      specRow.appendChild(tb);
+    }
+    info.appendChild(specRow);
 
     /* Distance */
     if(gpsOn&&doc._dist!=null){
@@ -1066,13 +1473,20 @@
     }
     wrap.appendChild(revSec);
 
-    /* Review form */
+    /* Review form + claim button row */
     const fw=document.createElement('div');
-    fw.style.cssText='padding:9px 14px;border-top:1px solid var(--border-light);';
-    const lb=document.createElement('button'); lb.className='btn-review'; lb.textContent=t('leave_review'); lb.onclick=()=>toggleForm(doc.id); fw.appendChild(lb);
-
+    fw.style.cssText='padding:9px 14px;border-top:1px solid var(--border-light);display:flex;gap:8px;';
+    const lb=document.createElement('button'); lb.className='btn-review'; lb.style.flex='1'; lb.textContent=t('leave_review'); lb.onclick=()=>toggleForm(doc.id); fw.appendChild(lb);
+    
+    if (getCategory(doc) === 'médecin') {
+      const cb_claim=document.createElement('button');
+      cb_claim.className='btn-review'; cb_claim.style.cssText='flex:1;border-color:var(--accent2);color:var(--accent2);';
+      cb_claim.textContent=t('claim_btn'); cb_claim.onclick=()=>openClaimModal(doc);
+      fw.appendChild(cb_claim);
+    }
+    
     const fd=document.createElement('div'); fd.id=`form-${doc.id}`;
-    fd.style.cssText='display:none;flex-direction:column;gap:7px;margin-top:9px;padding:11px;background:var(--surface2);border:1px solid var(--border-light);border-radius:var(--r);';
+    fd.style.cssText='display:none;flex-direction:column;gap:7px;margin-top:9px;padding:11px;background:var(--surface2);border:1px solid var(--border-light);border-radius:var(--r);width:100%;';
     const ft=document.createElement('div'); ft.style.cssText='font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--text-primary);'; ft.textContent=t('give_review'); fd.appendChild(ft);
     const ni=document.createElement('input'); ni.type='text'; ni.id=`name-${doc.id}`; ni.placeholder=t('name_ph'); ni.maxLength=60; ni.className='form-input'; ni.style.cssText='width:100%;padding:7px 11px;font-size:12px;'; fd.appendChild(ni);
     const sr2=document.createElement('div'); sr2.style.cssText='display:flex;align-items:center;gap:8px;';
@@ -1084,13 +1498,28 @@
     const br=document.createElement('div'); br.style.cssText='display:flex;gap:7px;';
     const pb=document.createElement('button'); pb.className='btn-publish'; pb.textContent=t('publish_btn'); pb.onclick=()=>submitAvis(doc.id);
     const cb=document.createElement('button'); cb.className='btn-cancel'; cb.textContent=t('cancel_btn'); cb.onclick=()=>toggleForm(doc.id);
-    br.appendChild(pb); br.appendChild(cb); fd.appendChild(br); fw.appendChild(fd); wrap.appendChild(fw);
+    br.appendChild(pb); br.appendChild(cb); fd.appendChild(br); 
+    
+    const formWrap=document.createElement('div');
+    formWrap.style.cssText='display:flex;flex-direction:column;width:100%;';
+    formWrap.appendChild(fw);
+    formWrap.appendChild(fd);
+    wrap.appendChild(formWrap);
 
     /* Action buttons */
     const ab=document.createElement('div'); ab.style.cssText='padding:0 14px 12px;display:flex;gap:8px;';
+    
     const ca=document.createElement('a'); ca.href=`tel:${doc.telephone}`; ca.className='btn-call';
     ca.innerHTML=`<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.07 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3 1.22h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 9a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 16z"/></svg>`;
     ca.appendChild(document.createTextNode(t('call_btn'))); ab.appendChild(ca);
+
+    if (getCategory(doc) === 'médecin' && doc.rdv_enabled !== false) {
+      const rdv_b=document.createElement('button'); rdv_b.className='btn-map';
+      rdv_b.style.cssText='border-color:var(--accent);color:var(--accent);';
+      rdv_b.innerHTML=`<span style="font-size:12px;">📅</span> <span>${t('rdv_btn')}</span>`;
+      rdv_b.onclick=()=>openRdvModal(doc); ab.appendChild(rdv_b);
+    }
+
     const ma=document.createElement('a'); ma.href=mapsUrl; ma.target='_blank'; ma.rel='noopener noreferrer'; ma.className='btn-map';
     ma.innerHTML=`<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>`;
     ma.appendChild(document.createTextNode(t('directions_btn'))); ab.appendChild(ma);
@@ -1144,6 +1573,437 @@
   function showToast(msg){
     const el=document.getElementById('toast'); el.textContent=msg;
     el.classList.add('show'); setTimeout(()=>el.classList.remove('show'),3000);
+  }
+
+  /* ══════════ MAP & TOGGLE ══════════ */
+  let map = null, markersLayer = null;
+
+  function toggleView() {
+    currentView = currentView === 'list' ? 'map' : 'list';
+    const icon = document.getElementById('viewToggleIcon');
+    const txt = document.getElementById('viewToggleTxt');
+    const list = document.getElementById('list');
+    const mapDiv = document.getElementById('mapView');
+    
+    if (currentView === 'map') {
+      icon.textContent = '📋';
+      txt.textContent = t('view_list');
+      list.style.display = 'none';
+      mapDiv.style.display = 'block';
+      filter();
+    } else {
+      icon.textContent = '🗺️';
+      txt.textContent = t('view_map');
+      list.style.display = 'flex';
+      mapDiv.style.display = 'none';
+      filter();
+    }
+  }
+
+  function renderMap(docs) {
+    const mapDiv = document.getElementById('mapView');
+    const empty = document.getElementById('empty');
+    const list = document.getElementById('list');
+    
+    list.style.display = 'none';
+    
+    if (!docs.length) {
+      mapDiv.style.display = 'none';
+      empty.style.display = 'flex';
+      empty.style.flexDirection = 'column';
+      empty.querySelectorAll('.i18n[data-key]').forEach(el => {
+        const k = el.dataset.key;
+        if (LANGS[currentLang][k] && typeof LANGS[currentLang][k] !== 'function') el.textContent = LANGS[currentLang][k];
+      });
+      document.getElementById('statsTxt').textContent = t('no_result');
+      return;
+    }
+    
+    empty.style.display = 'none';
+    mapDiv.style.display = 'block';
+    
+    const open = docs.filter(d => isOpen(d)).length;
+    const catLabel = activeCategory === 'médecin' ? t('cat_label_med') : activeCategory === 'pharmacie' ? t('cat_label_pha') : activeCategory === 'laboratoire' ? t('cat_label_lab') : t('cat_label_hop');
+    document.getElementById('statsTxt').textContent = t('stats_found', docs.length, catLabel, open, gpsOn);
+    
+    if (!map) {
+      map = L.map('mapView', {
+        zoomControl: true,
+        attributionControl: false
+      });
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19
+      }).addTo(map);
+      markersLayer = L.layerGroup().addTo(map);
+    } else {
+      markersLayer.clearLayers();
+    }
+    
+    const bounds = [];
+    
+    // User GPS location marker
+    if (gpsOn && userLat !== null && userLng !== null) {
+      const userIcon = L.divIcon({
+        className: 'user-marker-icon',
+        html: `<div style="background:#0EA5E9;width:14px;height:14px;border:3px solid #fff;border-radius:50%;box-shadow:0 0 8px rgba(0,0,0,0.3);"></div>`,
+        iconSize: [14, 14],
+        iconAnchor: [7, 7]
+      });
+      L.marker([userLat, userLng], { icon: userIcon })
+        .addTo(markersLayer)
+        .bindPopup(`<strong style="font-family:'Inter',sans-serif;font-size:12px;color:var(--text-primary);">${t('your_position')}</strong>`);
+      bounds.push([userLat, userLng]);
+    }
+    
+    docs.forEach(doc => {
+      if (!doc.lat || !doc.lng) return;
+      
+      const openState = isOpen(doc);
+      const markerColor = openState ? 'var(--green)' : 'var(--red)';
+      const markerHtml = `
+        <div style="background:${markerColor};width:16px;height:16px;border:3px solid #fff;border-radius:50%;box-shadow:0 2px 5px rgba(0,0,0,0.25);"></div>
+      `;
+      const customIcon = L.divIcon({
+        className: 'doc-marker-icon',
+        html: markerHtml,
+        iconSize: [16, 16],
+        iconAnchor: [8, 8]
+      });
+      
+      const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(doc.lat+','+doc.lng)}`;
+      const hasTarif = doc.tarif ? `<div style="font-size:11px;font-weight:700;color:var(--green);margin-top:2px;">💰 ${doc.tarif} DA</div>` : '';
+      
+      let actionButtons = `<a href="tel:${doc.telephone}" style="flex:1;background:var(--green);color:#fff;text-align:center;padding:5px 0;border-radius:4px;font-size:11px;font-weight:700;text-decoration:none;display:inline-block;">${t('call_btn')}</a>`;
+      
+      if (getCategory(doc) === 'médecin' && doc.rdv_enabled !== false) {
+        actionButtons = `
+          <button onclick="closeMapPopupsAndBook(${doc.id})" style="flex:1;background:var(--accent);color:#fff;text-align:center;padding:5px 0;border:none;border-radius:4px;font-size:11px;font-weight:700;cursor:pointer;display:inline-block;white-space:nowrap;">📅 ${t('rdv_btn')}</button>
+          <a href="tel:${doc.telephone}" style="flex:1;background:var(--green);color:#fff;text-align:center;padding:5px 0;border-radius:4px;font-size:11px;font-weight:700;text-decoration:none;display:inline-block;text-align:center;">📞</a>
+        `;
+      }
+      
+      const popupContent = `
+        <div class="map-popup" style="font-family:'Inter', sans-serif;min-width:180px;color:var(--text-primary);padding:2px;">
+          <h4 style="margin:0 0 3px 0;font-size:13px;font-weight:800;color:var(--text-primary);line-height:1.3;">${doc.nom}</h4>
+          <div style="font-size:10px;font-weight:700;color:var(--accent);">${doc.specialite}</div>
+          ${hasTarif}
+          <div style="font-size:11px;color:var(--text-secondary);margin:6px 0 8px 0;line-height:1.3;">📍 ${doc.ville}, ${doc.wilaya}</div>
+          <div style="display:flex;gap:5px;">
+            ${actionButtons}
+            <a href="${mapsUrl}" target="_blank" style="flex:1;background:var(--surface2);color:var(--text-secondary);text-align:center;padding:5px 0;border-radius:4px;font-size:11px;font-weight:700;text-decoration:none;display:inline-block;border:1px solid var(--border);">${t('directions_btn')}</a>
+          </div>
+        </div>
+      `;
+      
+      L.marker([doc.lat, doc.lng], { icon: customIcon })
+        .addTo(markersLayer)
+        .bindPopup(popupContent);
+      
+      bounds.push([doc.lat, doc.lng]);
+    });
+    
+    if (bounds.length > 0) {
+      map.fitBounds(bounds, { padding: [40, 40] });
+    } else {
+      map.setView([28.0339, 1.6596], 5);
+    }
+    
+    setTimeout(() => {
+      map.invalidateSize();
+    }, 50);
+  }
+
+  function closeMapPopupsAndBook(docId) {
+    if (map) map.closePopup();
+    const doc = ALL.find(d => d.id === docId);
+    if (doc) openRdvModal(doc);
+  }
+
+  /* ══════════ APPOINTMENTS (RDV) ══════════ */
+  let selectedDoc = null;
+  let selectedDate = null;
+  let selectedSlotTime = null;
+  let fpInstance = null;
+
+  function getDocEnabledDays(doc) {
+    if (!doc.jours || !doc.jours.length) return [0,1,2,3,4,5,6];
+    const enabled = [];
+    doc.jours.forEach(j => {
+      const lower = j.toLowerCase();
+      if (lower.startsWith('dim') || j.includes('الأحد')) enabled.push(0);
+      if (lower.startsWith('lun') || j.includes('الاثنين')) enabled.push(1);
+      if (lower.startsWith('mar') || j.includes('الثلاثاء')) enabled.push(2);
+      if (lower.startsWith('mer') || j.includes('الأربعاء')) enabled.push(3);
+      if (lower.startsWith('jeu') || j.includes('الخميس')) enabled.push(4);
+      if (lower.startsWith('ven') || j.includes('الجمعة')) enabled.push(5);
+      if (lower.startsWith('sam') || j.includes('السبت')) enabled.push(6);
+    });
+    return enabled;
+  }
+
+  function generateTimeSlots(doc, dateStr) {
+    const m = (doc.horaires || '').match(/(\d{1,2}):(\d{2})\s*-\s*(\d{1,2}):(\d{2})/);
+    let startHour = 8, startMin = 0, endHour = 16, endMin = 0;
+    if (m) {
+      startHour = parseInt(m[1]);
+      startMin = parseInt(m[2]);
+      endHour = parseInt(m[3]);
+      endMin = parseInt(m[4]);
+    }
+    
+    const slots = [];
+    let curr = startHour * 60 + startMin;
+    const end = endHour * 60 + endMin;
+    
+    while (curr + 30 <= end) {
+      const h = Math.floor(curr / 60);
+      const min = curr % 60;
+      const timeStr = `${h.toString().padStart(2,'0')}:${min.toString().padStart(2,'0')}`;
+      slots.push(timeStr);
+      curr += 30;
+    }
+    return slots;
+  }
+
+  function openRdvModal(doc) {
+    selectedDoc = doc;
+    selectedDate = null;
+    selectedSlotTime = null;
+    
+    document.getElementById('rdvDocName').textContent = doc.nom;
+    document.getElementById('rdvName').value = '';
+    document.getElementById('rdvPhone').value = '';
+    document.getElementById('rdvMotif').value = '';
+    
+    document.getElementById('slotsContainer').style.display = 'none';
+    document.getElementById('rdvForm').style.display = 'none';
+    document.getElementById('rdvModal').style.display = 'flex';
+    
+    const enabledDays = getDocEnabledDays(doc);
+    if (fpInstance) fpInstance.destroy();
+    
+    fpInstance = flatpickr("#rdvCalendar", {
+      inline: true,
+      minDate: "today",
+      locale: currentLang === 'ar' ? 'ar' : 'default',
+      disable: [
+        function(date) {
+          return !enabledDays.includes(date.getDay());
+        }
+      ],
+      onChange: function(selectedDates, dateStr, instance) {
+        onDateSelected(dateStr);
+      }
+    });
+  }
+
+  function closeRdvModal() {
+    document.getElementById('rdvModal').style.display = 'none';
+    if (fpInstance) {
+      fpInstance.destroy();
+      fpInstance = null;
+    }
+  }
+
+  function onDateSelected(dateStr) {
+    selectedDate = dateStr;
+    const slots = generateTimeSlots(selectedDoc, dateStr);
+    const slotsGrid = document.getElementById('rdvSlots');
+    slotsGrid.innerHTML = '';
+    
+    if (slots.length === 0) {
+      document.getElementById('slotsContainer').style.display = 'none';
+      document.getElementById('rdvForm').style.display = 'none';
+      return;
+    }
+    
+    const bookings = JSON.parse(localStorage.getItem('tabibdz_bookings') || '[]');
+    
+    slots.forEach(slot => {
+      const btn = document.createElement('button');
+      btn.className = 'slot-btn';
+      btn.textContent = slot;
+      
+      const alreadyBooked = bookings.some(b => b.doc_id === selectedDoc.id && b.date === dateStr && b.slot === slot);
+      if (alreadyBooked) {
+        btn.classList.add('disabled');
+        btn.disabled = true;
+      } else {
+        btn.onclick = () => selectSlot(slot, btn);
+      }
+      slotsGrid.appendChild(btn);
+    });
+    
+    document.getElementById('slotsContainer').style.display = 'block';
+    document.getElementById('rdvForm').style.display = 'none';
+  }
+
+  function selectSlot(slot, btn) {
+    selectedSlotTime = slot;
+    document.querySelectorAll('.slot-btn').forEach(b => b.classList.toggle('selected', b === btn));
+    document.getElementById('rdvForm').style.display = 'flex';
+    document.getElementById('btnConfirmRdv').textContent = typeof t('rdv_confirm_btn') === 'function' ? t('rdv_confirm_btn', slot) : t('rdv_confirm_btn').replace('${slot}', slot);
+  }
+
+  async function confirmRdv() {
+    const name = document.getElementById('rdvName').value.trim();
+    const phone = document.getElementById('rdvPhone').value.trim();
+    const motif = document.getElementById('rdvMotif').value.trim();
+    
+    if (!name || !phone) {
+      showToast(t('toast_rdv_fields'));
+      return;
+    }
+    
+    const cleanName = sanitizeName(name);
+    const cleanPhone = phone.replace(/[^\d\s+\-]/g, '').slice(0, 20);
+    const cleanMotif = sanitizeComment(motif);
+    
+    const rdvData = {
+      doc_id: selectedDoc.id,
+      doc_nom: selectedDoc.nom,
+      date: selectedDate,
+      slot: selectedSlotTime,
+      patient_name: cleanName,
+      patient_phone: cleanPhone,
+      motif: cleanMotif,
+      created_at: new Date().toISOString()
+    };
+    
+    const bookings = JSON.parse(localStorage.getItem('tabibdz_bookings') || '[]');
+    bookings.push(rdvData);
+    localStorage.setItem('tabibdz_bookings', JSON.stringify(bookings));
+    
+    try {
+      await supabaseDb.from('rendez_vous').insert([rdvData]);
+    } catch (e) {
+      console.log('Supabase booking insert skipped:', e.message);
+    }
+    
+    showToast(t('toast_rdv_ok'));
+    closeRdvModal();
+    filter();
+  }
+
+  /* ══════════ CLAIM PROFILE ══════════ */
+  let claimBase64Photo = null;
+
+  function openClaimModal(doc) {
+    selectedDoc = doc;
+    claimBase64Photo = doc.photo_url || null;
+    
+    const preview = document.getElementById('claimPhotoPreview');
+    const placeholder = document.getElementById('claimPhotoPlaceholder');
+    
+    if (doc.photo_url) {
+      preview.src = doc.photo_url;
+      preview.style.display = 'block';
+      placeholder.style.display = 'none';
+    } else {
+      preview.style.display = 'none';
+      placeholder.style.display = 'flex';
+    }
+    
+    document.getElementById('claimTarif').value = doc.tarif || '';
+    
+    const days = doc.jours || ["Dim", "Lun", "Mar", "Mer", "Jeu"];
+    document.getElementById('day-dim').checked = days.includes('Dim') || days.includes('الأحد');
+    document.getElementById('day-lun').checked = days.includes('Lun') || days.includes('الاثنين');
+    document.getElementById('day-mar').checked = days.includes('Mar') || days.includes('الثلاثاء');
+    document.getElementById('day-mer').checked = days.includes('Mer') || days.includes('الأربعاء');
+    document.getElementById('day-jeu').checked = days.includes('Jeu') || days.includes('الخميس');
+    document.getElementById('day-ven').checked = days.includes('Ven') || days.includes('الجمعة');
+    document.getElementById('day-sam').checked = days.includes('Sam') || days.includes('السبت');
+    
+    const m = (doc.horaires || '').match(/(\d{1,2}):(\d{2})\s*-\s*(\d{1,2}):(\d{2})/);
+    if (m) {
+      document.getElementById('claimStart').value = `${m[1].padStart(2,'0')}:${m[2]}`;
+      document.getElementById('claimEnd').value = `${m[3].padStart(2,'0')}:${m[4]}`;
+    } else {
+      document.getElementById('claimStart').value = '08:00';
+      document.getElementById('claimEnd').value = '16:00';
+    }
+    
+    document.getElementById('claimModal').style.display = 'flex';
+  }
+
+  function closeClaimModal() {
+    document.getElementById('claimModal').style.display = 'none';
+    document.getElementById('claimPhotoInput').value = '';
+  }
+
+  function previewClaimPhoto(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    if (file.size > 500 * 1024) {
+      showToast(t('toast_photo_large'));
+      event.target.value = '';
+      return;
+    }
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      claimBase64Photo = e.target.result;
+      const preview = document.getElementById('claimPhotoPreview');
+      preview.src = claimBase64Photo;
+      preview.style.display = 'block';
+      document.getElementById('claimPhotoPlaceholder').style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+  }
+
+  async function saveClaim() {
+    const tarif = parseInt(document.getElementById('claimTarif').value) || null;
+    const startTime = document.getElementById('claimStart').value;
+    const endTime = document.getElementById('claimEnd').value;
+    
+    const jours = [];
+    if (document.getElementById('day-dim').checked) jours.push('Dim');
+    if (document.getElementById('day-lun').checked) jours.push('Lun');
+    if (document.getElementById('day-mar').checked) jours.push('Mar');
+    if (document.getElementById('day-mer').checked) jours.push('Mer');
+    if (document.getElementById('day-jeu').checked) jours.push('Jeu');
+    if (document.getElementById('day-ven').checked) jours.push('Ven');
+    if (document.getElementById('day-sam').checked) jours.push('Sam');
+    
+    const horaires = `${startTime} - ${endTime}`;
+    
+    const index = ALL.findIndex(d => d.id === selectedDoc.id);
+    if (index !== -1) {
+      ALL[index].photo_url = claimBase64Photo;
+      ALL[index].tarif = tarif;
+      ALL[index].jours = jours;
+      ALL[index].horaires = horaires;
+      ALL[index].rdv_enabled = true;
+    }
+    
+    const localProfiles = JSON.parse(localStorage.getItem('tabibdz_profiles') || '{}');
+    localProfiles[selectedDoc.id] = {
+      photo_url: claimBase64Photo,
+      tarif,
+      jours,
+      horaires,
+      rdv_enabled: true
+    };
+    localStorage.setItem('tabibdz_profiles', JSON.stringify(localProfiles));
+    
+    try {
+      await supabaseDb.from('medecins').update({
+        photo_url: claimBase64Photo,
+        tarif,
+        jours,
+        horaires,
+        rdv_enabled: true
+      }).eq('id', selectedDoc.id);
+    } catch (e) {
+      console.warn('Supabase profile update skipped:', e.message);
+    }
+    
+    showToast(t('toast_claim_ok'));
+    closeClaimModal();
+    sessionStorage.removeItem(CACHE_KEY);
+    filter();
   }
 
   const qEl=document.getElementById('q'),clrEl=document.getElementById('clr');
