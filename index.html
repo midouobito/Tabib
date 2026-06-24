@@ -1,27 +1,39 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
   <title>TabibDZ – Annuaire Médical</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    :root { --blue: #1D4ED8; --blue-dk: #1E3A5F; --blue-lt: #EFF6FF; --teal: #0891B2; --green: #16A34A; --green-lt: #DCFCE7; --red: #DC2626; --red-lt: #FEE2E2; --amber: #D97706; --amber-lt: #FEF3C7; --page-bg: #F1F5F9; }
-    body{background:var(--page-bg);font-family:system-ui,sans-serif;min-height:100dvh;}
+    :root { --blue:#1D4ED8; --blue-dk:#1E3A5F; --blue-lt:#EFF6FF; --teal:#0891B2; --green:#16A34A; --green-lt:#DCFCE7; --red:#DC2626; --red-lt:#FEE2E2; --amber:#D97706; --amber-lt:#FEF3C7; --page-bg:#F1F5F9; }
+    *{-webkit-tap-highlight-color:transparent;box-sizing:border-box;}
+    body{background:var(--page-bg);font-family:'Segoe UI',system-ui,-apple-system,sans-serif;min-height:100dvh;}
     .hdr{background:linear-gradient(140deg,#1E3A5F 0%,#1D4ED8 100%);}
     .sz{position:sticky;top:0;z-index:40;background:#1E3A5F;padding:10px 14px 14px;box-shadow:0 4px 16px rgba(30,58,95,.30);}
-    .si{width:100%;padding:13px 46px;border-radius:13px;border:2px solid transparent;font-size:16px;background:#fff;color:#1F2937;outline:none;}
+    .si{width:100%;padding:13px 46px;border-radius:13px;border:2px solid transparent;font-size:16px;background:#fff;color:#1F2937;outline:none;transition:border-color .18s;}
+    .si:focus{border-color:var(--teal);}
     .sic{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:#9CA3AF;pointer-events:none;}
-    .sclr{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:#E5E7EB;border-radius:50%;width:24px;height:24px;cursor:pointer;display:none;align-items:center;justify-content:center;}
-    .row{display:flex;gap:8px;overflow-x:auto;padding:10px 14px;scrollbar-width:none;}
-    .chip{flex-shrink:0;padding:7px 15px;border-radius:999px;font-size:13px;font-weight:600;background:#fff;border:2px solid #CBD5E1;cursor:pointer;}
+    .sclr{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:#E5E7EB;border:none;border-radius:50%;width:24px;height:24px;cursor:pointer;font-size:12px;color:#6B7280;display:none;align-items:center;justify-content:center;}
+    .loc-btn{width:100%;margin-top:8px;padding:11px;border-radius:12px;border:none;background:rgba(255,255,255,.12);color:#fff;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;}
+    .loc-btn.on{background:rgba(8,145,178,.35);border:1.5px solid rgba(8,145,178,.6);}
+    .row{display:flex;gap:8px;overflow-x:auto;padding:10px 14px;background:var(--page-bg);scrollbar-width:none;}
+    .chip{flex-shrink:0;padding:7px 15px;border-radius:999px;font-size:13px;font-weight:600;border:2px solid #CBD5E1;background:#fff;color:#6B7280;cursor:pointer;}
     .chip.on{background:var(--blue);border-color:var(--blue);color:#fff;}
-    .schip{flex-shrink:0;padding:5px 13px;border-radius:999px;font-size:12px;font-weight:600;background:#fff;border:1.5px solid #E2E8F0;cursor:pointer;}
+    .schip{flex-shrink:0;padding:5px 13px;border-radius:999px;font-size:12px;font-weight:600;border:1.5px solid #E2E8F0;background:#fff;color:#9CA3AF;cursor:pointer;}
     .schip.on{background:var(--teal);border-color:var(--teal);color:#fff;}
-    .card{background:#fff;border-radius:18px;border:1px solid #E2E8F0;margin:0 14px 16px;overflow:hidden;}
-    .skel{background:linear-gradient(90deg,#E2E8F0 25%,#F8FAFC 50%,#E2E8F0 75%);background-size:200% 100%;animation:sh 1.3s infinite;border-radius:8px;}
-    @keyframes sh{0%{background-position:200% 0}100%{background-position:-200% 0}}
+    .stats{background:#fff;border-bottom:1px solid #E2E8F0;padding:9px 14px;font-size:13px;color:#6B7280;display:flex;align-items:center;gap:6px;}
+    .card{background:#fff;border-radius:18px;border:1px solid #E2E8F0;box-shadow:0 2px 10px rgba(0,0,0,.06);margin:0 14px 16px;overflow:hidden;}
+    .avatar{width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--teal));display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;flex-shrink:0;}
+    .b-ok{background:var(--green-lt);color:var(--green);font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;}
+    .b-no{background:var(--red-lt);color:var(--red);font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;}
+    .b-spec{background:var(--blue-lt);color:var(--blue);font-size:11.5px;font-weight:700;padding:4px 10px;border-radius:999px;display:inline-block;margin-top:4px;}
+    .score-ring{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:17px;}
+    .score-high{background:var(--green-lt);color:var(--green);}
+    .btn-call{flex:1;background:var(--green);color:#fff;text-align:center;font-weight:700;padding:13px;border-radius:12px;text-decoration:none;}
+    .btn-map{flex:1;background:var(--blue-lt);color:var(--blue);text-align:center;font-weight:700;padding:13px;border-radius:12px;text-decoration:none;border:2px solid #BFDBFE;}
+    .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1E3A5F;color:#fff;padding:12px 20px;border-radius:14px;opacity:0;transition:opacity .3s;z-index:99;}
+    .toast.show{opacity:1;}
   </style>
 </head>
 <body>
@@ -37,54 +49,83 @@
     <input id="q" class="si" type="search" placeholder="Nom, spécialité ou ville…"/>
     <button id="clr" class="sclr">✕</button>
   </div>
+  <button id="gpsBtn" class="loc-btn" onclick="requestGPS()">Localiser</button>
 </div>
 
 <div class="row" id="wbar"></div>
-<div class="row" id="sbar" style="padding-top:0"></div>
-<div class="stats p-4 text-sm text-gray-500" id="statsTxt">Chargement…</div>
-
+<div class="row" id="sbar"></div>
+<div class="stats" id="statsTxt">Chargement…</div>
 <main id="list"></main>
 
+<div class="toast" id="toast"></div>
+
 <script>
-let ALL=[], activeW='Toutes', activeS='Toutes';
-const FB=[
-  {id:1,nom:"Dr. Benali Ahmed",specialite:"Ophtalmologue",ville:"Ain Touta",wilaya:"Batna",adresse:"Rue principale",telephone:"0550123456",horaires:"08:00 - 16:00",disponible:true,lat:35.4167,lng:5.8833},
-  {id:2,nom:"Dr. Mansouri Djamila",specialite:"Pédiatre",ville:"Batna",wilaya:"Batna",adresse:"Cité 1200",telephone:"0661987654",horaires:"09:00 - 17:00",disponible:true,lat:35.5555,lng:6.1667}
-];
+let ALL=[], activeW='Toutes', activeS='Toutes', gpsOn=false;
+let localAvis = JSON.parse(localStorage.getItem('tabibdz_avis')||'{}');
 
-let supabase = null;
-try {
-  supabase = window.supabase.createClient(
-    'https://viabbtrtusufxbuhxypb.supabase.co',
-    'sb_publishable_i2E9hvP2PfkSsrYauszvCw_GO7BhNeP'
-  );
-} catch(e) { console.error("Erreur init", e); }
-
-async function load() {
-  if (supabase) {
-    const { data, error } = await supabase.from('medecins').select('*');
-    ALL = error ? FB : data;
-  } else {
-    ALL = FB;
-  }
-  render(ALL);
+async function load(){
+  try{
+    const r=await fetch('medecins.json');
+    ALL=await r.json();
+  }catch(e){ console.error("Erreur chargement JSON", e); }
+  buildWChips(); buildSChips(); filter();
 }
 
-function render(docs) {
-  const list = document.getElementById('list');
-  list.innerHTML = docs.map(d => `
+function filter(){
+  const q=document.getElementById('q').value.toLowerCase();
+  let res=ALL.filter(d=>
+    (activeW==='Toutes'||d.wilaya===activeW) &&
+    (activeS==='Toutes'||d.specialite===activeS) &&
+    (d.nom.toLowerCase().includes(q)||d.specialite.toLowerCase().includes(q)||d.ville.toLowerCase().includes(q))
+  );
+  render(res);
+}
+
+function render(docs){
+  const list=document.getElementById('list');
+  list.innerHTML=docs.map(d=>`
     <div class="card p-4">
-      <h2 class="font-bold text-lg">${d.nom}</h2>
-      <p class="text-sm text-gray-600">${d.specialite} - ${d.ville}</p>
-      <a href="tel:${d.telephone}" class="block mt-3 bg-green-600 text-white text-center py-2 rounded-lg font-bold">Appeler</a>
+      <div class="flex items-center gap-3">
+        <div class="avatar">${d.nom.substring(0,2).toUpperCase()}</div>
+        <div>
+          <h2 class="font-bold">${d.nom}</h2>
+          <span class="b-spec">${d.specialite}</span>
+        </div>
+      </div>
+      <div class="flex gap-2 mt-4">
+        <a href="tel:${d.telephone}" class="btn-call">Appeler</a>
+        <a href="https://www.google.com/maps/search/?api=1&query=${d.lat},${d.lng}" target="_blank" class="btn-map">Localiser</a>
+      </div>
     </div>
   `).join('');
   document.getElementById('statsTxt').textContent = `${docs.length} médecin(s) trouvé(s)`;
 }
 
-document.getElementById('q').addEventListener('input', (e) => {
-  const val = e.target.value.toLowerCase();
-  render(ALL.filter(d => d.nom.toLowerCase().includes(val) || d.specialite.toLowerCase().includes(val)));
+function buildWChips(){
+  const ws=['Toutes',...new Set(ALL.map(d=>d.wilaya))];
+  const z=document.getElementById('wbar');
+  ws.forEach(w=>{
+    const b=document.createElement('button');
+    b.className='chip '+(w==='Toutes'?'on':''); b.textContent=w;
+    b.onclick=()=>{activeW=w; z.querySelectorAll('.chip').forEach(c=>c.classList.toggle('on',c===b)); filter();};
+    z.appendChild(b);
+  });
+}
+
+function buildSChips(){
+  const ss=['Toutes',...new Set(ALL.map(d=>d.specialite))];
+  const z=document.getElementById('sbar');
+  ss.forEach(s=>{
+    const b=document.createElement('button');
+    b.className='schip '+(s==='Toutes'?'on':''); b.textContent=s;
+    b.onclick=()=>{activeS=s; z.querySelectorAll('.schip').forEach(c=>c.classList.toggle('on',c===b)); filter();};
+    z.appendChild(b);
+  });
+}
+
+document.getElementById('q').addEventListener('input',(e)=>{
+  document.getElementById('clr').style.display=e.target.value?'flex':'none';
+  filter();
 });
 
 load();
