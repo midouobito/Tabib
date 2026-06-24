@@ -1139,13 +1139,23 @@
   /* ══════════ STATE ══════════ */
   let ALL=[], activeCategory='médecin', activeW='Toutes', activeS='Toutes';
   let userLat=null, userLng=null, gpsOn=false;
-  let localAvis = JSON.parse(localStorage.getItem('tabibdz_avis')||'{}');
+  let localAvis = {};
+  try {
+    localAvis = JSON.parse(localStorage.getItem('tabibdz_avis')||'{}');
+  } catch(e) {
+    console.warn("Corrupted avis in localStorage:", e);
+  }
   let currentView = 'list';
   let currentFilteredDocs = [];
 
-  const supabaseUrl='https://viabbtrtusufxbuhxypb.supabase.co';
-  const supabaseKey='sb_publishable_i2E9hvP2PfkSsrYauszvCw_GO7BhNeP';
-  const supabaseDb=supabase.createClient(supabaseUrl, supabaseKey);
+  let supabaseDb = null;
+  if (typeof supabase !== 'undefined') {
+    const supabaseUrl='https://viabbtrtusufxbuhxypb.supabase.co';
+    const supabaseKey='sb_publishable_i2E9hvP2PfkSsrYauszvCw_GO7BhNeP';
+    supabaseDb = supabase.createClient(supabaseUrl, supabaseKey);
+  } else {
+    console.warn("Supabase library not loaded. Falling back to local data.");
+  }
 
   const FB=[
     {id:1,nom:"Dr. Benali Ahmed",specialite:"Ophtalmologue",ville:"Ain Touta",wilaya:"Batna",adresse:"Rue principale, bâtiment X",telephone:"0550123456",horaires:"08:00 - 16:00",jours:["Dim","Lun","Mar","Mer","Jeu"],disponible:true,lat:35.4167,lng:5.8833,tarif:1500,rdv_enabled:true,
@@ -1173,7 +1183,12 @@
   const CACHE_KEY='tabibdz_data', CACHE_TIME='tabibdz_data_ts', CACHE_TTL=30*60*1000;
 
   function applyLocalProfileOverrides(docs) {
-    const localProfiles = JSON.parse(localStorage.getItem('tabibdz_profiles') || '{}');
+    let localProfiles = {};
+    try {
+      localProfiles = JSON.parse(localStorage.getItem('tabibdz_profiles') || '{}');
+    } catch(e) {
+      console.warn("Corrupted profiles in localStorage:", e);
+    }
     return docs.map(d => {
       if (localProfiles[d.id]) {
         return { ...d, ...localProfiles[d.id] };
@@ -1218,16 +1233,17 @@
     autoRequestGPS();
   }
   async function refreshFromNetwork(){
-    try{
-      const {data,error}=await withTimeout(supabaseDb.from('medecins').select('*, avis(*)'),6000);
-      if(error) throw error;
-      if(data&&data.length>0){
-        const docsWithOverrides = applyLocalProfileOverrides(data);
-        ALL=docsWithOverrides;
-        saveToCache(data);
-        buildWChips(); buildSChips(); 
-        applyHashRouting();
-        filter();
+    if (supabaseDb) {
+      try{
+        const {data,error}=await withTimeout(supabaseDb.from('medecins').select('*, avis(*)'),6000);
+        if(error) throw error;
+        if(data&&data.length>0){
+          const docsWithOverrides = applyLocalProfileOverrides(data);
+          ALL=docsWithOverrides;
+          saveToCache(data);
+          buildWChips(); buildSChips(); 
+          applyHashRouting();
+          filter();
         checkForNewNotifications();
         doneProgress(); return;
       }
@@ -1906,7 +1922,12 @@
       return;
     }
     
-    const bookings = JSON.parse(localStorage.getItem('tabibdz_bookings') || '[]');
+    let bookings = [];
+    try {
+      bookings = JSON.parse(localStorage.getItem('tabibdz_bookings') || '[]');
+    } catch(e) {
+      console.warn("Corrupted bookings in localStorage:", e);
+    }
     
     slots.forEach(slot => {
       const btn = document.createElement('button');
