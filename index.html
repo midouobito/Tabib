@@ -4,7 +4,7 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
   <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://viabbtrtusufxbuhxypb.supabase.co https://cdn.tailwindcss.com https://cdn.jsdelivr.net https://fonts.googleapis.com https://fonts.gstatic.com https://ui-avatars.com; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://ui-avatars.com; connect-src 'self' https://viabbtrtusufxbuhxypb.supabase.co;">
-  <meta name="description" content="TabibDZ – Annuaire médical d'Algérie."/>
+  <meta name="description" content="TabibDZ – Annuaire médical d'Algérie : médecins, pharmacies, laboratoires et hôpitaux."/>
   <title>TabibDZ – Annuaire Médical &amp; Santé d'Algérie</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    /* ══════════════ TOKENS ══════════════ */
+    /* ══════════ TOKENS ══════════ */
     :root {
       --bg:             #F4F6FA;
       --bg2:            #EAECF3;
@@ -23,7 +23,7 @@
       --text-primary:   #0D1526;
       --text-secondary: #4A5568;
       --text-muted:     #8C96AA;
-      --sticky-bg:      rgba(244,246,250,0.95);
+      --sticky-bg:      rgba(244,246,250,0.96);
       --chip-bg:        #EAECF3;
       --chip-color:     #4A5568;
       --input-bg:       #FFFFFF;
@@ -34,9 +34,9 @@
       --green:          #16A34A;
       --red:            #DC2626;
       --amber:          #D97706;
-      --shadow:         0 1px 6px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.05);
-      --shadow-sm:      0 1px 3px rgba(0,0,0,0.08);
-      --r:              6px;   /* base radius — small, angular */
+      --shadow:         0 2px 12px rgba(0,0,0,0.10), 0 4px 24px rgba(0,0,0,0.06);
+      --shadow-sm:      0 1px 4px rgba(0,0,0,0.08);
+      --r:              6px;
       --r2:             4px;
     }
     [data-theme="dark"] {
@@ -49,7 +49,7 @@
       --text-primary:   #EDF2FF;
       --text-secondary: #8DA0BC;
       --text-muted:     #4E6180;
-      --sticky-bg:      rgba(11,15,28,0.95);
+      --sticky-bg:      rgba(11,15,28,0.96);
       --chip-bg:        #1A2235;
       --chip-color:     #7A90AD;
       --input-bg:       #151B2C;
@@ -60,11 +60,13 @@
       --green:          #22C55E;
       --red:            #F87171;
       --amber:          #FBBF24;
-      --shadow:         0 1px 6px rgba(0,0,0,0.4), 0 4px 16px rgba(0,0,0,0.25);
-      --shadow-sm:      0 1px 3px rgba(0,0,0,0.3);
+      --shadow:         0 2px 12px rgba(0,0,0,0.5), 0 4px 24px rgba(0,0,0,0.3);
+      --shadow-sm:      0 1px 4px rgba(0,0,0,0.35);
     }
 
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+    html, body { height: 100%; }
 
     body {
       background: var(--bg);
@@ -72,66 +74,75 @@
       font-family: 'Inter', sans-serif;
       min-height: 100dvh;
       transition: background 0.25s, color 0.25s;
+      margin: 0;
     }
     [dir="rtl"] body, [dir="rtl"] * {
       font-family: 'IBM Plex Sans Arabic', 'Inter', sans-serif;
     }
 
-    /* ── Progress bar ── */
+    /* ══════════ PROGRESS BAR ══════════ */
     #progress-bar {
       position: fixed; top: 0; left: 0; height: 3px; width: 0%;
       background: linear-gradient(90deg, var(--accent), var(--accent2));
       z-index: 9999; transition: width 0.3s ease, opacity 0.4s ease;
+      pointer-events: none;
     }
     #progress-bar.done { width: 100%; opacity: 0; }
 
-    /* ── Topbar ── */
+    /* ══════════ TOPBAR ══════════ */
     .topbar {
       background: var(--surface);
       border-bottom: 1px solid var(--border);
       box-shadow: var(--shadow-sm);
+      position: sticky; top: 0; z-index: 50;
+      display: flex; align-items: center;
+      padding: 0 20px; height: 56px; gap: 12px;
     }
-
-    /* ── Sidebar / content area ── */
-    .sidebar {
-      background: var(--surface);
-      border-right: 1px solid var(--border);
+    .topbar-logo-wrap { display: flex; align-items: center; gap: 10px; margin-right: auto; }
+    .logo-icon {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: var(--r); padding: 7px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
     }
+    .logo-name { font-size: 18px; font-weight: 900; letter-spacing: -.5px; color: var(--text-primary); }
+    .logo-sub  { font-size: 8px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--accent2); }
 
-    /* ── Control button (theme/lang) ── */
+    /* ══════════ CTRL BUTTONS ══════════ */
     .ctrl-btn {
       display: inline-flex; align-items: center; gap: 5px;
-      padding: 6px 11px; border-radius: var(--r2);
+      padding: 6px 10px; border-radius: var(--r2);
       font-size: 12px; font-weight: 700;
-      border: 1px solid var(--border);
-      background: var(--surface2);
-      color: var(--text-secondary);
-      cursor: pointer;
-      transition: all 0.15s ease;
+      border: 1px solid var(--border); background: var(--surface2);
+      color: var(--text-secondary); cursor: pointer;
+      transition: all 0.15s ease; white-space: nowrap;
     }
     .ctrl-btn:hover { background: var(--bg2); color: var(--text-primary); border-color: var(--accent); }
 
-    /* ── Search input ── */
-    .si {
-      width: 100%;
-      padding: 10px 16px 10px 40px;
-      border-radius: var(--r2);
-      border: 1px solid var(--border);
-      font-size: 14px; font-weight: 500;
-      background: var(--input-bg);
-      color: var(--text-primary);
-      outline: none;
-      transition: border-color 0.2s, box-shadow 0.2s;
+    /* ══════════ DESKTOP LAYOUT ══════════ */
+    .app-layout {
+      display: flex;
+      min-height: calc(100dvh - 56px);
     }
-    [dir="rtl"] .si { padding: 10px 40px 10px 16px; }
-    .si::placeholder { color: var(--text-muted); }
-    .si:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(79,70,229,0.1); }
 
-    /* ── Category tabs ── */
+    /* ══════════ SIDEBAR (desktop only) ══════════ */
+    .sidebar {
+      width: 200px;
+      flex-shrink: 0;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      padding: 16px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      position: sticky;
+      top: 56px;
+      height: calc(100dvh - 56px);
+      overflow-y: auto;
+    }
     .cat-tab {
-      display: flex; align-items: center; gap: 8px;
-      padding: 9px 16px;
-      border-radius: var(--r2);
+      display: flex; align-items: center; gap: 9px;
+      padding: 9px 12px; border-radius: var(--r2);
       font-size: 13px; font-weight: 600;
       color: var(--text-secondary);
       background: transparent; border: none;
@@ -146,100 +157,176 @@
       color: #fff; box-shadow: 0 2px 8px rgba(79,70,229,0.25);
     }
 
-    /* ── Filter chips ── */
+    /* ══════════ MOBILE BOTTOM NAV ══════════ */
+    .mobile-nav {
+      display: none;
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      box-shadow: 0 -2px 16px rgba(0,0,0,0.1);
+      z-index: 50;
+    }
+    .mobile-nav-inner {
+      display: flex; align-items: stretch;
+      height: 60px; padding-bottom: env(safe-area-inset-bottom, 0px);
+    }
+    .mnav-btn {
+      flex: 1; display: flex; flex-direction: column; align-items: center;
+      justify-content: center; gap: 3px;
+      border: none; background: transparent; cursor: pointer;
+      font-size: 10px; font-weight: 700; color: var(--text-muted);
+      transition: all 0.15s ease; padding: 6px 4px;
+    }
+    .mnav-btn .micon { font-size: 20px; line-height: 1; }
+    .mnav-btn.active { color: var(--accent); }
+    .mnav-btn.active .micon { transform: scale(1.1); }
+
+    /* ══════════ MAIN CONTENT AREA ══════════ */
+    .content-area { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+
+    /* ══════════ STICKY SEARCH ZONE ══════════ */
+    .search-zone {
+      position: sticky; top: 56px; z-index: 40;
+      background: var(--sticky-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 16px; display: flex; flex-direction: column; gap: 10px;
+    }
+
+    /* ══════════ SEARCH INPUT ══════════ */
+    .search-row { display: flex; gap: 8px; align-items: center; }
+    .si-wrap { position: relative; flex: 1; }
+    .si {
+      width: 100%; padding: 10px 16px 10px 38px;
+      border-radius: var(--r2); border: 1px solid var(--border);
+      font-size: 14px; font-weight: 500;
+      background: var(--input-bg); color: var(--text-primary);
+      outline: none; transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    [dir="rtl"] .si { padding: 10px 38px 10px 16px; }
+    .si::placeholder { color: var(--text-muted); }
+    .si:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(79,70,229,0.12); }
+    .si-icon { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: var(--text-muted); pointer-events: none; display: flex; }
+    [dir="rtl"] .si-icon { left: auto; right: 11px; }
+    .si-clr {
+      position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+      width: 20px; height: 20px; border-radius: 3px;
+      background: var(--bg2); border: 1px solid var(--border);
+      color: var(--text-muted); font-size: 10px;
+      display: none; align-items: center; justify-content: center; cursor: pointer;
+    }
+    [dir="rtl"] .si-clr { right: auto; left: 8px; }
+
+    .gps-btn {
+      display: flex; align-items: center; gap: 6px;
+      padding: 9px 13px; border-radius: var(--r2);
+      font-size: 12px; font-weight: 700;
+      background: var(--surface2); border: 1px solid var(--border);
+      color: var(--text-secondary); cursor: pointer;
+      transition: all 0.15s; white-space: nowrap;
+    }
+    .gps-btn:hover { background: var(--bg2); border-color: var(--accent2); color: var(--accent2); }
+    .gps-btn.active { background: rgba(14,165,233,0.08); border-color: var(--accent2); color: var(--accent2); }
+
+    /* ══════════ FILTER ROWS ══════════ */
+    .filters-row {
+      display: flex; gap: 16px; align-items: flex-start; flex-wrap: wrap;
+    }
+    .filter-group { display: flex; flex-direction: column; gap: 5px; min-width: 0; flex: 1; }
+    .sec-label { font-size: 10px; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; color: var(--text-muted); }
+    .chips-row {
+      display: flex; gap: 5px; overflow-x: auto;
+      -ms-overflow-style: none; scrollbar-width: none;
+      padding-bottom: 2px;
+    }
+    .chips-row::-webkit-scrollbar { display: none; }
     .chip {
-      flex-shrink: 0; padding: 5px 13px; border-radius: var(--r2);
+      flex-shrink: 0; padding: 5px 12px; border-radius: var(--r2);
       font-size: 12px; font-weight: 600;
-      border: 1px solid var(--border);
-      background: var(--chip-bg); color: var(--chip-color);
-      cursor: pointer; white-space: nowrap; transition: all 0.15s;
+      border: 1px solid var(--border); background: var(--chip-bg);
+      color: var(--chip-color); cursor: pointer; white-space: nowrap; transition: all 0.15s;
     }
     .chip:hover { color: var(--text-primary); border-color: var(--accent); }
     .chip.on { background: var(--accent); border-color: var(--accent); color: #fff; }
-
     .schip {
-      flex-shrink: 0; padding: 4px 11px; border-radius: var(--r2);
+      flex-shrink: 0; padding: 4px 10px; border-radius: var(--r2);
       font-size: 11px; font-weight: 600;
-      border: 1px solid var(--border-light);
-      background: var(--surface2); color: var(--text-muted);
-      cursor: pointer; white-space: nowrap; transition: all 0.15s;
+      border: 1px solid var(--border-light); background: var(--surface2);
+      color: var(--text-muted); cursor: pointer; white-space: nowrap; transition: all 0.15s;
     }
     .schip:hover { color: var(--text-primary); border-color: var(--accent); }
     .schip.on { background: var(--accent2); border-color: var(--accent2); color: #fff; }
 
-    /* ── Scrollable rows ── */
-    .row {
-      display: flex; gap: 6px; overflow-x: auto;
-      padding: 8px 0; -ms-overflow-style: none; scrollbar-width: none;
+    /* ══════════ STATS BAR ══════════ */
+    .stat-bar {
+      padding: 8px 16px; display: flex; align-items: center; gap: 7px;
+      border-bottom: 1px solid var(--border-light);
+      font-size: 12px; font-weight: 600; color: var(--text-muted);
     }
-    .row::-webkit-scrollbar { display: none; }
 
-    /* ── Skeleton ── */
+    /* ══════════ CARDS AREA ══════════ */
+    .cards-area {
+      padding: 14px 16px;
+      display: flex; flex-direction: column; gap: 10px;
+    }
+
+    /* ══════════ SKELETON ══════════ */
     .skel {
       background: linear-gradient(90deg, var(--skel-from) 25%, var(--skel-mid) 50%, var(--skel-from) 75%);
       background-size: 200% 100%; animation: sh 1.3s infinite;
     }
-    @keyframes sh { 0% { background-position: 200% 0 } 100% { background-position: -200% 0 } }
+    @keyframes sh { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
 
-    /* ── Doctor CARD ── */
+    /* ══════════ DOCTOR CARD ══════════ */
     .doc-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--r);
-      box-shadow: var(--shadow-sm);
-      transition: box-shadow 0.2s, border-color 0.2s, transform 0.15s;
-      overflow: hidden;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--r); box-shadow: var(--shadow-sm);
+      transition: box-shadow 0.2s, border-color 0.2s, transform 0.15s; overflow: hidden;
     }
-    .doc-card:hover {
-      box-shadow: var(--shadow);
-      border-color: var(--accent);
-      transform: translateY(-1px);
-    }
+    .doc-card:hover { box-shadow: var(--shadow); border-color: var(--accent); transform: translateY(-1px); }
 
-    /* ── Doctor photo ── */
     .doc-photo {
-      width: 64px; height: 64px;
-      border-radius: var(--r);
-      object-fit: cover;
-      flex-shrink: 0;
-      border: 2px solid var(--border);
-      background: var(--bg2);
+      width: 60px; height: 60px; border-radius: var(--r); object-fit: cover;
+      flex-shrink: 0; border: 2px solid var(--border); background: var(--bg2);
     }
 
-    /* ── Status badge ── */
     .badge-open   { background: #DCFCE7; color: #15803D; border: 1px solid #86EFAC; }
     .badge-closed { background: var(--bg2); color: var(--text-muted); border: 1px solid var(--border); }
-    [data-theme="dark"] .badge-open { background: rgba(34,197,94,0.12); color: #4ADE80; border-color: rgba(34,197,94,0.25); }
+    [data-theme="dark"] .badge-open   { background: rgba(34,197,94,0.12); color: #4ADE80; border-color: rgba(34,197,94,0.25); }
     [data-theme="dark"] .badge-closed { background: var(--surface2); }
 
-    /* ── Score ring ── */
     .score-ring {
-      width: 40px; height: 40px; border-radius: var(--r2);
+      width: 38px; height: 38px; border-radius: var(--r2); flex-shrink: 0;
       display: flex; align-items: center; justify-content: center;
-      font-weight: 800; font-size: 14px; flex-shrink: 0;
+      font-weight: 800; font-size: 13px;
     }
     .score-high { background: rgba(22,163,74,0.1); color: var(--green); border: 1px solid rgba(22,163,74,0.2); }
     .score-mid  { background: rgba(217,119,6,0.1); color: var(--amber); border: 1px solid rgba(217,119,6,0.2); }
     .score-low  { background: rgba(220,38,38,0.1); color: var(--red);   border: 1px solid rgba(220,38,38,0.2); }
 
-    /* ── Avis row ── */
+    .spec-badge {
+      display: inline-block; padding: 2px 7px; border-radius: var(--r2);
+      font-size: 11px; font-weight: 700;
+      background: rgba(79,70,229,0.08); color: var(--accent);
+      border: 1px solid rgba(79,70,229,0.15);
+    }
+
+    /* ══════════ AVIS ══════════ */
     .avis-row {
-      display: flex; gap: 10px; overflow-x: auto;
-      padding: 8px 16px 12px; -ms-overflow-style: none; scrollbar-width: none;
+      display: flex; gap: 8px; overflow-x: auto; padding: 8px 14px 12px;
+      -ms-overflow-style: none; scrollbar-width: none;
     }
     .avis-row::-webkit-scrollbar { display: none; }
     .avis-card {
-      flex-shrink: 0; width: 220px;
-      background: var(--surface2); border: 1px solid var(--border-light);
-      border-radius: var(--r2); padding: 10px;
+      flex-shrink: 0; width: 200px; background: var(--surface2);
+      border: 1px solid var(--border-light); border-radius: var(--r2); padding: 10px;
     }
-
-    /* ── Sentiment dots ── */
     .dot-pos { width: 7px; height: 7px; border-radius: 50%; background: var(--green); }
     .dot-mid { width: 7px; height: 7px; border-radius: 50%; background: var(--amber); }
     .dot-neg { width: 7px; height: 7px; border-radius: 50%; background: var(--red); }
 
-    /* ── Form inputs ── */
+    /* ══════════ FORM ══════════ */
     .form-input {
       background: var(--bg2); border: 1px solid var(--border);
       color: var(--text-primary); border-radius: var(--r2);
@@ -248,166 +335,196 @@
     .form-input::placeholder { color: var(--text-muted); }
     .form-input:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 3px rgba(79,70,229,0.1); }
 
-    /* ── Star picker ── */
-    .star-pick span {
-      color: var(--border); font-size: 22px; cursor: pointer; transition: color 0.1s;
-    }
+    .star-pick span { color: var(--border); font-size: 22px; cursor: pointer; transition: color 0.1s; }
     .star-pick span.sel { color: var(--amber); }
 
-    /* ── Toast ── */
+    /* ══════════ BUTTONS ══════════ */
+    .btn-call {
+      flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px;
+      background: var(--green); color: #fff; border: none; border-radius: var(--r2);
+      font-weight: 700; font-size: 13px; padding: 10px 0; cursor: pointer;
+      text-decoration: none; transition: opacity 0.15s;
+    }
+    .btn-call:hover { opacity: 0.87; }
+    .btn-map {
+      flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px;
+      background: var(--surface2); color: var(--text-secondary);
+      border: 1px solid var(--border); border-radius: var(--r2);
+      font-weight: 700; font-size: 13px; padding: 10px 0; cursor: pointer;
+      text-decoration: none; transition: all 0.15s;
+    }
+    .btn-map:hover { background: var(--bg2); color: var(--text-primary); border-color: var(--accent); }
+    .btn-review {
+      width: 100%; background: var(--surface2); border: 1px solid var(--border);
+      color: var(--text-secondary); border-radius: var(--r2);
+      font-size: 12px; font-weight: 700; padding: 8px 12px; cursor: pointer; transition: all 0.15s;
+    }
+    .btn-review:hover { background: var(--bg2); color: var(--text-primary); border-color: var(--accent); }
+    .btn-publish {
+      flex: 1; background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff; border: none; border-radius: var(--r2);
+      font-size: 12px; font-weight: 700; padding: 9px 0; cursor: pointer; transition: opacity 0.15s;
+    }
+    .btn-publish:hover { opacity: 0.87; }
+    .btn-cancel {
+      flex: 1; background: var(--bg2); border: 1px solid var(--border);
+      color: var(--text-muted); border-radius: var(--r2);
+      font-size: 12px; font-weight: 600; padding: 9px 0; cursor: pointer; transition: all 0.15s;
+    }
+    .btn-cancel:hover { color: var(--text-primary); }
+
+    /* ══════════ TOAST ══════════ */
     .toast {
       position: fixed; bottom: 24px; left: 50%;
       transform: translateX(-50%) translateY(8px);
       background: var(--surface); border: 1px solid var(--border);
-      color: var(--text-primary); padding: 12px 20px;
+      color: var(--text-primary); padding: 11px 18px;
       border-radius: var(--r); font-size: 13px; font-weight: 600;
       box-shadow: var(--shadow); z-index: 9998; opacity: 0;
       transition: all 0.3s ease; pointer-events: none; white-space: nowrap;
     }
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-    /* ── GPS button ── */
-    .gps-btn {
-      background: var(--surface2); border: 1px solid var(--border);
-      color: var(--text-secondary); border-radius: var(--r2);
-      transition: all 0.15s;
+    /* ══════════ EMPTY STATE ══════════ */
+    .empty-box {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--r); padding: 48px 24px;
+      display: none; flex-direction: column; align-items: center; text-align: center;
     }
-    .gps-btn:hover { background: var(--bg2); border-color: var(--accent2); color: var(--accent2); }
-    .gps-btn.active { background: rgba(14,165,233,0.08); border-color: var(--accent2); color: var(--accent2); }
 
-    /* ── Divider ── */
-    .divider { border-color: var(--border-light); }
+    /* ══════════ AVATAR COLORS ══════════ */
+    .av-1{background:linear-gradient(135deg,#4F46E5,#7C3AED);}
+    .av-2{background:linear-gradient(135deg,#0EA5E9,#06B6D4);}
+    .av-3{background:linear-gradient(135deg,#16A34A,#059669);}
+    .av-4{background:linear-gradient(135deg,#DC2626,#F43F5E);}
+    .av-5{background:linear-gradient(135deg,#D97706,#F59E0B);}
+    .av-6{background:linear-gradient(135deg,#7C3AED,#EC4899);}
+    .av-7{background:linear-gradient(135deg,#0891B2,#4F46E5);}
+    .av-8{background:linear-gradient(135deg,#059669,#0EA5E9);}
 
-    /* ── Section label ── */
-    .sec-label { font-size: 10px; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; color: var(--text-muted); }
-
-    /* ── Action buttons ── */
-    .btn-call {
-      background: var(--green); color: #fff;
-      border: none; border-radius: var(--r2);
-      font-weight: 700; font-size: 13px;
-      padding: 10px 0; cursor: pointer;
-      transition: opacity 0.15s;
-    }
-    .btn-call:hover { opacity: 0.88; }
-    .btn-map {
-      background: var(--surface2); color: var(--text-secondary);
-      border: 1px solid var(--border); border-radius: var(--r2);
-      font-weight: 700; font-size: 13px;
-      padding: 10px 0; cursor: pointer;
-      transition: all 0.15s;
-    }
-    .btn-map:hover { background: var(--bg2); color: var(--text-primary); border-color: var(--accent); }
-
-    /* ── Scrollbar custom ── */
+    /* ══════════ CUSTOM SCROLLBAR ══════════ */
     ::-webkit-scrollbar { width: 5px; height: 5px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 
-    /* ── Stat bar ── */
-    .stat-bar { border-top: 1px solid var(--border-light); border-bottom: 1px solid var(--border-light); }
-
-    /* ── Search section sticky ── */
-    .search-sticky {
-      position: sticky; top: 0; z-index: 40;
-      background: var(--sticky-bg);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
+    /* ══════════ FOOTER (desktop) ══════════ */
+    .sidebar-footer {
+      margin-top: auto; padding-top: 20px;
+      font-size: 10px; color: var(--text-muted); line-height: 1.7;
     }
 
-    /* ── Empty state ── */
-    .empty-box { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); }
+    /* ══════════ TRANSITIONS ══════════ */
+    .doc-card,.chip,.schip,.cat-tab,.ctrl-btn,.gps-btn,.form-input,
+    .avis-card,.topbar,.sidebar,.mobile-nav { transition: background 0.2s, border-color 0.2s, color 0.2s; }
 
-    /* ── Spec badge ── */
-    .spec-badge {
-      display: inline-block;
-      padding: 2px 8px; border-radius: var(--r2);
-      font-size: 11px; font-weight: 700;
-      background: rgba(79,70,229,0.08);
-      color: var(--accent); border: 1px solid rgba(79,70,229,0.15);
+    /* ══════════════════════════════════════
+       RESPONSIVE — MOBILE FIRST
+    ══════════════════════════════════════ */
+    @media (max-width: 767px) {
+      /* Hide desktop sidebar */
+      .sidebar { display: none; }
+
+      /* Show mobile bottom nav */
+      .mobile-nav { display: flex; }
+
+      /* Pad content above bottom nav */
+      body { padding-bottom: 60px; }
+
+      /* Topbar compact */
+      .topbar { padding: 0 12px; height: 50px; }
+      .logo-name { font-size: 16px; }
+      .logo-sub  { display: none; }
+      .logo-icon { padding: 6px; }
+      .ctrl-btn  { padding: 5px 8px; font-size: 11px; }
+
+      /* Sticky search top adjustment */
+      .search-zone { top: 50px; padding: 10px 12px; gap: 8px; }
+
+      /* GPS button: icon only on very small */
+      .gps-btn { padding: 9px 10px; }
+      #gpsTxtMobile { display: none; }
+
+      /* Filters: stack wilaya and spec vertically */
+      .filters-row { gap: 10px; }
+
+      /* Cards */
+      .cards-area { padding: 10px 12px; gap: 8px; }
+
+      /* Card photo smaller on mobile */
+      .doc-photo { width: 52px; height: 52px; }
+
+      /* Avis cards narrower */
+      .avis-card { width: 180px; }
+
+      /* Toast above bottom nav */
+      .toast { bottom: 76px; }
+
+      /* Empty box */
+      .empty-box { margin: 0 12px; }
     }
 
-    /* ── Photo fallback gradient colors per specialty ── */
-    .av-1 { background: linear-gradient(135deg,#4F46E5,#7C3AED); }
-    .av-2 { background: linear-gradient(135deg,#0EA5E9,#06B6D4); }
-    .av-3 { background: linear-gradient(135deg,#16A34A,#059669); }
-    .av-4 { background: linear-gradient(135deg,#DC2626,#F43F5E); }
-    .av-5 { background: linear-gradient(135deg,#D97706,#F59E0B); }
-    .av-6 { background: linear-gradient(135deg,#7C3AED,#EC4899); }
-    .av-7 { background: linear-gradient(135deg,#0891B2,#4F46E5); }
-    .av-8 { background: linear-gradient(135deg,#059669,#0EA5E9); }
-
-    /* ── Leave review btn ── */
-    .btn-review {
-      background: var(--surface2); border: 1px solid var(--border);
-      color: var(--text-secondary); border-radius: var(--r2);
-      font-size: 12px; font-weight: 700;
-      padding: 8px 12px; cursor: pointer; transition: all 0.15s; width: 100%;
+    @media (min-width: 768px) {
+      /* Hide mobile bottom nav on desktop */
+      .mobile-nav { display: none; }
+      /* Show sidebar */
+      .sidebar { display: flex; }
+      /* Layout row on desktop */
+      .app-layout { flex-direction: row; }
     }
-    .btn-review:hover { background: var(--bg2); color: var(--text-primary); border-color: var(--accent); }
 
-    /* ── Publish btn ── */
-    .btn-publish {
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      color: #fff; border: none; border-radius: var(--r2);
-      font-size: 12px; font-weight: 700; padding: 9px 0; cursor: pointer;
-      transition: opacity 0.15s;
+    /* Large screens — limit card width */
+    @media (min-width: 1200px) {
+      .cards-area { max-width: 860px; }
     }
-    .btn-publish:hover { opacity: 0.88; }
 
-    /* ── Cancel btn ── */
-    .btn-cancel {
-      background: var(--bg2); border: 1px solid var(--border);
-      color: var(--text-muted); border-radius: var(--r2);
-      font-size: 12px; font-weight: 600; padding: 9px 0; cursor: pointer;
-      transition: all 0.15s;
+    @media (min-width: 1400px) {
+      .sidebar { width: 220px; }
     }
-    .btn-cancel:hover { color: var(--text-primary); }
 
-    /* ── Transitions ── */
-    .doc-card, .chip, .schip, .cat-tab, .ctrl-btn, .gps-btn,
-    .form-input, .avis-card, .topbar, .sidebar {
-      transition: background 0.2s, border-color 0.2s, color 0.2s;
+    /* Tablet adjustments */
+    @media (min-width: 768px) and (max-width: 1024px) {
+      .sidebar { width: 170px; }
+      .cat-tab { font-size: 12px; padding: 8px 10px; }
+    }
+
+    /* ── Pulse animation for open badge dot ── */
+    @keyframes pulse {
+      0%,100% { opacity: 1; }
+      50%      { opacity: 0.5; }
     }
   </style>
 </head>
 <body>
 
-  <!-- Progress Bar -->
   <div id="progress-bar"></div>
 
-  <!-- TOP BAR -->
-  <header class="topbar px-6 py-3 flex items-center gap-4">
-    <!-- Logo -->
-    <div class="flex items-center gap-3 mr-auto">
-      <div style="background:linear-gradient(135deg,var(--accent),var(--accent2)); border-radius:var(--r); padding:7px; display:flex; align-items:center; justify-content:center;">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+  <!-- ══════════ TOP BAR ══════════ -->
+  <header class="topbar">
+    <div class="topbar-logo-wrap">
+      <div class="logo-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
         </svg>
       </div>
       <div>
-        <div style="font-size:20px; font-weight:900; letter-spacing:-.5px; color:var(--text-primary)">TabibDZ</div>
-        <div id="tagline" style="font-size:9px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--accent2)">Dossier Santé Algérie</div>
+        <div class="logo-name">TabibDZ</div>
+        <div id="tagline" class="logo-sub">Dossier Santé Algérie</div>
       </div>
     </div>
-
-    <!-- Controls -->
-    <div style="display:flex; align-items:center; gap:8px;">
-      <button id="langBtn" onclick="toggleLang()" class="ctrl-btn">
-        <span>🌐</span><span id="langLabel">عربي</span>
-      </button>
-      <button id="themeBtn" onclick="toggleTheme()" class="ctrl-btn">
-        <span id="themeIcon">🌙</span>
-      </button>
-    </div>
+    <button id="langBtn" onclick="toggleLang()" class="ctrl-btn">
+      <span>🌐</span><span id="langLabel">عربي</span>
+    </button>
+    <button id="themeBtn" onclick="toggleTheme()" class="ctrl-btn">
+      <span id="themeIcon">🌙</span>
+    </button>
   </header>
 
-  <!-- LAYOUT: sidebar + main -->
-  <div style="display:flex; min-height:calc(100dvh - 57px);">
+  <!-- ══════════ APP LAYOUT ══════════ -->
+  <div class="app-layout">
 
-    <!-- SIDEBAR (categories) -->
-    <aside class="sidebar" style="width:200px; min-height:100%; padding:16px 12px; flex-shrink:0; display:flex; flex-direction:column; gap:4px; position:sticky; top:57px; height:calc(100dvh - 57px); overflow-y:auto;">
-      <p class="sec-label" style="padding:4px 8px 10px">Catégorie</p>
+    <!-- SIDEBAR (desktop) -->
+    <aside class="sidebar">
+      <p class="sec-label" style="padding:4px 6px 10px">Catégorie</p>
       <button onclick="setCategory('médecin')"    class="cat-tab active" data-cat="médecin">
         <span>🩺</span><span class="i18n" data-key="cat_medecin">Médecins</span>
       </button>
@@ -420,28 +537,29 @@
       <button onclick="setCategory('hôpital')"    class="cat-tab" data-cat="hôpital">
         <span>🏥</span><span class="i18n" data-key="cat_hopital">Hôpitaux</span>
       </button>
-
-      <div style="margin-top:auto; padding-top:24px;">
-        <div style="font-size:10px; color:var(--text-muted); line-height:1.6">TabibDZ © 2026<br/><span class="i18n" data-key="footer_note">Données indicatives.</span></div>
+      <div class="sidebar-footer">
+        TabibDZ © 2026<br/>
+        <span class="i18n" data-key="footer_note">Données indicatives.</span>
       </div>
     </aside>
 
     <!-- MAIN CONTENT -->
-    <main style="flex:1; min-width:0; display:flex; flex-direction:column;">
+    <div class="content-area">
 
       <!-- STICKY SEARCH + FILTERS -->
-      <div class="search-sticky" style="padding:12px 20px; display:flex; flex-direction:column; gap:10px;">
-
-        <!-- Search & GPS row -->
-        <div style="display:flex; gap:10px; align-items:center;">
-          <div style="position:relative; flex:1;">
-            <span style="position:absolute; left:11px; top:50%; transform:translateY(-50%); color:var(--text-muted); display:flex;">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <div class="search-zone">
+        <!-- Search row -->
+        <div class="search-row">
+          <div class="si-wrap">
+            <span class="si-icon">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+              </svg>
             </span>
-            <input id="q" class="si" type="search" placeholder="Rechercher par nom, ville, spécialité..." autocomplete="off" maxlength="80"/>
-            <button id="clr" style="position:absolute; right:10px; top:50%; transform:translateY(-50%); width:20px; height:20px; border-radius:var(--r2); background:var(--bg2); border:1px solid var(--border); color:var(--text-muted); font-size:10px; display:none; align-items:center; justify-content:center; cursor:pointer;">✕</button>
+            <input id="q" class="si" type="search" placeholder="Rechercher..." autocomplete="off" maxlength="80"/>
+            <button id="clr" class="si-clr">✕</button>
           </div>
-          <button id="gpsBtn" class="gps-btn" style="display:flex; align-items:center; gap:7px; padding:9px 14px; font-size:13px; font-weight:600; cursor:pointer; white-space:nowrap;" onclick="requestGPS()">
+          <button id="gpsBtn" class="gps-btn" onclick="requestGPS()">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
               <circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>
             </svg>
@@ -449,102 +567,119 @@
           </button>
         </div>
 
-        <!-- Filters row -->
-        <div style="display:flex; gap:20px; align-items:flex-start;">
-          <div>
-            <p class="sec-label" style="margin-bottom:5px;" id="lbl-wilaya">Wilaya</p>
-            <div class="row" id="wbar" style="padding:0; gap:5px;"></div>
+        <!-- Filters -->
+        <div class="filters-row">
+          <div class="filter-group">
+            <p class="sec-label i18n" data-key="filter_wilaya">Wilaya</p>
+            <div class="chips-row" id="wbar"></div>
           </div>
-          <div id="sbar_container">
-            <p class="sec-label" style="margin-bottom:5px;" id="lbl-spec">Spécialité</p>
-            <div class="row" id="sbar" style="padding:0; gap:5px;"></div>
+          <div class="filter-group" id="sbar_container">
+            <p class="sec-label i18n" data-key="filter_spec">Spécialité</p>
+            <div class="chips-row" id="sbar"></div>
           </div>
         </div>
       </div>
 
-      <!-- STATS BAR -->
-      <div class="stat-bar" style="padding:8px 20px; display:flex; align-items:center; gap:8px;">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.2">
+      <!-- STATS -->
+      <div class="stat-bar">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.2">
           <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
         </svg>
-        <span id="statsTxt" style="font-size:12px; font-weight:600; color:var(--text-muted);" class="i18n" data-key="loading">Chargement...</span>
+        <span id="statsTxt" class="i18n" data-key="loading">Chargement...</span>
       </div>
 
       <!-- CARDS LIST -->
-      <div style="padding:16px 20px; display:flex; flex-direction:column; gap:12px;" id="list">
-        <!-- Skeleton loaders -->
-        <div class="doc-card" id="sk1" style="padding:20px; display:flex; gap:16px;">
-          <div class="skel" style="width:64px; height:64px; border-radius:var(--r); flex-shrink:0;"></div>
-          <div style="flex:1; display:flex; flex-direction:column; gap:10px; padding-top:4px;">
-            <div class="skel" style="height:15px; width:55%; border-radius:3px;"></div>
-            <div class="skel" style="height:12px; width:30%; border-radius:3px;"></div>
-            <div class="skel" style="height:38px; width:100%; border-radius:var(--r2);"></div>
+      <div class="cards-area" id="list">
+        <div class="doc-card" id="sk1" style="padding:16px; display:flex; gap:14px;">
+          <div class="skel" style="width:60px; height:60px; border-radius:var(--r); flex-shrink:0;"></div>
+          <div style="flex:1; display:flex; flex-direction:column; gap:9px; padding-top:3px;">
+            <div class="skel" style="height:14px; width:55%; border-radius:3px;"></div>
+            <div class="skel" style="height:11px; width:28%; border-radius:3px;"></div>
+            <div class="skel" style="height:36px; width:100%; border-radius:var(--r2);"></div>
           </div>
         </div>
-        <div class="doc-card" id="sk2" style="padding:20px; display:flex; gap:16px;">
-          <div class="skel" style="width:64px; height:64px; border-radius:var(--r); flex-shrink:0;"></div>
-          <div style="flex:1; display:flex; flex-direction:column; gap:10px; padding-top:4px;">
-            <div class="skel" style="height:15px; width:65%; border-radius:3px;"></div>
-            <div class="skel" style="height:12px; width:25%; border-radius:3px;"></div>
-            <div class="skel" style="height:38px; width:100%; border-radius:var(--r2);"></div>
+        <div class="doc-card" id="sk2" style="padding:16px; display:flex; gap:14px;">
+          <div class="skel" style="width:60px; height:60px; border-radius:var(--r); flex-shrink:0;"></div>
+          <div style="flex:1; display:flex; flex-direction:column; gap:9px; padding-top:3px;">
+            <div class="skel" style="height:14px; width:65%; border-radius:3px;"></div>
+            <div class="skel" style="height:11px; width:22%; border-radius:3px;"></div>
+            <div class="skel" style="height:36px; width:100%; border-radius:var(--r2);"></div>
           </div>
         </div>
-        <div class="doc-card" id="sk3" style="padding:20px; display:flex; gap:16px;">
-          <div class="skel" style="width:64px; height:64px; border-radius:var(--r); flex-shrink:0;"></div>
-          <div style="flex:1; display:flex; flex-direction:column; gap:10px; padding-top:4px;">
-            <div class="skel" style="height:15px; width:45%; border-radius:3px;"></div>
-            <div class="skel" style="height:12px; width:35%; border-radius:3px;"></div>
-            <div class="skel" style="height:38px; width:100%; border-radius:var(--r2);"></div>
+        <div class="doc-card" id="sk3" style="padding:16px; display:flex; gap:14px;">
+          <div class="skel" style="width:60px; height:60px; border-radius:var(--r); flex-shrink:0;"></div>
+          <div style="flex:1; display:flex; flex-direction:column; gap:9px; padding-top:3px;">
+            <div class="skel" style="height:14px; width:42%; border-radius:3px;"></div>
+            <div class="skel" style="height:11px; width:30%; border-radius:3px;"></div>
+            <div class="skel" style="height:36px; width:100%; border-radius:var(--r2);"></div>
           </div>
         </div>
-        <div class="doc-card" id="sk4" style="padding:20px; display:flex; gap:16px;">
-          <div class="skel" style="width:64px; height:64px; border-radius:var(--r); flex-shrink:0;"></div>
-          <div style="flex:1; display:flex; flex-direction:column; gap:10px; padding-top:4px;">
-            <div class="skel" style="height:15px; width:70%; border-radius:3px;"></div>
-            <div class="skel" style="height:12px; width:20%; border-radius:3px;"></div>
-            <div class="skel" style="height:38px; width:100%; border-radius:var(--r2);"></div>
+        <div class="doc-card" id="sk4" style="padding:16px; display:flex; gap:14px;">
+          <div class="skel" style="width:60px; height:60px; border-radius:var(--r); flex-shrink:0;"></div>
+          <div style="flex:1; display:flex; flex-direction:column; gap:9px; padding-top:3px;">
+            <div class="skel" style="height:14px; width:70%; border-radius:3px;"></div>
+            <div class="skel" style="height:11px; width:18%; border-radius:3px;"></div>
+            <div class="skel" style="height:36px; width:100%; border-radius:var(--r2);"></div>
           </div>
         </div>
       </div>
 
       <!-- EMPTY STATE -->
-      <div id="empty" class="empty-box" style="display:none; flex-direction:column; align-items:center; text-align:center; padding:60px 20px; margin:0 20px;">
-        <div style="font-size:48px; margin-bottom:12px;">🩺</div>
-        <h3 class="i18n" data-key="empty_title" style="font-size:16px; font-weight:700; margin-bottom:6px; color:var(--text-primary)">Aucun résultat trouvé</h3>
-        <p class="i18n" data-key="empty_desc" style="font-size:12px; color:var(--text-muted); max-width:280px; line-height:1.6">Essayez d'ajuster votre recherche ou réinitialisez les filtres.</p>
-        <button onclick="resetAll()" class="i18n" data-key="reset_btn" style="margin-top:20px; padding:9px 20px; border-radius:var(--r2); background:var(--accent); color:#fff; border:none; font-size:13px; font-weight:700; cursor:pointer;">Réinitialiser</button>
+      <div id="empty" class="empty-box" style="margin:0 16px;">
+        <div style="font-size:44px; margin-bottom:10px;">🩺</div>
+        <h3 class="i18n" data-key="empty_title" style="font-size:15px; font-weight:700; margin:0 0 6px; color:var(--text-primary)">Aucun résultat trouvé</h3>
+        <p class="i18n" data-key="empty_desc" style="font-size:12px; color:var(--text-muted); max-width:260px; line-height:1.6; margin:0 0 16px;">Essayez d'ajuster votre recherche ou réinitialisez les filtres.</p>
+        <button onclick="resetAll()" class="i18n" data-key="reset_btn" style="padding:8px 18px; border-radius:var(--r2); background:var(--accent); color:#fff; border:none; font-size:13px; font-weight:700; cursor:pointer;">Réinitialiser</button>
       </div>
 
-    </main>
-  </div>
+      <!-- FOOTER (desktop only, inside content) -->
+      <div style="padding:24px 16px 12px; font-size:10px; color:var(--text-muted); text-align:center; border-top:1px solid var(--border-light); margin-top:auto; display:none;" id="footer-desktop" class="desktop-footer">
+        TabibDZ © 2026 · <span class="i18n" data-key="footer_note">Données indicatives.</span>
+      </div>
+
+    </div><!-- /content-area -->
+  </div><!-- /app-layout -->
+
+  <!-- ══════════ MOBILE BOTTOM NAV ══════════ -->
+  <nav class="mobile-nav" id="mobileNav">
+    <div class="mobile-nav-inner">
+      <button class="mnav-btn active" data-cat="médecin" onclick="setCategory('médecin')">
+        <span class="micon">🩺</span>
+        <span class="i18n" data-key="cat_medecin">Médecins</span>
+      </button>
+      <button class="mnav-btn" data-cat="pharmacie" onclick="setCategory('pharmacie')">
+        <span class="micon">💊</span>
+        <span class="i18n" data-key="cat_pharmacie">Pharmacies</span>
+      </button>
+      <button class="mnav-btn" data-cat="laboratoire" onclick="setCategory('laboratoire')">
+        <span class="micon">🔬</span>
+        <span class="i18n" data-key="cat_labo">Labos</span>
+      </button>
+      <button class="mnav-btn" data-cat="hôpital" onclick="setCategory('hôpital')">
+        <span class="micon">🏥</span>
+        <span class="i18n" data-key="cat_hopital">Hôpitaux</span>
+      </button>
+    </div>
+  </nav>
 
   <!-- TOAST -->
   <div class="toast" id="toast"></div>
 
   <script>
-  /* ══════════════════════════════════════════
-     SECURITY
-  ══════════════════════════════════════════ */
-  function escHtml(s) {
-    if (typeof s !== 'string') return '';
-    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
-  }
+  /* ══════════ SECURITY ══════════ */
   function sanitizeName(s)    { return s.replace(/[<>{}()\[\]\\\/;=]/g,'').slice(0,60).trim(); }
   function sanitizeComment(s) { return s.replace(/[<>{}\\]/g,'').slice(0,500).trim(); }
-
   const sessionReviews = JSON.parse(sessionStorage.getItem('tabibdz_session_rev') || '{}');
-  function canReview(docId) { return (sessionReviews[docId]||0) < 3; }
-  function recordReview(docId) {
-    sessionReviews[docId] = (sessionReviews[docId]||0)+1;
+  function canReview(id)  { return (sessionReviews[id]||0) < 3; }
+  function recordReview(id) {
+    sessionReviews[id] = (sessionReviews[id]||0)+1;
     sessionStorage.setItem('tabibdz_session_rev', JSON.stringify(sessionReviews));
   }
 
-  /* ══════════════════════════════════════════
-     TRANSLATIONS
-  ══════════════════════════════════════════ */
+  /* ══════════ TRANSLATIONS ══════════ */
   const LANGS = {
     fr: {
-      cat_medecin:'Médecins', cat_pharmacie:'Pharmacies', cat_labo:'Laboratoires', cat_hopital:'Hôpitaux',
+      cat_medecin:'Médecins', cat_pharmacie:'Pharmacies', cat_labo:'Labos', cat_hopital:'Hôpitaux',
       gps_btn:'Près de moi', gps_locating:'Localisation...', gps_sorted:'✓ Par distance',
       filter_wilaya:'Wilaya', filter_spec:'Spécialité',
       loading:'Chargement...', no_result:'Aucun résultat',
@@ -552,19 +687,18 @@
       empty_title:'Aucun résultat trouvé', empty_desc:"Essayez d'ajuster votre recherche ou réinitialisez les filtres.",
       reset_btn:'Réinitialiser', leave_review:'✏️ Laisser un avis',
       give_review:'Votre avis', name_ph:'Prénom (ex: Fatima B.)', rating_lbl:'Note :',
-      comment_ph:'Rédigez votre commentaire...', publish_btn:'Publier', cancel_btn:'Annuler',
+      comment_ph:'Votre commentaire...', publish_btn:'Publier', cancel_btn:'Annuler',
       call_btn:'📞 Appeler', directions_btn:'🗺️ Itinéraire',
       open_lbl:'Ouvert', closed_lbl:'Fermé',
       reviews_title:(n)=>`Avis (${n})`, no_reviews:'Aucun avis patient.',
       pos_lbl:'Positif', neu_lbl:'Neutre', neg_lbl:'Négatif',
       all_lbl:'Toutes', tagline:'Dossier Santé Algérie',
-      header_desc:"Trouvez médecins, pharmacies, labos & hôpitaux en Algérie.",
       footer_note:'Données indicatives.',
       toast_no_gps:'GPS non disponible', toast_gps_ok:'📍 Position captée',
       toast_gps_err:'Position non disponible', toast_review_ok:'✅ Merci pour votre avis !',
       toast_review_local:'✅ Avis enregistré localement', toast_name_req:'⚠️ Entrez votre prénom',
-      toast_star_req:'⚠️ Choisissez une note', toast_short_cmt:'⚠️ Commentaire trop court (10 car. min)',
-      toast_rate_limit:'⚠️ Limite de 3 avis atteinte', loading_cache:'⚡ Données chargées depuis le cache',
+      toast_star_req:'⚠️ Choisissez une note', toast_short_cmt:'⚠️ Commentaire trop court',
+      toast_rate_limit:'⚠️ Limite de 3 avis atteinte', loading_cache:'⚡ Données depuis le cache',
       cat_label_med:'médecin', cat_label_pha:'pharmacie', cat_label_lab:'laboratoire', cat_label_hop:'hôpital',
     },
     ar: {
@@ -582,7 +716,6 @@
       reviews_title:(n)=>`آراء (${n})`, no_reviews:'لا توجد آراء بعد.',
       pos_lbl:'إيجابي', neu_lbl:'محايد', neg_lbl:'سلبي',
       all_lbl:'الكل', tagline:'الدليل الصحي الجزائري',
-      header_desc:'ابحث عن طبيب أو صيدلية أو مخبر أو مستشفى في الجزائر.',
       footer_note:'البيانات لأغراض إعلامية فقط.',
       toast_no_gps:'GPS غير متاح', toast_gps_ok:'📍 تم تحديد الموقع',
       toast_gps_err:'الموقع غير متاح', toast_review_ok:'✅ شكراً على تقييمك!',
@@ -594,12 +727,10 @@
   };
 
   let currentLang = localStorage.getItem('tabibdz_lang') || 'fr';
-
   function t(key, ...args) {
-    const entry = LANGS[currentLang][key];
-    return typeof entry === 'function' ? entry(...args) : (entry || key);
+    const e = LANGS[currentLang][key];
+    return typeof e === 'function' ? e(...args) : (e || key);
   }
-
   function applyLang() {
     const isAr = currentLang === 'ar';
     document.documentElement.lang = currentLang;
@@ -610,61 +741,44 @@
       const k = el.dataset.key;
       if (LANGS[currentLang][k] && typeof LANGS[currentLang][k] !== 'function') el.textContent = LANGS[currentLang][k];
     });
-    document.getElementById('q').placeholder = isAr ? 'ابحث بالاسم أو المدينة...' : 'Rechercher par nom, ville, spécialité...';
+    document.getElementById('q').placeholder = isAr ? 'ابحث بالاسم أو المدينة...' : 'Rechercher par nom, ville...';
     if (!gpsOn) document.getElementById('gpsTxt').textContent = t('gps_btn');
     if (ALL.length > 0) { buildWChips(); buildSChips(); filter(); }
   }
+  function toggleLang() { currentLang = currentLang==='fr'?'ar':'fr'; localStorage.setItem('tabibdz_lang',currentLang); applyLang(); }
 
-  function toggleLang() {
-    currentLang = currentLang === 'fr' ? 'ar' : 'fr';
-    localStorage.setItem('tabibdz_lang', currentLang);
-    applyLang();
-  }
-
-  /* ══════════════════════════════════════════
-     THEME
-  ══════════════════════════════════════════ */
+  /* ══════════ THEME ══════════ */
   let currentTheme = localStorage.getItem('tabibdz_theme') || 'light';
   function applyTheme() {
     document.documentElement.setAttribute('data-theme', currentTheme);
-    document.getElementById('themeIcon').textContent = currentTheme === 'dark' ? '☀️' : '🌙';
+    document.getElementById('themeIcon').textContent = currentTheme==='dark' ? '☀️' : '🌙';
   }
-  function toggleTheme() {
-    currentTheme = currentTheme === 'light' ? 'dark' : 'light';
-    localStorage.setItem('tabibdz_theme', currentTheme);
-    applyTheme();
-  }
+  function toggleTheme() { currentTheme=currentTheme==='light'?'dark':'light'; localStorage.setItem('tabibdz_theme',currentTheme); applyTheme(); }
   applyTheme();
 
-  /* ══════════════════════════════════════════
-     PROGRESS BAR
-  ══════════════════════════════════════════ */
-  let progressTimer = null;
+  /* ══════════ PROGRESS BAR ══════════ */
+  let pTimer=null;
   function startProgress() {
-    const bar = document.getElementById('progress-bar');
-    bar.style.width = '0%'; bar.style.opacity = '1'; bar.classList.remove('done');
-    let w = 0;
-    progressTimer = setInterval(() => { w = Math.min(w + (w<60?8:w<85?3:0.5), 90); bar.style.width = w+'%'; }, 120);
+    const b=document.getElementById('progress-bar');
+    b.style.width='0%'; b.style.opacity='1'; b.classList.remove('done');
+    let w=0; pTimer=setInterval(()=>{w=Math.min(w+(w<60?8:w<85?3:0.5),90);b.style.width=w+'%';},120);
   }
   function doneProgress() {
-    clearInterval(progressTimer);
-    const bar = document.getElementById('progress-bar');
-    bar.style.width = '100%';
-    setTimeout(() => bar.classList.add('done'), 300);
+    clearInterval(pTimer);
+    const b=document.getElementById('progress-bar');
+    b.style.width='100%'; setTimeout(()=>b.classList.add('done'),300);
   }
 
-  /* ══════════════════════════════════════════
-     STATE
-  ══════════════════════════════════════════ */
+  /* ══════════ STATE ══════════ */
   let ALL=[], activeCategory='médecin', activeW='Toutes', activeS='Toutes';
   let userLat=null, userLng=null, gpsOn=false;
   let localAvis = JSON.parse(localStorage.getItem('tabibdz_avis')||'{}');
 
-  const supabaseUrl = 'https://viabbtrtusufxbuhxypb.supabase.co';
-  const supabaseKey = 'sb_publishable_i2E9hvP2PfkSsrYauszvCw_GO7BhNeP';
-  const supabaseDb  = supabase.createClient(supabaseUrl, supabaseKey);
+  const supabaseUrl='https://viabbtrtusufxbuhxypb.supabase.co';
+  const supabaseKey='sb_publishable_i2E9hvP2PfkSsrYauszvCw_GO7BhNeP';
+  const supabaseDb=supabase.createClient(supabaseUrl, supabaseKey);
 
-  const FB = [
+  const FB=[
     {id:1,nom:"Dr. Benali Ahmed",specialite:"Ophtalmologue",ville:"Ain Touta",wilaya:"Batna",adresse:"Rue principale, bâtiment X",telephone:"0550123456",horaires:"08:00 - 16:00",jours:["Dim","Lun","Mar","Mer","Jeu"],disponible:true,lat:35.4167,lng:5.8833,
       avis:[{auteur:"Fatima B.",note:5,commentaire:"Très bon médecin, très à l'écoute.",date:"2025-05-10"},{auteur:"Karim M.",note:4,commentaire:"Bon docteur, attente un peu longue.",date:"2025-04-22"},{auteur:"Nadia R.",note:2,commentaire:"Cabinet mal organisé, j'ai attendu 2h.",date:"2025-03-15"}]},
     {id:2,nom:"Dr. Mansouri Djamila",specialite:"Pédiatre",ville:"Batna",wilaya:"Batna",adresse:"Cité 1200 logements",telephone:"0661987654",horaires:"09:00 - 17:00",jours:["Sam","Dim","Lun","Mar","Mer","Jeu"],disponible:true,lat:35.5555,lng:6.1667,
@@ -675,530 +789,340 @@
     {id:5,nom:"Laboratoire d'analyses médicales Mila",specialite:"Laboratoire",ville:"Mila",wilaya:"Mila",adresse:"Cité des Fleurs",telephone:"031567890",horaires:"07:30 - 16:30",jours:["Dim","Lun","Mar","Mer","Jeu"],disponible:true,lat:36.4500,lng:6.2600,avis:[]}
   ];
 
-  /* ══════════════════════════════════════════
-     AVATAR PHOTO
-  ══════════════════════════════════════════ */
-  // Gradient color classes per specialty (for fallback)
-  const avColors = ['av-1','av-2','av-3','av-4','av-5','av-6','av-7','av-8'];
-  function getAvatarColor(specialite) {
-    let hash = 0;
-    for (let c of (specialite||'')) hash = (hash*31 + c.charCodeAt(0)) & 0xffffffff;
-    return avColors[Math.abs(hash) % avColors.length];
-  }
-
-  // Generate avatar URL using ui-avatars.com
-  function getAvatarUrl(nom, specialite) {
-    const clean = nom.replace(/Dr\.?\s*/i,'').trim();
-    const initials = clean.split(/\s+/).slice(0,2).map(w=>w[0]).join('').toUpperCase();
-    // Color based on specialty
-    const colors = ['4F46E5','0EA5E9','16A34A','DC2626','D97706','7C3AED','0891B2','059669'];
-    let hash = 0;
-    for (let c of (specialite||'')) hash = (hash*31 + c.charCodeAt(0)) & 0xffffffff;
-    const bg = colors[Math.abs(hash) % colors.length];
+  /* ══════════ AVATAR ══════════ */
+  const avColors=['av-1','av-2','av-3','av-4','av-5','av-6','av-7','av-8'];
+  function hashStr(s){ let h=0; for(let c of s) h=(h*31+c.charCodeAt(0))&0xffffffff; return Math.abs(h); }
+  function getAvatarColor(spec){ return avColors[hashStr(spec||'')%avColors.length]; }
+  function getAvatarUrl(nom, spec){
+    const clean=nom.replace(/Dr\.?\s*/i,'').trim();
+    const colors=['4F46E5','0EA5E9','16A34A','DC2626','D97706','7C3AED','0891B2','059669'];
+    const bg=colors[hashStr(spec||'')%colors.length];
     return `https://ui-avatars.com/api/?name=${encodeURIComponent(clean)}&background=${bg}&color=fff&size=128&bold=true&font-size=0.38&rounded=false&format=png`;
   }
 
-  /* ══════════════════════════════════════════
-     LOAD DATA
-  ══════════════════════════════════════════ */
-  const CACHE_KEY = 'tabibdz_data', CACHE_TIME = 'tabibdz_data_ts', CACHE_TTL = 30*60*1000;
-
-  function loadFromCache() {
-    try {
-      const ts = parseInt(sessionStorage.getItem(CACHE_TIME)||'0');
-      const data = sessionStorage.getItem(CACHE_KEY);
-      if (data && Date.now()-ts < CACHE_TTL) return JSON.parse(data);
-    } catch(e) {}
+  /* ══════════ DATA LOADING ══════════ */
+  const CACHE_KEY='tabibdz_data', CACHE_TIME='tabibdz_data_ts', CACHE_TTL=30*60*1000;
+  function loadFromCache(){
+    try{
+      const ts=parseInt(sessionStorage.getItem(CACHE_TIME)||'0');
+      const d=sessionStorage.getItem(CACHE_KEY);
+      if(d && Date.now()-ts<CACHE_TTL) return JSON.parse(d);
+    }catch(e){}
     return null;
   }
-  function saveToCache(data) {
-    try { sessionStorage.setItem(CACHE_KEY, JSON.stringify(data)); sessionStorage.setItem(CACHE_TIME, Date.now().toString()); } catch(e) {}
+  function saveToCache(d){
+    try{ sessionStorage.setItem(CACHE_KEY,JSON.stringify(d)); sessionStorage.setItem(CACHE_TIME,Date.now().toString()); }catch(e){}
   }
-  function withTimeout(promise, ms) {
-    return Promise.race([promise, new Promise((_,reject)=>setTimeout(()=>reject(new Error('timeout')),ms))]);
-  }
+  function withTimeout(p,ms){ return Promise.race([p,new Promise((_,r)=>setTimeout(()=>r(new Error('timeout')),ms))]); }
 
-  async function load() {
+  async function load(){
     startProgress();
-    const cached = loadFromCache();
-    if (cached) {
-      ALL = cached; buildWChips(); buildSChips(); filter(); doneProgress();
-      showToast(t('loading_cache'));
-      refreshFromNetwork(); return;
-    }
+    const cached=loadFromCache();
+    if(cached){ ALL=cached; buildWChips(); buildSChips(); filter(); doneProgress(); showToast(t('loading_cache')); refreshFromNetwork(); return; }
     await refreshFromNetwork();
   }
-
-  async function refreshFromNetwork() {
-    try {
-      const { data, error } = await withTimeout(supabaseDb.from('medecins').select('*, avis(*)'), 6000);
-      if (error) throw error;
-      if (data && data.length > 0) { ALL = data; saveToCache(data); buildWChips(); buildSChips(); filter(); doneProgress(); return; }
-    } catch(err) { console.warn('Supabase timeout:', err.message); }
-    try {
-      const r = await fetch('medecins.json'); if (!r.ok) throw 0;
-      ALL = await r.json(); saveToCache(ALL);
-    } catch(e) { ALL = FB; }
+  async function refreshFromNetwork(){
+    try{
+      const {data,error}=await withTimeout(supabaseDb.from('medecins').select('*, avis(*)'),6000);
+      if(error) throw error;
+      if(data&&data.length>0){ ALL=data; saveToCache(data); buildWChips(); buildSChips(); filter(); doneProgress(); return; }
+    }catch(e){ console.warn('Supabase:',e.message); }
+    try{ const r=await fetch('medecins.json'); if(!r.ok) throw 0; ALL=await r.json(); saveToCache(ALL); }
+    catch(e){ ALL=FB; }
     buildWChips(); buildSChips(); filter(); doneProgress();
   }
 
-  /* ══════════════════════════════════════════
-     CATEGORY / FILTERS
-  ══════════════════════════════════════════ */
-  function getCategory(item) {
-    const spec = (item.specialite||'').toLowerCase().trim();
-    if (spec.includes('pharmacie'))  return 'pharmacie';
-    if (spec.includes('laboratoire')||spec.includes('analyse')) return 'laboratoire';
-    if (spec.includes('hôpital')||spec.includes('hopital')||spec.includes('clinique')) return 'hôpital';
+  /* ══════════ CATEGORIES ══════════ */
+  function getCategory(item){
+    const s=(item.specialite||'').toLowerCase().trim();
+    if(s.includes('pharmacie')) return 'pharmacie';
+    if(s.includes('laboratoire')||s.includes('analyse')) return 'laboratoire';
+    if(s.includes('hôpital')||s.includes('hopital')||s.includes('clinique')) return 'hôpital';
     return 'médecin';
   }
-  function setCategory(cat) {
-    activeCategory = cat; activeS = 'Toutes';
+  function setCategory(cat){
+    activeCategory=cat; activeS='Toutes';
+    // Desktop sidebar
     document.querySelectorAll('.cat-tab').forEach(b=>b.classList.toggle('active',b.dataset.cat===cat));
-    const sb = document.getElementById('sbar_container');
-    if (cat==='médecin') { sb.style.display=''; buildSChips(); } else sb.style.display='none';
+    // Mobile bottom nav
+    document.querySelectorAll('.mnav-btn').forEach(b=>b.classList.toggle('active',b.dataset.cat===cat));
+    // Spec filter visibility
+    const sb=document.getElementById('sbar_container');
+    if(cat==='médecin'){ sb.style.display=''; buildSChips(); } else sb.style.display='none';
     filter();
   }
 
-  function isOpen(d) {
-    if (!d.disponible) return false;
+  /* ══════════ OPENING HOURS ══════════ */
+  function isOpen(d){
+    if(!d.disponible) return false;
     const now=new Date(), days=['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
-    if (d.jours && !d.jours.includes(days[now.getDay()])) return false;
+    if(d.jours&&!d.jours.includes(days[now.getDay()])) return false;
     const m=d.horaires.match(/(\d{1,2}):(\d{2})\s*-\s*(\d{1,2}):(\d{2})/);
-    if (!m) return true;
+    if(!m) return true;
     const o=+m[1]*60+ +m[2], c=+m[3]*60+ +m[4], n=now.getHours()*60+now.getMinutes();
-    return n>=o && n<c;
+    return n>=o&&n<c;
   }
 
-  function dist(a,b,c,e) {
-    const R=6371,dL=(c-a)*Math.PI/180,dG=(e-b)*Math.PI/180;
-    const x=Math.sin(dL/2)**2+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(dG/2)**2;
-    return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));
-  }
-  function fmtD(k) { return k<1?`${Math.round(k*1000)} m`:`${k.toFixed(1)} km`; }
+  function dist(a,b,c,e){ const R=6371,dL=(c-a)*Math.PI/180,dG=(e-b)*Math.PI/180,x=Math.sin(dL/2)**2+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(dG/2)**2; return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x)); }
+  function fmtD(k){ return k<1?`${Math.round(k*1000)} m`:`${k.toFixed(1)} km`; }
 
-  function requestGPS() {
-    if (!navigator.geolocation) { showToast(t('toast_no_gps')); return; }
-    document.getElementById('gpsTxt').textContent = t('gps_locating');
+  function requestGPS(){
+    if(!navigator.geolocation){ showToast(t('toast_no_gps')); return; }
+    document.getElementById('gpsTxt').textContent=t('gps_locating');
     navigator.geolocation.getCurrentPosition(p=>{
       userLat=p.coords.latitude; userLng=p.coords.longitude; gpsOn=true;
-      document.getElementById('gpsTxt').textContent = t('gps_sorted');
+      document.getElementById('gpsTxt').textContent=t('gps_sorted');
       document.getElementById('gpsBtn').classList.add('active');
       showToast(t('toast_gps_ok')); filter();
-    }, ()=>{ document.getElementById('gpsTxt').textContent=t('gps_btn'); showToast(t('toast_gps_err')); }, {timeout:8000});
+    },()=>{ document.getElementById('gpsTxt').textContent=t('gps_btn'); showToast(t('toast_gps_err')); },{timeout:8000});
   }
 
-  function starsHtml(note) {
-    let h='<span style="color:var(--amber); display:inline-flex; gap:1px; font-size:13px;">';
-    for(let i=1;i<=5;i++) h+=`<span style="opacity:${i<=note?1:0.2}">★</span>`;
-    return h+'</span>';
+  function starsHtml(n){ let h='<span style="display:inline-flex;gap:1px;font-size:12px;color:var(--amber);">'; for(let i=1;i<=5;i++) h+=`<span style="opacity:${i<=n?1:0.2}">★</span>`; return h+'</span>'; }
+  function sentimentClass(n){ return n>=4?'dot-pos':n===3?'dot-mid':'dot-neg'; }
+  function sentimentLabel(n){ return n>=4?t('pos_lbl'):n===3?t('neu_lbl'):t('neg_lbl'); }
+  function sentimentColor(n){ return n>=4?'var(--green)':n===3?'var(--amber)':'var(--red)'; }
+  function scoreClass(a){ return a>=4?'score-high':a>=3?'score-mid':'score-low'; }
+  function getAllAvis(doc){ return [...(doc.avis||[]),(localAvis[doc.id]||[])].flat(); }
+  function avgScore(av){ return !av.length?null:av.reduce((s,a)=>s+a.note,0)/av.length; }
+
+  /* ══════════ CHIPS ══════════ */
+  function buildWChips(){
+    const lbl=t('all_lbl');
+    const ws=[lbl,...new Set(ALL.map(d=>d.wilaya))];
+    const z=document.getElementById('wbar'); z.innerHTML='';
+    ws.forEach((w,i)=>{
+      const b=document.createElement('button'); b.className='chip';
+      b.textContent=w;
+      if((activeW==='Toutes'&&i===0)||w===activeW) b.classList.add('on');
+      b.onclick=()=>{ activeW=(i===0)?'Toutes':w; z.querySelectorAll('.chip').forEach(c=>c.classList.toggle('on',c===b)); filter(); };
+      z.appendChild(b);
+    });
   }
-
-  function sentimentClass(note) { return note>=4?'dot-pos':note===3?'dot-mid':'dot-neg'; }
-  function sentimentLabel(note) { return note>=4?t('pos_lbl'):note===3?t('neu_lbl'):t('neg_lbl'); }
-  function sentimentColor(note) { return note>=4?'var(--green)':note===3?'var(--amber)':'var(--red)'; }
-  function scoreClass(avg) { return avg>=4?'score-high':avg>=3?'score-mid':'score-low'; }
-
-  function getAllAvis(doc) { return [...(doc.avis||[]), ...(localAvis[doc.id]||[])]; }
-  function avgScore(avis)  { return !avis.length?null:avis.reduce((s,a)=>s+a.note,0)/avis.length; }
-
-  /* ══════════════════════════════════════════
-     CHIPS
-  ══════════════════════════════════════════ */
-  function buildWChips() {
-    const allLbl = t('all_lbl');
-    const ws = [allLbl, ...new Set(ALL.map(d=>d.wilaya))];
-    const z  = document.getElementById('wbar'); z.innerHTML='';
-    ws.forEach((w,i) => {
-      const b = document.createElement('button');
-      b.className = 'chip';
-      b.textContent = w;
-      const isActive = (activeW==='Toutes' && i===0) || w===activeW;
-      if (isActive) b.classList.add('on');
-      b.onclick = () => {
-        activeW = (i===0) ? 'Toutes' : w;
-        z.querySelectorAll('.chip').forEach(c=>c.classList.toggle('on',c===b));
-        filter();
-      };
+  function buildSChips(){
+    const lbl=t('all_lbl');
+    const docs=ALL.filter(d=>getCategory(d)==='médecin');
+    const ss=[lbl,...new Set(docs.map(d=>d.specialite))];
+    const z=document.getElementById('sbar'); z.innerHTML='';
+    ss.forEach((s,i)=>{
+      const b=document.createElement('button'); b.className='schip';
+      b.textContent=s; if(i===0||s===activeS) b.classList.add('on');
+      b.onclick=()=>{ activeS=(i===0)?'Toutes':s; z.querySelectorAll('.schip').forEach(c=>c.classList.toggle('on',c===b)); filter(); };
       z.appendChild(b);
     });
   }
 
-  function buildSChips() {
-    const allLbl = t('all_lbl');
-    const docs   = ALL.filter(d=>getCategory(d)==='médecin');
-    const ss     = [allLbl, ...new Set(docs.map(d=>d.specialite))];
-    const z      = document.getElementById('sbar'); z.innerHTML='';
-    ss.forEach((s,i) => {
-      const b = document.createElement('button');
-      b.className = 'schip';
-      b.textContent = s;
-      if (i===0||s===activeS) b.classList.add('on');
-      b.onclick = () => {
-        activeS = (i===0) ? 'Toutes' : s;
-        z.querySelectorAll('.schip').forEach(c=>c.classList.toggle('on',c===b));
-        filter();
-      };
-      z.appendChild(b);
-    });
-  }
-
-  /* ══════════════════════════════════════════
-     FILTER & RENDER
-  ══════════════════════════════════════════ */
-  function filter() {
-    const q = document.getElementById('q').value.toLowerCase().trim();
-    let res  = ALL.slice().filter(d=>getCategory(d)===activeCategory);
-    if (activeW!=='Toutes')          res=res.filter(d=>d.wilaya===activeW);
-    if (activeCategory==='médecin' && activeS!=='Toutes') res=res.filter(d=>d.specialite===activeS);
-    if (q) res=res.filter(d=>[d.nom,d.specialite,d.ville,d.wilaya,d.adresse].some(f=>f.toLowerCase().includes(q)));
-    if (gpsOn && userLat!==null) {
-      res.forEach(d=>d._dist=dist(userLat,userLng,d.lat,d.lng));
-      res.sort((a,b)=>a._dist-b._dist);
-    } else {
-      res.sort((a,b)=>(isOpen(a)?0:1)-(isOpen(b)?0:1)||a.nom.localeCompare(b.nom));
-    }
+  /* ══════════ FILTER & RENDER ══════════ */
+  function filter(){
+    const q=document.getElementById('q').value.toLowerCase().trim();
+    let res=ALL.slice().filter(d=>getCategory(d)===activeCategory);
+    if(activeW!=='Toutes') res=res.filter(d=>d.wilaya===activeW);
+    if(activeCategory==='médecin'&&activeS!=='Toutes') res=res.filter(d=>d.specialite===activeS);
+    if(q) res=res.filter(d=>[d.nom,d.specialite,d.ville,d.wilaya,d.adresse].some(f=>(f||'').toLowerCase().includes(q)));
+    if(gpsOn&&userLat!==null){ res.forEach(d=>d._dist=dist(userLat,userLng,d.lat,d.lng)); res.sort((a,b)=>a._dist-b._dist); }
+    else { res.sort((a,b)=>(isOpen(a)?0:1)-(isOpen(b)?0:1)||a.nom.localeCompare(b.nom)); }
     render(res);
   }
 
-  function render(docs) {
-    ['sk1','sk2','sk3','sk4'].forEach(id=>{ const e=document.getElementById(id); if(e)e.remove(); });
+  function render(docs){
+    ['sk1','sk2','sk3','sk4'].forEach(id=>{const e=document.getElementById(id);if(e)e.remove();});
     const list=document.getElementById('list'), empty=document.getElementById('empty');
     list.innerHTML='';
-
-    if (!docs.length) {
+    if(!docs.length){
       empty.style.display='flex'; empty.style.flexDirection='column';
       empty.querySelectorAll('.i18n[data-key]').forEach(el=>{
         const k=el.dataset.key;
-        if(LANGS[currentLang][k] && typeof LANGS[currentLang][k]!=='function') el.textContent=LANGS[currentLang][k];
+        if(LANGS[currentLang][k]&&typeof LANGS[currentLang][k]!=='function') el.textContent=LANGS[currentLang][k];
       });
-      document.getElementById('statsTxt').textContent = t('no_result'); return;
+      document.getElementById('statsTxt').textContent=t('no_result'); return;
     }
     empty.style.display='none';
     const open=docs.filter(d=>isOpen(d)).length;
-    let catLabel;
-    if(activeCategory==='médecin')    catLabel=t('cat_label_med');
-    else if(activeCategory==='pharmacie')  catLabel=t('cat_label_pha');
-    else if(activeCategory==='laboratoire') catLabel=t('cat_label_lab');
-    else catLabel=t('cat_label_hop');
-    document.getElementById('statsTxt').textContent = t('stats_found', docs.length, catLabel, open, gpsOn);
+    const catLabel=activeCategory==='médecin'?t('cat_label_med'):activeCategory==='pharmacie'?t('cat_label_pha'):activeCategory==='laboratoire'?t('cat_label_lab'):t('cat_label_hop');
+    document.getElementById('statsTxt').textContent=t('stats_found',docs.length,catLabel,open,gpsOn);
     docs.forEach(d=>list.appendChild(buildCard(d)));
   }
 
-  /* ══════════════════════════════════════════
-     BUILD CARD — secure DOM
-  ══════════════════════════════════════════ */
-  function buildCard(doc) {
-    const open    = isOpen(doc);
-    const allAvis = getAllAvis(doc);
-    const avg     = avgScore(allAvis);
-    const avgDisp = avg ? avg.toFixed(1) : '–';
-    const sClass  = avg ? scoreClass(avg) : 'score-mid';
-    const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(doc.lat+','+doc.lng)}`;
-    const avatarUrl = getAvatarUrl(doc.nom, doc.specialite);
+  /* ══════════ BUILD CARD ══════════ */
+  function buildCard(doc){
+    const open=isOpen(doc), allAvis=getAllAvis(doc), avg=avgScore(allAvis);
+    const mapsUrl=`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(doc.lat+','+doc.lng)}`;
 
-    const wrap = document.createElement('div');
-    wrap.className = 'doc-card';
+    const wrap=document.createElement('div'); wrap.className='doc-card';
 
-    /* ── Card Header ── */
-    const header = document.createElement('div');
-    header.style.cssText = 'padding:16px 16px 12px; display:flex; gap:14px; align-items:flex-start;';
+    /* Header: photo + info */
+    const hdr=document.createElement('div');
+    hdr.style.cssText='padding:14px 14px 10px; display:flex; gap:12px; align-items:flex-start;';
 
-    // Photo
-    const photo = document.createElement('img');
-    photo.src   = avatarUrl;
-    photo.alt   = doc.nom;
-    photo.className = 'doc-photo';
-    photo.loading = 'lazy';
-    photo.onerror = function() {
-      // Fallback to initials div if image fails
-      const fallback = document.createElement('div');
-      const cl = getAvatarColor(doc.specialite);
-      fallback.className = `doc-photo ${cl}`;
-      fallback.style.cssText = 'display:flex; align-items:center; justify-content:center; font-weight:900; font-size:20px; color:#fff; letter-spacing:-1px;';
-      const clean = doc.nom.replace(/Dr\.?\s*/i,'').trim().split(/\s+/);
-      fallback.textContent = (clean[0][0]+(clean[1]?clean[1][0]:'')).toUpperCase();
-      this.parentNode.replaceChild(fallback, this);
+    /* Photo */
+    const photo=document.createElement('img');
+    photo.src=getAvatarUrl(doc.nom,doc.specialite); photo.alt=doc.nom;
+    photo.className='doc-photo'; photo.loading='lazy';
+    photo.onerror=function(){
+      const fb=document.createElement('div');
+      fb.className=`doc-photo ${getAvatarColor(doc.specialite)}`;
+      fb.style.cssText='display:flex;align-items:center;justify-content:center;font-weight:900;font-size:18px;color:#fff;';
+      const p=doc.nom.replace(/Dr\.?\s*/i,'').trim().split(/\s+/);
+      fb.textContent=(p[0][0]+(p[1]?p[1][0]:'')).toUpperCase();
+      this.parentNode.replaceChild(fb,this);
     };
-    header.appendChild(photo);
+    hdr.appendChild(photo);
 
-    // Info
-    const info = document.createElement('div');
-    info.style.cssText = 'flex:1; min-width:0;';
+    /* Info block */
+    const info=document.createElement('div'); info.style.cssText='flex:1;min-width:0;';
 
-    // Name + status
-    const nameRow = document.createElement('div');
-    nameRow.style.cssText = 'display:flex; align-items:flex-start; justify-content:space-between; gap:8px; flex-wrap:wrap; margin-bottom:4px;';
+    /* Name + status */
+    const nr=document.createElement('div');
+    nr.style.cssText='display:flex;align-items:flex-start;justify-content:space-between;gap:6px;flex-wrap:wrap;margin-bottom:4px;';
+    const ne=document.createElement('div');
+    ne.style.cssText='font-size:14px;font-weight:800;color:var(--text-primary);line-height:1.3;';
+    ne.textContent=doc.nom; nr.appendChild(ne);
+    const sb=document.createElement('span');
+    sb.style.cssText='display:inline-flex;align-items:center;gap:3px;padding:3px 7px;border-radius:var(--r2);font-size:10px;font-weight:700;flex-shrink:0;';
+    sb.className=open?'badge-open':'badge-closed';
+    const dot=document.createElement('span');
+    dot.style.cssText=`width:5px;height:5px;border-radius:50%;background:${open?'var(--green)':'var(--text-muted)'};${open?'animation:pulse 2s infinite':''}`;
+    sb.appendChild(dot); sb.appendChild(document.createTextNode(open?t('open_lbl'):t('closed_lbl')));
+    nr.appendChild(sb); info.appendChild(nr);
 
-    const nameEl = document.createElement('div');
-    nameEl.style.cssText = 'font-size:15px; font-weight:800; color:var(--text-primary); line-height:1.3;';
-    nameEl.textContent = doc.nom;
-    nameRow.appendChild(nameEl);
+    /* Spec */
+    const spec=document.createElement('span'); spec.className='spec-badge';
+    spec.textContent=doc.specialite; info.appendChild(spec);
 
-    const statusBadge = document.createElement('span');
-    statusBadge.style.cssText = `display:inline-flex; align-items:center; gap:4px; padding:3px 8px; border-radius:var(--r2); font-size:10px; font-weight:700;`;
-    statusBadge.className = open ? 'badge-open' : 'badge-closed';
-    const dot = document.createElement('span');
-    dot.style.cssText = `width:5px; height:5px; border-radius:50%; background:${open?'var(--green)':'var(--text-muted)'};`;
-    if (open) dot.style.animation = 'pulse 2s infinite';
-    statusBadge.appendChild(dot);
-    statusBadge.appendChild(document.createTextNode(open ? t('open_lbl') : t('closed_lbl')));
-    nameRow.appendChild(statusBadge);
-    info.appendChild(nameRow);
-
-    // Specialty badge
-    const specBadge = document.createElement('span');
-    specBadge.className = 'spec-badge';
-    specBadge.style.marginBottom = '6px; display:inline-block;';
-    specBadge.textContent = doc.specialite;
-    info.appendChild(specBadge);
-
-    // Distance
-    if (gpsOn && doc._dist != null) {
-      const distEl = document.createElement('div');
-      distEl.style.cssText = 'margin-top:4px; display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:700; color:var(--green); background:rgba(22,163,74,0.08); border:1px solid rgba(22,163,74,0.2); border-radius:var(--r2); padding:2px 7px;';
-      distEl.innerHTML = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>`;
-      distEl.appendChild(document.createTextNode(fmtD(doc._dist)));
-      info.appendChild(distEl);
+    /* Distance */
+    if(gpsOn&&doc._dist!=null){
+      const de=document.createElement('div');
+      de.style.cssText='margin-top:4px;display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:700;color:var(--green);background:rgba(22,163,74,0.08);border:1px solid rgba(22,163,74,0.2);border-radius:var(--r2);padding:2px 6px;';
+      de.innerHTML=`<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>`;
+      de.appendChild(document.createTextNode(fmtD(doc._dist))); info.appendChild(de);
     }
 
-    // Rating inline
-    if (avg) {
-      const ratRow = document.createElement('div');
-      ratRow.style.cssText = 'display:flex; align-items:center; gap:8px; margin-top:8px; padding:8px 10px; background:var(--surface2); border:1px solid var(--border-light); border-radius:var(--r2);';
-      const ring = document.createElement('div');
-      ring.className = `score-ring ${sClass}`;
-      ring.textContent = avgDisp;
-      ratRow.appendChild(ring);
-      const ratInfo = document.createElement('div');
-      const starsD = document.createElement('div');
-      starsD.innerHTML = starsHtml(Math.round(avg));
-      ratInfo.appendChild(starsD);
-      const ratMeta = document.createElement('div');
-      ratMeta.style.cssText = 'font-size:10px; font-weight:600; color:var(--text-muted); margin-top:2px;';
-      const pos = allAvis.filter(a=>a.note>=4).length, neg = allAvis.filter(a=>a.note<=2).length;
-      ratMeta.textContent = `${allAvis.length} avis · ${pos} pos · ${neg} neg`;
-      ratInfo.appendChild(ratMeta);
-      ratRow.appendChild(ratInfo);
-      info.appendChild(ratRow);
+    /* Rating inline */
+    if(avg){
+      const rr=document.createElement('div');
+      rr.style.cssText='display:flex;align-items:center;gap:8px;margin-top:8px;padding:7px 9px;background:var(--surface2);border:1px solid var(--border-light);border-radius:var(--r2);';
+      const ring=document.createElement('div'); ring.className=`score-ring ${scoreClass(avg)}`; ring.textContent=avg.toFixed(1);
+      rr.appendChild(ring);
+      const ri=document.createElement('div');
+      ri.innerHTML=starsHtml(Math.round(avg));
+      const rm=document.createElement('div');
+      rm.style.cssText='font-size:10px;font-weight:600;color:var(--text-muted);margin-top:2px;';
+      const pos=allAvis.filter(a=>a.note>=4).length, neg=allAvis.filter(a=>a.note<=2).length;
+      rm.textContent=`${allAvis.length} avis · ${pos} pos · ${neg} neg`;
+      ri.appendChild(rm); rr.appendChild(ri); info.appendChild(rr);
     }
 
-    header.appendChild(info);
-    wrap.appendChild(header);
+    hdr.appendChild(info); wrap.appendChild(hdr);
 
-    /* ── Details section ── */
-    const details = document.createElement('div');
-    details.style.cssText = 'padding:10px 16px 12px; display:flex; flex-direction:column; gap:6px; border-top:1px solid var(--border-light);';
+    /* Details */
+    const det=document.createElement('div');
+    det.style.cssText='padding:10px 14px;border-top:1px solid var(--border-light);display:flex;flex-direction:column;gap:5px;';
 
-    function detailRow(iconSvg, content) {
-      const row = document.createElement('div');
-      row.style.cssText = 'display:flex; align-items:flex-start; gap:8px; font-size:12px; color:var(--text-secondary);';
-      row.innerHTML = `<span style="flex-shrink:0; margin-top:1px; color:var(--accent2);">${iconSvg}</span>`;
-      row.appendChild(content);
-      return row;
+    function drow(svg, el){
+      const row=document.createElement('div');
+      row.style.cssText='display:flex;align-items:flex-start;gap:7px;font-size:12px;color:var(--text-secondary);';
+      row.innerHTML=`<span style="flex-shrink:0;margin-top:1px;color:var(--accent2);">${svg}</span>`;
+      row.appendChild(el); return row;
     }
+    const iconMap=`<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>`;
+    const iconClock=`<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`;
+    const iconPhone=`<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.07 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3 1.22h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 9a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 16z"/></svg>`;
 
-    // Address
-    const addrContent = document.createElement('span');
-    const addrStrong = document.createElement('strong');
-    addrStrong.style.color = 'var(--text-primary)';
-    addrStrong.textContent = doc.ville;
-    const addrWilaya = document.createElement('span');
-    addrWilaya.style.cssText = 'color:var(--accent2); font-weight:700;';
-    addrWilaya.textContent = doc.wilaya;
-    addrContent.appendChild(document.createTextNode(doc.adresse + ', '));
-    addrContent.appendChild(addrStrong);
-    addrContent.appendChild(document.createTextNode(' — '));
-    addrContent.appendChild(addrWilaya);
-    details.appendChild(detailRow(
-      `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>`,
-      addrContent
-    ));
+    const ac=document.createElement('span');
+    const as=document.createElement('strong'); as.style.color='var(--text-primary)'; as.textContent=doc.ville;
+    const aw=document.createElement('span'); aw.style.cssText='color:var(--accent2);font-weight:700;'; aw.textContent=doc.wilaya;
+    ac.appendChild(document.createTextNode(doc.adresse+', ')); ac.appendChild(as); ac.appendChild(document.createTextNode(' — ')); ac.appendChild(aw);
+    det.appendChild(drow(iconMap,ac));
 
-    // Hours
-    const hoursContent = document.createElement('span');
-    hoursContent.textContent = `${doc.horaires} · `;
-    const joursEl = document.createElement('strong');
-    joursEl.style.color = 'var(--text-primary)';
-    joursEl.textContent = (doc.jours||[]).join(' · ');
-    hoursContent.appendChild(joursEl);
-    details.appendChild(detailRow(
-      `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`,
-      hoursContent
-    ));
+    const hc=document.createElement('span'); hc.textContent=`${doc.horaires} · `;
+    const hs=document.createElement('strong'); hs.style.color='var(--text-primary)'; hs.textContent=(doc.jours||[]).join(' · '); hc.appendChild(hs);
+    det.appendChild(drow(iconClock,hc));
 
-    // Phone
-    const phoneContent = document.createElement('span');
-    phoneContent.style.cssText = 'font-weight:700; color:var(--accent);';
-    phoneContent.textContent = doc.telephone;
-    details.appendChild(detailRow(
-      `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.07 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3 1.22h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 9a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 16z"/></svg>`,
-      phoneContent
-    ));
+    const pc=document.createElement('span'); pc.style.cssText='font-weight:700;color:var(--accent);'; pc.textContent=doc.telephone;
+    det.appendChild(drow(iconPhone,pc));
+    wrap.appendChild(det);
 
-    wrap.appendChild(details);
-
-    /* ── Reviews ── */
-    const revSection = document.createElement('div');
-    revSection.style.borderTop = '1px solid var(--border-light)';
-
-    if (allAvis.length > 0) {
-      const revHeader = document.createElement('div');
-      revHeader.style.cssText = 'padding:10px 16px 0; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--text-muted);';
-      revHeader.textContent = t('reviews_title', allAvis.length);
-      revSection.appendChild(revHeader);
-
-      const avisRow = document.createElement('div');
-      avisRow.className = 'avis-row';
-
-      allAvis.forEach(a => {
-        const card = document.createElement('div');
-        card.className = 'avis-card';
-        const sentRow = document.createElement('div');
-        sentRow.style.cssText = 'display:flex; align-items:center; gap:6px; margin-bottom:6px;';
-        const dotEl = document.createElement('div'); dotEl.className = sentimentClass(a.note);
-        const sentLbl = document.createElement('span');
-        sentLbl.style.cssText = `font-size:10px; font-weight:700; color:${sentimentColor(a.note)};`;
-        sentLbl.textContent = sentimentLabel(a.note);
-        const dateEl = document.createElement('span');
-        dateEl.style.cssText = 'margin-left:auto; font-size:10px; font-weight:600; color:var(--text-muted);';
-        dateEl.textContent = a.date.slice(0,7);
-        sentRow.appendChild(dotEl); sentRow.appendChild(sentLbl); sentRow.appendChild(dateEl);
-        card.appendChild(sentRow);
-        const starsEl = document.createElement('div');
-        starsEl.innerHTML = starsHtml(a.note);
-        card.appendChild(starsEl);
-        const comment = document.createElement('p');
-        comment.style.cssText = 'font-size:11px; color:var(--text-secondary); margin-top:6px; line-height:1.5;';
-        comment.textContent = a.commentaire;
-        card.appendChild(comment);
-        const author = document.createElement('p');
-        author.style.cssText = 'font-size:10px; font-weight:700; color:var(--text-muted); margin-top:6px;';
-        author.textContent = '— '+a.auteur;
-        card.appendChild(author);
-        avisRow.appendChild(card);
+    /* Reviews */
+    const revSec=document.createElement('div'); revSec.style.borderTop='1px solid var(--border-light)';
+    if(allAvis.length>0){
+      const rh=document.createElement('div');
+      rh.style.cssText='padding:9px 14px 0;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);';
+      rh.textContent=t('reviews_title',allAvis.length); revSec.appendChild(rh);
+      const ar=document.createElement('div'); ar.className='avis-row';
+      allAvis.forEach(a=>{
+        const c=document.createElement('div'); c.className='avis-card';
+        const sr=document.createElement('div'); sr.style.cssText='display:flex;align-items:center;gap:5px;margin-bottom:5px;';
+        const de=document.createElement('div'); de.className=sentimentClass(a.note);
+        const sl=document.createElement('span'); sl.style.cssText=`font-size:10px;font-weight:700;color:${sentimentColor(a.note)};`; sl.textContent=sentimentLabel(a.note);
+        const sd=document.createElement('span'); sd.style.cssText='margin-left:auto;font-size:10px;font-weight:600;color:var(--text-muted);'; sd.textContent=a.date.slice(0,7);
+        sr.appendChild(de); sr.appendChild(sl); sr.appendChild(sd); c.appendChild(sr);
+        const ss=document.createElement('div'); ss.innerHTML=starsHtml(a.note); c.appendChild(ss);
+        const sc=document.createElement('p'); sc.style.cssText='font-size:11px;color:var(--text-secondary);margin-top:5px;line-height:1.5;'; sc.textContent=a.commentaire; c.appendChild(sc);
+        const sa=document.createElement('p'); sa.style.cssText='font-size:10px;font-weight:700;color:var(--text-muted);margin-top:5px;'; sa.textContent='— '+a.auteur; c.appendChild(sa);
+        ar.appendChild(c);
       });
-      revSection.appendChild(avisRow);
+      revSec.appendChild(ar);
     } else {
-      const noRev = document.createElement('div');
-      noRev.style.cssText = 'padding:10px 16px; font-size:11px; font-style:italic; color:var(--text-muted);';
-      noRev.textContent = t('no_reviews');
-      revSection.appendChild(noRev);
+      const nr2=document.createElement('div'); nr2.style.cssText='padding:9px 14px;font-size:11px;font-style:italic;color:var(--text-muted);'; nr2.textContent=t('no_reviews'); revSec.appendChild(nr2);
     }
-    wrap.appendChild(revSection);
+    wrap.appendChild(revSec);
 
-    /* ── Review form ── */
-    const formWrap = document.createElement('div');
-    formWrap.style.cssText = 'padding:10px 16px 14px; border-top:1px solid var(--border-light);';
+    /* Review form */
+    const fw=document.createElement('div');
+    fw.style.cssText='padding:9px 14px;border-top:1px solid var(--border-light);';
+    const lb=document.createElement('button'); lb.className='btn-review'; lb.textContent=t('leave_review'); lb.onclick=()=>toggleForm(doc.id); fw.appendChild(lb);
 
-    const leaveBtn = document.createElement('button');
-    leaveBtn.className = 'btn-review';
-    leaveBtn.textContent = t('leave_review');
-    leaveBtn.onclick = () => toggleForm(doc.id);
-    formWrap.appendChild(leaveBtn);
+    const fd=document.createElement('div'); fd.id=`form-${doc.id}`;
+    fd.style.cssText='display:none;flex-direction:column;gap:7px;margin-top:9px;padding:11px;background:var(--surface2);border:1px solid var(--border-light);border-radius:var(--r);';
+    const ft=document.createElement('div'); ft.style.cssText='font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--text-primary);'; ft.textContent=t('give_review'); fd.appendChild(ft);
+    const ni=document.createElement('input'); ni.type='text'; ni.id=`name-${doc.id}`; ni.placeholder=t('name_ph'); ni.maxLength=60; ni.className='form-input'; ni.style.cssText='width:100%;padding:7px 11px;font-size:12px;'; fd.appendChild(ni);
+    const sr2=document.createElement('div'); sr2.style.cssText='display:flex;align-items:center;gap:8px;';
+    const sl2=document.createElement('span'); sl2.style.cssText='font-size:11px;font-weight:600;color:var(--text-secondary);'; sl2.textContent=t('rating_lbl');
+    const sp=document.createElement('div'); sp.className='star-pick'; sp.style.cssText='display:flex;gap:2px;'; sp.id=`stars-${doc.id}`; sp.dataset.val='0';
+    for(let i=1;i<=5;i++){ const s=document.createElement('span'); s.textContent='★'; s.onclick=()=>setStar(doc.id,i); sp.appendChild(s); }
+    sr2.appendChild(sl2); sr2.appendChild(sp); fd.appendChild(sr2);
+    const ta=document.createElement('textarea'); ta.id=`txt-${doc.id}`; ta.rows=3; ta.placeholder=t('comment_ph'); ta.maxLength=500; ta.className='form-input'; ta.style.cssText='width:100%;padding:7px 11px;font-size:12px;resize:none;'; fd.appendChild(ta);
+    const br=document.createElement('div'); br.style.cssText='display:flex;gap:7px;';
+    const pb=document.createElement('button'); pb.className='btn-publish'; pb.textContent=t('publish_btn'); pb.onclick=()=>submitAvis(doc.id);
+    const cb=document.createElement('button'); cb.className='btn-cancel'; cb.textContent=t('cancel_btn'); cb.onclick=()=>toggleForm(doc.id);
+    br.appendChild(pb); br.appendChild(cb); fd.appendChild(br); fw.appendChild(fd); wrap.appendChild(fw);
 
-    const formDiv = document.createElement('div');
-    formDiv.id = `form-${doc.id}`;
-    formDiv.style.cssText = 'display:none; flex-direction:column; gap:8px; margin-top:10px; padding:12px; background:var(--surface2); border:1px solid var(--border-light); border-radius:var(--r);';
-
-    const formTitle = document.createElement('div');
-    formTitle.style.cssText = 'font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.08em; color:var(--text-primary); margin-bottom:4px;';
-    formTitle.textContent = t('give_review');
-    formDiv.appendChild(formTitle);
-
-    const nameInput = document.createElement('input');
-    nameInput.type='text'; nameInput.id=`name-${doc.id}`;
-    nameInput.placeholder=t('name_ph'); nameInput.maxLength=60;
-    nameInput.className='form-input'; nameInput.style.cssText='width:100%; padding:8px 12px; font-size:12px;';
-    formDiv.appendChild(nameInput);
-
-    const starRow = document.createElement('div');
-    starRow.style.cssText = 'display:flex; align-items:center; gap:10px;';
-    const starLabel = document.createElement('span');
-    starLabel.style.cssText = 'font-size:11px; font-weight:600; color:var(--text-secondary);';
-    starLabel.textContent = t('rating_lbl');
-    const starPick = document.createElement('div');
-    starPick.className='star-pick'; starPick.style.cssText='display:flex; gap:2px;';
-    starPick.id=`stars-${doc.id}`; starPick.dataset.val='0';
-    for(let i=1;i<=5;i++) {
-      const s=document.createElement('span'); s.textContent='★'; s.onclick=()=>setStar(doc.id,i);
-      starPick.appendChild(s);
-    }
-    starRow.appendChild(starLabel); starRow.appendChild(starPick);
-    formDiv.appendChild(starRow);
-
-    const textarea = document.createElement('textarea');
-    textarea.id=`txt-${doc.id}`; textarea.rows=3;
-    textarea.placeholder=t('comment_ph'); textarea.maxLength=500;
-    textarea.className='form-input'; textarea.style.cssText='width:100%; padding:8px 12px; font-size:12px; resize:none;';
-    formDiv.appendChild(textarea);
-
-    const btnRow = document.createElement('div');
-    btnRow.style.cssText='display:flex; gap:8px;';
-    const pub=document.createElement('button'); pub.className='btn-publish'; pub.style.flex='1';
-    pub.textContent=t('publish_btn'); pub.onclick=()=>submitAvis(doc.id);
-    const can=document.createElement('button'); can.className='btn-cancel'; can.style.flex='1';
-    can.textContent=t('cancel_btn'); can.onclick=()=>toggleForm(doc.id);
-    btnRow.appendChild(pub); btnRow.appendChild(can);
-    formDiv.appendChild(btnRow);
-
-    formWrap.appendChild(formDiv);
-    wrap.appendChild(formWrap);
-
-    /* ── Action buttons ── */
-    const actRow = document.createElement('div');
-    actRow.style.cssText = 'padding:0 16px 14px; display:flex; gap:8px;';
-
-    const callA = document.createElement('a');
-    callA.href=`tel:${doc.telephone}`; callA.className='btn-call';
-    callA.style.cssText='flex:1; display:flex; align-items:center; justify-content:center; gap:6px; text-decoration:none;';
-    callA.innerHTML=`<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.07 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3 1.22h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 9a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 16z"/></svg>`;
-    callA.appendChild(document.createTextNode(t('call_btn')));
-    actRow.appendChild(callA);
-
-    const mapA = document.createElement('a');
-    mapA.href=mapsUrl; mapA.target='_blank'; mapA.rel='noopener noreferrer';
-    mapA.className='btn-map';
-    mapA.style.cssText='flex:1; display:flex; align-items:center; justify-content:center; gap:6px; text-decoration:none;';
-    mapA.innerHTML=`<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>`;
-    mapA.appendChild(document.createTextNode(t('directions_btn')));
-    actRow.appendChild(mapA);
-
-    wrap.appendChild(actRow);
+    /* Action buttons */
+    const ab=document.createElement('div'); ab.style.cssText='padding:0 14px 12px;display:flex;gap:8px;';
+    const ca=document.createElement('a'); ca.href=`tel:${doc.telephone}`; ca.className='btn-call';
+    ca.innerHTML=`<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.07 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3 1.22h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 9a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 16z"/></svg>`;
+    ca.appendChild(document.createTextNode(t('call_btn'))); ab.appendChild(ca);
+    const ma=document.createElement('a'); ma.href=mapsUrl; ma.target='_blank'; ma.rel='noopener noreferrer'; ma.className='btn-map';
+    ma.innerHTML=`<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>`;
+    ma.appendChild(document.createTextNode(t('directions_btn'))); ab.appendChild(ma);
+    wrap.appendChild(ab);
     return wrap;
   }
 
-  /* ══════════════════════════════════════════
-     HELPERS
-  ══════════════════════════════════════════ */
-  function toggleForm(id) {
-    const f = document.getElementById(`form-${id}`);
-    f.style.display = f.style.display==='none'||f.style.display==='' ? 'flex' : 'none';
-    if (f.style.display==='flex') f.style.flexDirection='column';
+  /* ══════════ HELPERS ══════════ */
+  function toggleForm(id){
+    const f=document.getElementById(`form-${id}`);
+    if(f.style.display==='none'||f.style.display===''){f.style.display='flex';f.style.flexDirection='column';}
+    else f.style.display='none';
   }
-
-  function setStar(id, val) {
+  function setStar(id,val){
     const z=document.getElementById(`stars-${id}`); z.dataset.val=val;
     z.querySelectorAll('span').forEach((s,i)=>s.classList.toggle('sel',i<val));
   }
-
-  async function submitAvis(id) {
-    if (!canReview(id)) { showToast(t('toast_rate_limit')); return; }
-    const rawName = document.getElementById(`name-${id}`).value.trim();
-    const note    = parseInt(document.getElementById(`stars-${id}`).dataset.val||'0');
-    const rawTxt  = document.getElementById(`txt-${id}`).value.trim();
-    if (!rawName)           { showToast(t('toast_name_req'));  return; }
-    if (!note)              { showToast(t('toast_star_req'));  return; }
-    if (rawTxt.length < 10) { showToast(t('toast_short_cmt')); return; }
-    const name = sanitizeName(rawName), txt = sanitizeComment(rawTxt);
-    const today = new Date().toISOString().slice(0,10);
-    const newAvis = { medecin_id:id, auteur:name, note, commentaire:txt, date:today };
-    try {
-      const { error } = await supabaseDb.from('avis').insert([newAvis]);
-      if (error) throw error; recordReview(id); showToast(t('toast_review_ok'));
-    } catch(err) {
-      if (!localAvis[id]) localAvis[id]=[];
-      localAvis[id].push({auteur:name,note,commentaire:txt,date:today});
+  async function submitAvis(id){
+    if(!canReview(id)){showToast(t('toast_rate_limit'));return;}
+    const n=document.getElementById(`name-${id}`).value.trim();
+    const note=parseInt(document.getElementById(`stars-${id}`).dataset.val||'0');
+    const txt=document.getElementById(`txt-${id}`).value.trim();
+    if(!n){showToast(t('toast_name_req'));return;}
+    if(!note){showToast(t('toast_star_req'));return;}
+    if(txt.length<10){showToast(t('toast_short_cmt'));return;}
+    const name=sanitizeName(n), cmnt=sanitizeComment(txt), today=new Date().toISOString().slice(0,10);
+    try{
+      const{error}=await supabaseDb.from('avis').insert([{medecin_id:id,auteur:name,note,commentaire:cmnt,date:today}]);
+      if(error) throw error; recordReview(id); showToast(t('toast_review_ok'));
+    }catch(e){
+      if(!localAvis[id])localAvis[id]=[];
+      localAvis[id].push({auteur:name,note,commentaire:cmnt,date:today});
       localStorage.setItem('tabibdz_avis',JSON.stringify(localAvis));
       recordReview(id); showToast(t('toast_review_local'));
     }
@@ -1206,12 +1130,9 @@
     document.getElementById(`stars-${id}`).dataset.val='0';
     document.getElementById(`stars-${id}`).querySelectorAll('span').forEach(s=>s.classList.remove('sel'));
     document.getElementById(`txt-${id}`).value='';
-    toggleForm(id);
-    sessionStorage.removeItem(CACHE_KEY);
-    await load();
+    toggleForm(id); sessionStorage.removeItem(CACHE_KEY); await load();
   }
-
-  function resetAll() {
+  function resetAll(){
     document.getElementById('q').value=''; document.getElementById('clr').style.display='none';
     activeW='Toutes'; activeS='Toutes'; gpsOn=false; userLat=userLng=null;
     document.getElementById('gpsTxt').textContent=t('gps_btn');
@@ -1220,17 +1141,16 @@
     document.querySelectorAll('.schip').forEach((c,i)=>c.classList.toggle('on',i===0));
     filter();
   }
-
-  function showToast(msg) {
+  function showToast(msg){
     const el=document.getElementById('toast'); el.textContent=msg;
     el.classList.add('show'); setTimeout(()=>el.classList.remove('show'),3000);
   }
 
-  const qEl=document.getElementById('q'), clrEl=document.getElementById('clr');
-  qEl.addEventListener('input',()=>{ clrEl.style.display=qEl.value?'flex':'none'; filter(); });
-  clrEl.addEventListener('click',()=>{ qEl.value=''; clrEl.style.display='none'; filter(); qEl.focus(); });
+  const qEl=document.getElementById('q'),clrEl=document.getElementById('clr');
+  qEl.addEventListener('input',()=>{clrEl.style.display=qEl.value?'flex':'none';filter();});
+  clrEl.addEventListener('click',()=>{qEl.value='';clrEl.style.display='none';filter();qEl.focus();});
 
-  /* ── Init ── */
+  /* ══════════ INIT ══════════ */
   applyLang();
   load();
   </script>
