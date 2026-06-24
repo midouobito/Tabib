@@ -1479,9 +1479,8 @@
     claimBase64Photo = doc.photo_url || null;
     
     // Reset steps
-    document.getElementById('claimVerifyStep').style.display = 'flex';
+    document.getElementById('claimVerifyStartStep').style.display = 'flex';
     document.getElementById('claimEditFormStep').style.display = 'none';
-    document.getElementById('claimOrderNum').value = '';
     
     // Set dynamic info on doctor card in verification panel
     document.getElementById('verifyDocName').textContent = doc.nom;
