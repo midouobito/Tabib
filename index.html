@@ -275,8 +275,8 @@
         <button onclick="closeClaimModal()" class="modal-close-btn">✕</button>
       </div>
       
-      <!-- STEP 1: VERIFICATION STEP -->
-      <div id="claimVerifyStep" class="modal-body" style="display:flex;flex-direction:column;gap:14px;max-height:calc(100dvh - 140px);overflow-y:auto;">
+      <!-- STEP 1: VERIFICATION INITIATION STEP -->
+      <div id="claimVerifyStartStep" class="modal-body" style="display:flex;flex-direction:column;gap:14px;max-height:calc(100dvh - 140px);overflow-y:auto;">
         <h4 style="font-size:13px;font-weight:800;color:var(--text-primary);margin:0;text-align:center;" class="i18n" data-key="verify_required">Vérification Professionnelle Requise</h4>
         
         <!-- Doctor Quick Info Card (Glassmorphism inside modal) -->
@@ -289,14 +289,33 @@
           </div>
         </div>
 
-        <!-- Input Field -->
-        <div>
-          <label class="form-label i18n" data-key="order_num_label">Numéro d'Ordre National des Médecins</label>
-          <input type="text" id="claimOrderNum" placeholder="ex: 12345" class="form-input" style="width:100%;padding:10px 14px;font-size:13px;text-align:center;letter-spacing:1px;" />
+        <!-- Privacy warning with masked number -->
+        <p style="font-size:12px;color:var(--text-secondary);line-height:1.6;text-align:center;margin:10px 0 5px;" id="otpWarningMsg">
+          Pour des raisons de sécurité, un code de validation va être envoyé au numéro officiel du cabinet : <strong id="maskedPhone" style="color:var(--accent2);letter-spacing:1px;">...</strong>
+        </p>
+
+        <button onclick="requestOtpCode()" class="btn-publish" style="padding:10px 0;font-size:13px;width:100%;font-weight:700;margin-top:5px;">
+          <span class="i18n" data-key="receive_code_btn">Recevoir le code</span>
+        </button>
+      </div>
+
+      <!-- STEP 2: OTP CODE ENTRY STEP -->
+      <div id="claimVerifyOtpStep" class="modal-body" style="display:none;flex-direction:column;gap:14px;max-height:calc(100dvh - 140px);overflow-y:auto;">
+        <h4 style="font-size:13px;font-weight:800;color:var(--text-primary);margin:0;text-align:center;" class="i18n" data-key="enter_code_title">Saisir le code de validation</h4>
+        <p style="font-size:11px;color:var(--text-secondary);text-align:center;margin:0;" class="i18n" data-key="enter_code_desc">Saisissez les 6 chiffres reçus par WhatsApp ou SMS :</p>
+        
+        <!-- 6-digit OTP code grid inputs -->
+        <div style="display:flex;justify-content:center;gap:8px;margin:10px 0;" id="otpInputGrid">
+          <input type="text" maxlength="1" class="form-input otp-box" oninput="otpNext(this, 1)" onkeydown="otpBack(event, 1)" style="width:40px;height:45px;text-align:center;font-size:20px;font-weight:800;color:var(--accent2);" />
+          <input type="text" maxlength="1" class="form-input otp-box" oninput="otpNext(this, 2)" onkeydown="otpBack(event, 2)" style="width:40px;height:45px;text-align:center;font-size:20px;font-weight:800;color:var(--accent2);" />
+          <input type="text" maxlength="1" class="form-input otp-box" oninput="otpNext(this, 3)" onkeydown="otpBack(event, 3)" style="width:40px;height:45px;text-align:center;font-size:20px;font-weight:800;color:var(--accent2);" />
+          <input type="text" maxlength="1" class="form-input otp-box" oninput="otpNext(this, 4)" onkeydown="otpBack(event, 4)" style="width:40px;height:45px;text-align:center;font-size:20px;font-weight:800;color:var(--accent2);" />
+          <input type="text" maxlength="1" class="form-input otp-box" oninput="otpNext(this, 5)" onkeydown="otpBack(event, 5)" style="width:40px;height:45px;text-align:center;font-size:20px;font-weight:800;color:var(--accent2);" />
+          <input type="text" maxlength="1" class="form-input otp-box" oninput="otpNext(this, 6)" onkeydown="otpBack(event, 6)" style="width:40px;height:45px;text-align:center;font-size:20px;font-weight:800;color:var(--accent2);" />
         </div>
 
         <!-- Gravitational Anomaly Field and Mercury Sphere -->
-        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:15px 0;position:relative;height:140px;background:radial-gradient(circle, rgba(99,102,241,0.05) 0%, transparent 70%);border-radius:var(--r);overflow:hidden;">
+        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 0;position:relative;height:120px;background:radial-gradient(circle, rgba(99,102,241,0.05) 0%, transparent 70%);border-radius:var(--r);overflow:hidden;">
           <div class="gravity-well-core"></div>
           <div class="grav-ring ring-1"></div>
           <div class="grav-ring ring-2"></div>
@@ -304,12 +323,12 @@
           <div class="mercury-sphere" id="mercurySphere" onclick="simulateMercuryPulse()">
             <div class="mercury-shimmer"></div>
           </div>
-          <div style="font-size:9px;color:var(--text-muted);font-weight:700;margin-top:auto;letter-spacing:0.05em;text-transform:uppercase;z-index:2;" class="i18n" data-key="field_generator">Générateur de champ gravitationnel actif</div>
         </div>
 
-        <button onclick="verifyDoctorCredentials()" class="btn-publish" style="padding:10px 0;font-size:13px;width:100%;display:flex;align-items:center;justify-content:center;gap:6px;">
-          <span class="i18n" data-key="verify_claim_btn">Vérifier et Réclamer</span>
-        </button>
+        <div style="display:flex;gap:8px;">
+          <button onclick="backToOtpStart()" class="btn-cancel" style="padding:10px 0;font-size:12px;flex:1;">Retour</button>
+          <button onclick="verifyOtpCode()" class="btn-publish" style="padding:10px 0;font-size:13px;flex:2;font-weight:700;">Vérifier le code</button>
+        </div>
       </div>
 
       <!-- STEP 2: PROFILE UPDATE STEP (Initially Hidden) -->
@@ -1495,23 +1514,85 @@
     setTimeout(() => s.classList.remove('pulse'), 800);
   }
 
-  function verifyDoctorCredentials() {
-    const num = document.getElementById('claimOrderNum').value.trim();
-    if (!num) {
-      showToast(currentLang === 'ar' ? '⚠️ يرجى إدخال رقم القيد' : "⚠️ Entrez votre numéro d'ordre");
+  let generatedOtpCode = null;
+  let otpExpiresAt = null;
+
+  function maskPhoneNumber(phone) {
+    if (!phone) return '•••';
+    const clean = phone.replace(/[^\d]/g, '');
+    if (clean.length < 7) return phone.slice(0, 3) + ' ••• ' + phone.slice(-2);
+    return clean.slice(0, 4) + ' ••• ' + clean.slice(-3);
+  }
+
+  function requestOtpCode() {
+    generatedOtpCode = Math.floor(100000 + Math.random() * 900000).toString();
+    otpExpiresAt = Date.now() + 5 * 60 * 1000; // 5 mins
+    
+    // Simulate sending SMS/WhatsApp in developers logs/toasts
+    showToast(currentLang === 'ar' ? `💬 تم الإرسال (تجريبي): ${generatedOtpCode}` : `💬 OTP envoyé (Test): ${generatedOtpCode}`);
+    console.log(`[TabibDZ Auth Code] OTP: ${generatedOtpCode} for profile claim of ${selectedDoc.nom}. Expires in 5 minutes.`);
+    
+    // Transition UI
+    document.getElementById('claimVerifyStartStep').style.display = 'none';
+    document.getElementById('claimVerifyOtpStep').style.display = 'flex';
+    
+    // Focus first input box
+    setTimeout(() => {
+      const firstInput = document.querySelectorAll('.otp-box')[0];
+      if (firstInput) firstInput.focus();
+    }, 100);
+  }
+
+  function backToOtpStart() {
+    document.getElementById('claimVerifyStartStep').style.display = 'flex';
+    document.getElementById('claimVerifyOtpStep').style.display = 'none';
+  }
+
+  function otpNext(input, idx) {
+    if (input.value.length === 1 && idx < 6) {
+      document.querySelectorAll('.otp-box')[idx].focus();
+    }
+  }
+
+  function otpBack(event, idx) {
+    if (event.key === 'Backspace' && idx > 1 && !event.target.value) {
+      document.querySelectorAll('.otp-box')[idx - 2].focus();
+    }
+  }
+
+  function verifyOtpCode() {
+    let enteredCode = '';
+    document.querySelectorAll('.otp-box').forEach(input => {
+      enteredCode += input.value.trim();
+    });
+    
+    if (enteredCode.length < 6) {
+      showToast(currentLang === 'ar' ? '⚠️ يرجى إدخال رمز التحقق كاملاً' : '⚠️ Entrez les 6 chiffres du code');
       return;
     }
     
-    // Trigger anomaly generator animation
+    if (Date.now() > otpExpiresAt) {
+      showToast(currentLang === 'ar' ? '⚠️ انتهت صلاحية الرمز' : '⚠️ Code OTP expiré (délai de 5 minutes dépassé)');
+      return;
+    }
+    
+    if (enteredCode !== generatedOtpCode) {
+      showToast(currentLang === 'ar' ? '❌ رمز التحقق غير صحيح' : '❌ Code incorrect. Veuillez réessayer.');
+      return;
+    }
+    
+    // Correct code: trigger gravity merge animation
     const sphere = document.getElementById('mercurySphere');
     sphere.classList.add('merging');
     
-    showToast(currentLang === 'ar' ? '⚡ جاري التحقق...' : '⚡ Vérification...');
+    showToast(currentLang === 'ar' ? '✅ تم التأكيد بنجاح!' : '✅ Code validé avec succès !');
     
     setTimeout(() => {
       sphere.classList.remove('merging');
-      // Hide verification screen and slide in edit form
-      document.getElementById('claimVerifyStep').style.display = 'none';
+      generatedOtpCode = null; // Destroy code
+      
+      // Transition to edit form step
+      document.getElementById('claimVerifyOtpStep').style.display = 'none';
       document.getElementById('claimEditFormStep').style.display = 'flex';
       
       // Populate fields on edit form
@@ -1555,8 +1636,6 @@
       if (gCheck) {
         gCheck.checked = selectedDoc.garde || false;
       }
-      
-      showToast(currentLang === 'ar' ? '✅ تم التحقق بنجاح' : '✅ Vérification réussie !');
     }, 1500);
   }
 
