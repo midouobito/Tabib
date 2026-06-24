@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TabibDZ – Administration & Importation</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root {
+      --bg-dark: #0F172A;
+      --card-dark: #1E293B;
+      --accent-primary: #8B5CF6;
+      --accent-secondary: #06B6D4;
+    }
+    body {
+      background-color: var(--bg-dark);
+      color: #F8FAFC;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+    .gradient-border {
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+    }
+    .custom-scroll::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scroll::-webkit-scrollbar-track {
+      background: #1e293b;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #475569;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body class="min-h-screen p-4 md:p-8">
+
+  <div class="max-w-6xl mx-auto">
+    <!-- Header -->
+    <header class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-8 border-b border-slate-800">
+      <div class="flex items-center gap-3">
+        <div class="gradient-border p-2.5 rounded-2xl">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.1a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-3xl font-black tracking-tight">TabibDZ Admin</h1>
+          <p class="text-slate-400 text-sm font-medium mt-0.5">Collecte & Importation de Médecins (Supabase)</p>
+        </div>
+      </div>
+      <div>
+        <a href="index.html" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl border border-slate-700 bg-slate-800/50 hover:bg-slate-800 text-sm font-semibold transition-all">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          Voir le site
+        </a>
+      </div>
+    </header>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mt-8">
+      
+      <!-- Left Panel: Instructions and Scraper Code -->
+      <div class="lg:col-span-5 space-y-6">
+        <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl">
+          <h2 class="text-xl font-bold text-slate-100 flex items-center gap-2 mb-4">
+            <span class="text-violet-400">1.</span> Scraping Google Maps
+          </h2>
+          <div class="text-slate-300 text-sm space-y-3">
+            <p>Pour collecter les médecins d'une spécialité et d'une ville spécifique en Algérie, procédez comme suit :</p>
+            <ol class="list-decimal list-inside space-y-2 text-slate-400">
+              <li>Ouvrez <a href="https://www.google.com/maps" target="_blank" class="text-cyan-400 underline hover:text-cyan-300">Google Maps</a> dans votre navigateur.</li>
+              <li>Recherchez une requête précise (ex: <code class="bg-slate-800 text-slate-200 px-1.5 py-0.5 rounded">pédiatre Batna</code> ou <code class="bg-slate-800 text-slate-200 px-1.5 py-0.5 rounded">cardiologue Alger</code>).</li>
+              <li>Ouvrez la console de développement (Appuyez sur <kbd class="bg-slate-800 px-1 rounded text-xs">F12</kbd> ou <kbd class="bg-slate-800 px-1 rounded text-xs">Ctrl+Maj+I</kbd>, puis onglet <strong>Console</strong>).</li>
+              <li>Copiez le script ci-dessous, collez-le dans la console et appuyez sur <kbd class="bg-slate-800 px-1 rounded text-xs">Entrée</kbd>.</li>
+              <li>Tapez <code class="bg-slate-800 text-slate-200 px-1.5 py-0.5 rounded">await scrapeGoogleMaps("Spécialité", "Wilaya")</code> (ex: <code class="bg-slate-800 text-slate-200 px-1.5 py-0.5 rounded">await scrapeGoogleMaps("Pédiatre", "Batna")</code>) et lancez l'exécution.</li>
+              <li>La page va défiler automatiquement puis télécharger un fichier JSON sur votre ordinateur.</li>
+            </ol>
+          </div>
+
+          <div class="mt-5">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Script de Scraping</span>
+              <button onclick="copyScraperScript()" class="text-xs bg-violet-600 hover:bg-violet-500 text-white font-semibold px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                Copier le script
+              </button>
+            </div>
+            <textarea id="scraperCode" readonly class="w-full h-44 bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs font-mono text-cyan-400/90 focus:outline-none resize-none custom-scroll"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Panel: Data Import and Logs -->
+      <div class="lg:col-span-7 space-y-6">
+        <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl">
+          <h2 class="text-xl font-bold text-slate-100 flex items-center gap-2 mb-4">
+            <span class="text-cyan-400">2.</span> Importation dans Supabase
+          </h2>
+
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-semibold text-slate-400 mb-2">Déposer ou coller le contenu du fichier JSON généré</label>
+              <textarea id="importJson" placeholder="Collez le contenu du fichier JSON ici..." class="w-full h-48 bg-slate-950 border border-slate-800 rounded-xl p-4 text-xs font-mono text-slate-300 focus:border-cyan-500 focus:outline-none resize-none custom-scroll"></textarea>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-3">
+              <button onclick="analyseData()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-100 font-semibold px-5 py-3 rounded-xl transition-all">
+                Analyse & Prévisualisation
+              </button>
+              <button id="btnImport" disabled onclick="startImport()" class="flex-1 bg-cyan-600 hover:bg-cyan-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold px-5 py-3 rounded-xl transition-all flex items-center justify-center gap-2">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+                Importer dans la Base
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Progress and Logs -->
+        <div id="logSection" class="hidden bg-slate-900 border border-slate-800 p-6 rounded-2xl">
+          <h3 class="text-lg font-bold text-slate-200 mb-3 flex items-center gap-2">
+            <span>Rapport d'Importation</span>
+            <span id="importBadge" class="text-xs bg-slate-800 text-slate-300 px-2 py-0.5 rounded font-mono">En attente</span>
+          </h3>
+          
+          <!-- Progress bar -->
+          <div class="w-full bg-slate-950 rounded-full h-3 mb-4 overflow-hidden">
+            <div id="progressBar" class="bg-gradient-to-r from-violet-500 to-cyan-500 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
+          </div>
+
+          <div class="grid grid-cols-3 gap-4 mb-4">
+            <div class="bg-slate-950/50 border border-slate-800 p-3 rounded-xl text-center">
+              <p class="text-xs text-slate-400 font-medium">Succès (Ajoutés)</p>
+              <p id="cntAdded" class="text-xl font-bold text-emerald-400">0</p>
+            </div>
+            <div class="bg-slate-950/50 border border-slate-800 p-3 rounded-xl text-center">
+              <p class="text-xs text-slate-400 font-medium">Doublons (Ignorés)</p>
+              <p id="cntSkipped" class="text-xl font-bold text-amber-400">0</p>
+            </div>
+            <div class="bg-slate-950/50 border border-slate-800 p-3 rounded-xl text-center">
+              <p class="text-xs text-slate-400 font-medium">Erreurs</p>
+              <p id="cntErrors" class="text-xl font-bold text-red-400">0</p>
+            </div>
+          </div>
+
+          <div id="logs" class="h-44 bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs font-mono text-emerald-400/90 overflow-y-auto custom-scroll space-y-1">
+            <!-- Dynamic logs -->
+          </div>
+        </div>
+
+        <!-- Preview Table -->
+        <div id="previewSection" class="hidden bg-slate-900 border border-slate-800 p-6 rounded-2xl">
+          <h3 class="text-lg font-bold text-slate-200 mb-3">Prévisualisation (<span id="previewCount">0</span>)</h3>
+          <div class="overflow-x-auto border border-slate-800 rounded-xl custom-scroll max-h-80">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-slate-950 text-slate-400 uppercase tracking-wider font-semibold border-b border-slate-800">
+                <tr>
+                  <th class="p-3">Nom</th>
+                  <th class="p-3">Spécialité</th>
+                  <th class="p-3">Ville</th>
+                  <th class="p-3">Téléphone</th>
+                  <th class="p-3">Adresse</th>
+                  <th class="p-3">Position (GPS)</th>
+                </tr>
+              </thead>
+              <tbody id="previewBody" class="divide-y divide-slate-800/50 bg-slate-900/50">
+                <!-- Data rows -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-800 text-white border border-slate-700 px-5 py-3 rounded-xl text-sm font-semibold shadow-2xl transition-all duration-300 opacity-0 pointer-events-none"></div>
+
+  <script>
+    /* ── SUPABASE CLIENT ── */
+    const supabaseUrl = 'https://viabbtrtusufxbuhxypb.supabase.co';
+    const supabaseKey = 'sb_publishable_i2E9hvP2PfkSsrYauszvCw_GO7BhNeP';
+    const supabaseDb = supabase.createClient(supabaseUrl, supabaseKey);
+
+    let parsedData = [];
+
+    // SCRAPER SCRIPT FOR GOOGLE MAPS
+    const scraperScript = `async function scrapeGoogleMaps(specialite, wilaya) {
+  const feed = document.querySelector('div[role="feed"]');
+  if (!feed) {
+    console.error("Erreur: Le volet latéral de recherche Google Maps n'a pas été trouvé. Assurez-vous d'avoir lancé une recherche (ex: 'pédiatre Batna').");
+    return;
+  }
+  
+  console.log("Défilement automatique en cours... Veuillez patienter.");
+  let lastHeight = feed.scrollHeight;
+  while (true) {
+    feed.scrollBy(0, 1000);
+    await new Promise(r => setTimeout(r, 2000));
+    let newHeight = feed.scrollHeight;
+    if (newHeight === lastHeight) {
+      feed.scrollBy(0, 1000);
+      await new Promise(r => setTimeout(r, 2000));
+      if (feed.scrollHeight === lastHeight) {
+        console.log("Défilement terminé.");
+        break;
+      }
+    }
+    lastHeight = feed.scrollHeight;
+  }
+
+  console.log("Extraction des données...");
+  const items = document.querySelectorAll('a.hfpxzc');
+  const results = [];
+
+  items.forEach((item, index) => {
+    try {
+      const nom = item.getAttribute('aria-label') || "Sans nom";
+      const url = item.getAttribute('href') || "";
+      
+      // Extraction lat/lng
+      let lat = null, lng = null;
+      const latLngMatch = url.match(/!3d([0-9.-]+)!4d([0-9.-]+)/);
+      if (latLngMatch) {
+        lat = parseFloat(latLngMatch[1]);
+        lng = parseFloat(latLngMatch[2]);
+      } else {
+        const atMatch = url.match(/@([0-9.-]+),([0-9.-]+)/);
+        if (atMatch) {
+          lat = parseFloat(atMatch[1]);
+          lng = parseFloat(atMatch[2]);
+        }
+      }
+
+      // Recherche du conteneur parent
+      let parent = item.parentElement;
+      while (parent && parent.tagName !== 'DIV') {
+        parent = parent.parentElement;
+      }
+      
+      const cardText = parent ? parent.innerText : "";
+      const lines = cardText.split('\\n').map(l => l.trim()).filter(Boolean);
+      
+      // Extraction téléphone algérien
+      let telephone = "Non renseigné";
+      const phoneRegex = /(0[567][0-9]\\s*[0-9\\s-]{6,10})|(\\+213\\s*[567][0-9\\s-]{8,12})/;
+      for (const line of lines) {
+        const match = line.match(phoneRegex);
+        if (match) {
+          telephone = match[0].replace(/[\\s-]/g, '').replace('+213', '0');
+          break;
+        }
+      }
+
+      // Extraction Adresse
+      let adresse = "Algérie";
+      const excludeKeywords = ['étoile', 'stars', 'fermé', 'ouvert', 'horaires', 'site', 'direction', 'partager', 'enregistrer', 'téléphone', 'appeler'];
+      const addressLines = lines.filter(line => {
+        if (line.includes(nom)) return false;
+        if (phoneRegex.test(line)) return false;
+        if (line.match(/^[0-9.,]+$/)) return false;
+        if (excludeKeywords.some(kw => line.toLowerCase().includes(kw))) return false;
+        return true;
+      });
+      
+      if (addressLines.length > 0) {
+        adresse = addressLines[0];
+      }
+
+      // Extraction de la note
+      let rating = null;
+      const ratingMatch = cardText.match(/([3-5][.,][0-9])\\s*étoiles?/i) || cardText.match(/([3-5][.,][0-9])/);
+      if (ratingMatch) {
+        rating = parseFloat(ratingMatch[1].replace(',', '.'));
+      }
+
+      results.push({
+        nom,
+        specialite: specialite || "Médecin",
+        ville: wilaya || "Algérie",
+        wilaya: wilaya || "Algérie",
+        adresse,
+        telephone,
+        horaires: "08:00 - 16:00",
+        jours: ["Dim", "Lun", "Mar", "Mer", "Jeu"],
+        disponible: true,
+        lat,
+        lng,
+        avis: rating ? [{ auteur: "Patient", note: Math.round(rating), commentaire: "Avis importé depuis Google Maps", date: new Date().toISOString().slice(0,10) }] : []
+      });
+    } catch (err) {
+      console.error("Erreur de parsing:", err);
+    }
+  });
+
+  console.log(results.length + " médecins extraits !");
+  
+  // Téléchargement du JSON
+  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(results, null, 2));
+  const dlAnchor = document.createElement('a');
+  dlAnchor.setAttribute("href", dataStr);
+  dlAnchor.setAttribute("download", "medecins_" + specialite.toLowerCase() + "_" + wilaya.toLowerCase() + ".json");
+  document.body.appendChild(dlAnchor);
+  dlAnchor.click();
+  dlAnchor.remove();
+}`;
+
+    // Fill script in textarea
+    document.getElementById('scraperCode').value = scraperScript;
+
+    // Toast function
+    function showToast(msg, type = 'success') {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.className = `fixed bottom-6 left-1/2 -translate-x-1/2 px-5 py-3 rounded-xl text-sm font-semibold shadow-2xl transition-all duration-300 opacity-100 z-50 ${
+        type === 'error' ? 'bg-red-950 text-red-200 border-red-800' : 'bg-slate-800 text-white border-slate-700'
+      }`;
+      setTimeout(() => {
+        t.classList.remove('opacity-100');
+        t.classList.add('opacity-0');
+      }, 3000);
+    }
+
+    // Copy script
+    function copyScraperScript() {
+      const copyText = document.getElementById("scraperCode");
+      copyText.select();
+      copyText.setSelectionRange(0, 99999);
+      navigator.clipboard.writeText(copyText.value);
+      showToast("Script copié dans le presse-papiers !");
+    }
+
+    // Analysis
+    function analyseData() {
+      const val = document.getElementById('importJson').value.trim();
+      if (!val) {
+        showToast("Veuillez coller du JSON valide.", "error");
+        return;
+      }
+
+      try {
+        parsedData = JSON.parse(val);
+        if (!Array.isArray(parsedData)) {
+          showToast("Le format JSON doit être un tableau d'objets.", "error");
+          return;
+        }
+
+        // Display counts
+        document.getElementById('previewCount').textContent = parsedData.length;
+        
+        // Build preview table
+        const tbody = document.getElementById('previewBody');
+        tbody.innerHTML = '';
+        parsedData.forEach(d => {
+          const tr = document.createElement('tr');
+          tr.className = 'border-b border-slate-800 hover:bg-slate-800/30 transition-all';
+          tr.innerHTML = `
+            <td class="p-3 font-semibold text-slate-200">${d.nom || '–'}</td>
+            <td class="p-3 text-violet-400">${d.specialite || '–'}</td>
+            <td class="p-3 text-cyan-400 font-semibold">${d.ville || '–'}</td>
+            <td class="p-3 text-slate-300 font-mono">${d.telephone || '–'}</td>
+            <td class="p-3 text-slate-400 max-w-xs truncate">${d.adresse || '–'}</td>
+            <td class="p-3 text-slate-400 font-mono">${d.lat && d.lng ? `${d.lat.toFixed(4)}, ${d.lng.toFixed(4)}` : '–'}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+
+        document.getElementById('previewSection').classList.remove('hidden');
+        document.getElementById('btnImport').removeAttribute('disabled');
+        showToast(`Analyse réussie : ${parsedData.length} médecins trouvés.`);
+      } catch (err) {
+        showToast("Erreur de format JSON. Vérifiez la syntaxe.", "error");
+      }
+    }
+
+    // Import loop
+    async function startImport() {
+      if (!parsedData.length) return;
+
+      document.getElementById('logSection').classList.remove('hidden');
+      document.getElementById('btnImport').setAttribute('disabled', 'true');
+      document.getElementById('importBadge').textContent = "En cours...";
+      document.getElementById('importBadge').className = "text-xs bg-cyan-900 text-cyan-200 px-2 py-0.5 rounded font-mono";
+
+      const logDiv = document.getElementById('logs');
+      logDiv.innerHTML = '';
+      
+      let added = 0;
+      let skipped = 0;
+      let errors = 0;
+      const total = parsedData.length;
+
+      const addLog = (msg, type = 'info') => {
+        const p = document.createElement('p');
+        if (type === 'success') p.className = 'text-emerald-400';
+        else if (type === 'skip') p.className = 'text-amber-400';
+        else if (type === 'error') p.className = 'text-red-400';
+        else p.className = 'text-slate-400';
+        p.textContent = msg;
+        logDiv.appendChild(p);
+        logDiv.scrollTop = logDiv.scrollHeight;
+      };
+
+      addLog("🚀 Démarrage de l'importation de " + total + " médecins...");
+
+      for (let i = 0; i < total; i++) {
+        const m = parsedData[i];
+        
+        // Progress update
+        const percent = Math.round(((i + 1) / total) * 100);
+        document.getElementById('progressBar').style.width = `${percent}%`;
+
+        try {
+          // 1. Check duplicate
+          const { data: existing, error: errCheck } = await supabaseDb
+            .from('medecins')
+            .select('id')
+            .eq('nom', m.nom)
+            .eq('telephone', m.telephone)
+            .maybeSingle();
+
+          if (errCheck) throw errCheck;
+
+          if (existing) {
+            skipped++;
+            document.getElementById('cntSkipped').textContent = skipped;
+            addLog(`[~] Ignoré (Doublon) : ${m.nom} (${m.telephone})`, 'skip');
+            continue;
+          }
+
+          // 2. Insert doctor
+          const newDoc = {
+            nom: m.nom,
+            specialite: m.specialite,
+            ville: m.ville,
+            wilaya: m.wilaya,
+            adresse: m.adresse,
+            telephone: m.telephone,
+            horaires: m.horaires,
+            jours: m.jours,
+            disponible: m.disponible,
+            lat: m.lat,
+            lng: m.lng
+          };
+
+          const { data: insertedDoc, error: errInsert } = await supabaseDb
+            .from('medecins')
+            .insert([newDoc])
+            .select();
+
+          if (errInsert) throw errInsert;
+
+          const docId = insertedDoc[0].id;
+
+          // 3. Insert reviews if exist
+          if (m.avis && m.avis.length > 0) {
+            const reviews = m.avis.map(av => ({
+              medecin_id: docId,
+              auteur: av.auteur,
+              note: av.note,
+              commentaire: av.commentaire,
+              date: av.date
+            }));
+
+            const { error: errAvis } = await supabaseDb
+              .from('avis')
+              .insert(reviews);
+
+            if (errAvis) {
+              addLog(`[!] Avis non insérés pour : ${m.nom}`, 'error');
+            }
+          }
+
+          added++;
+          document.getElementById('cntAdded').textContent = added;
+          addLog(`[+] Importé avec succès : ${m.nom}`, 'success');
+
+        } catch (error) {
+          errors++;
+          document.getElementById('cntErrors').textContent = errors;
+          addLog(`[!] Erreur sur ${m.nom || 'Inconnu'} : ${error.message}`, 'error');
+        }
+
+        // Wait 100ms between calls to avoid API rate limit
+        await new Promise(r => setTimeout(r, 100));
+      }
+
+      addLog("✅ Importation terminée !");
+      document.getElementById('importBadge').textContent = "Terminé";
+      document.getElementById('importBadge').className = "text-xs bg-emerald-900 text-emerald-200 px-2 py-0.5 rounded font-mono";
+      document.getElementById('btnImport').removeAttribute('disabled');
+      showToast("Importation complétée.");
+    }
+  </script>
+</body>
+</html>
