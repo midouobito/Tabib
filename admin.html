@@ -37,7 +37,7 @@
 </head>
 <body class="min-h-screen p-4 md:p-8">
 
-  <div class="max-w-6xl mx-auto">
+  <div class="max-w-6xl mx-auto" id="adminMainContent" style="display: none;">
     <!-- Header -->
     <header class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-8 border-b border-slate-800">
       <div class="flex items-center gap-3">
@@ -53,7 +53,10 @@
         </div>
       </div>
       <div class="flex items-center gap-3">
-        <input type="password" id="adminPass" placeholder="Code Secret Administrateur" class="bg-slate-950 border border-slate-800 text-sm rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-cyan-500 w-44 md:w-56" />
+        <span id="adminUserEmail" class="text-xs text-slate-400 font-medium hidden"></span>
+        <button id="adminLogoutBtn" onclick="handleAdminLogout()" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-red-950 bg-red-950/30 hover:bg-red-900/50 text-red-200 text-sm font-semibold transition-all hidden">
+          Déconnexion
+        </button>
         <a href="index.html" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl border border-slate-700 bg-slate-80/50 hover:bg-slate-800 text-sm font-semibold transition-all">
           Voir le site
         </a>
@@ -70,6 +73,9 @@
       </button>
       <button onclick="switchTab('garde')" id="tabBtn-garde" class="tab-btn px-4 py-2.5 text-sm font-semibold rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700 transition-all inline-flex items-center gap-2">
         <i data-lucide="moon" class="w-4 h-4"></i> Pharmacies de Garde
+      </button>
+      <button onclick="switchTab('add')" id="tabBtn-add" class="tab-btn px-4 py-2.5 text-sm font-semibold rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700 transition-all inline-flex items-center gap-2">
+        <i data-lucide="plus-circle" class="w-4 h-4"></i> Ajouter un Médecin
       </button>
     </div>
 
@@ -257,6 +263,123 @@
         </div>
       </div>
 
+      <!-- Tab 4: Add Doctor Form -->
+      <div id="tab-add" class="tab-content hidden max-w-2xl mx-auto space-y-6">
+        <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-xl">
+          <h2 class="text-2xl font-bold text-slate-100 flex items-center gap-2 mb-6">
+            <span>➕</span> Ajouter un Médecin
+          </h2>
+
+          <div id="addMessage" class="hidden p-4 mb-6 rounded-xl text-sm font-semibold"></div>
+
+          <form id="addMedecinForm" onsubmit="handleAddMedecin(event)" class="space-y-4 text-sm">
+            <!-- Row 1: Name & Specialty -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-slate-400 mb-1 text-xs font-bold uppercase">Nom complet du docteur *</label>
+                <input type="text" id="addNom" required placeholder="ex: Dr. Sahraoui.F"
+                  class="w-full bg-slate-950 text-white rounded-lg p-3 border border-slate-800 focus:border-cyan-400 outline-none transition-all" />
+              </div>
+              <div>
+                <label class="block text-slate-400 mb-1 text-xs font-bold uppercase">Spécialité *</label>
+                <select id="addSpecialite" class="w-full bg-slate-950 text-white rounded-lg p-3 border border-slate-800 focus:border-cyan-400 outline-none transition-all">
+                  <option value="Généraliste">Généraliste</option>
+                  <option value="Gynécologue">Gynécologue</option>
+                  <option value="Pédiatre">Pédiatre</option>
+                  <option value="Cardiologue">Cardiologue</option>
+                  <option value="Ophtalmologue">Ophtalmologue</option>
+                  <option value="Dermatologue">Dermatologue</option>
+                  <option value="ORL">ORL</option>
+                  <option value="Dentiste">Dentiste</option>
+                  <option value="Pharmacie">Pharmacie</option>
+                  <option value="Laboratoire">Laboratoire</option>
+                  <option value="Hôpital">Hôpital</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Row 2: Wilaya & Commune/Ville -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-slate-400 mb-1 text-xs font-bold uppercase">Wilaya *</label>
+                <select id="addWilaya" class="w-full bg-slate-950 text-white rounded-lg p-3 border border-slate-800 focus:border-cyan-400 outline-none transition-all">
+                  <option value="Batna">Batna</option>
+                  <option value="Alger">Alger</option>
+                  <option value="Oran">Oran</option>
+                  <option value="Constantine">Constantine</option>
+                  <option value="Mila">Mila</option>
+                  <option value="Annaba">Annaba</option>
+                  <option value="Sétif">Sétif</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-slate-400 mb-1 text-xs font-bold uppercase">Commune / Ville *</label>
+                <input type="text" id="addVille" required placeholder="ex: Ain Touta"
+                  class="w-full bg-slate-950 text-white rounded-lg p-3 border border-slate-800 focus:border-cyan-400 outline-none transition-all" />
+              </div>
+            </div>
+
+            <!-- Row 3: Adresse & Téléphone -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-slate-400 mb-1 text-xs font-bold uppercase">Adresse exacte</label>
+                <input type="text" id="addAdresse" placeholder="ex: Cité 16 Avril..."
+                  class="w-full bg-slate-950 text-white rounded-lg p-3 border border-slate-800 focus:border-cyan-400 outline-none transition-all" />
+              </div>
+              <div>
+                <label class="block text-slate-400 mb-1 text-xs font-bold uppercase">Téléphone du cabinet *</label>
+                <input type="tel" id="addTelephone" required placeholder="ex: 0555..."
+                  class="w-full bg-slate-950 text-white rounded-lg p-3 border border-slate-800 focus:border-cyan-400 outline-none transition-all" />
+              </div>
+            </div>
+
+            <button type="submit" id="btnAddSubmit" class="w-full mt-6 bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-3 rounded-xl transition-all flex items-center justify-center gap-2">
+              Ajouter à la base de données
+            </button>
+          </form>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- AUTH/LOGIN OVERLAY -->
+  <div id="adminAuthOverlay" class="fixed inset-0 z-[999] flex items-center justify-center bg-slate-950/80 backdrop-blur-md transition-all duration-300">
+    <!-- background blobs for VisionOS look -->
+    <div class="absolute top-1/4 left-1/4 w-80 h-80 rounded-full bg-violet-600/10 blur-[100px] pointer-events-none"></div>
+    <div class="absolute bottom-1/4 right-1/4 w-80 h-80 rounded-full bg-cyan-600/10 blur-[100px] pointer-events-none"></div>
+
+    <div class="bg-slate-900/60 border border-slate-800/80 backdrop-blur-2xl p-8 rounded-3xl w-full max-w-md shadow-2xl space-y-6 mx-4">
+      <div class="text-center space-y-2">
+        <div class="inline-flex gradient-border p-3 rounded-2xl mb-2">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.1a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
+        </div>
+        <h2 class="text-2xl font-black tracking-tight text-white">Console Admin TabibDZ</h2>
+        <p class="text-slate-400 text-xs font-semibold">Connexion avec vos identifiants Supabase</p>
+      </div>
+
+      <div class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-400 uppercase mb-2">Adresse Email</label>
+          <input type="email" id="adminEmail" placeholder="nom@exemple.com" class="w-full bg-slate-950 border border-slate-800 text-sm rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cyan-500 transition-colors" />
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-400 uppercase mb-2">Mot de passe</label>
+          <input type="password" id="adminPassword" placeholder="••••••••" class="w-full bg-slate-950 border border-slate-800 text-sm rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cyan-500 transition-colors" />
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-3">
+        <button id="adminLoginBtn" onclick="handleAdminLogin()" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-3 rounded-xl transition-all flex items-center justify-center gap-2">
+          Connexion
+        </button>
+        <a href="index.html" class="w-full border border-slate-700 hover:bg-slate-800 text-slate-300 text-center font-semibold py-3 rounded-xl text-sm transition-all">
+          Retour au site
+        </a>
+      </div>
     </div>
   </div>
 
@@ -358,14 +481,127 @@
     let selectedItem = null;
     let editBase64Photo = null;
 
-    // Secret code check
+    // Secret code check - Enforced by Supabase Auth and RLS policies
     function checkPasscode() {
-      const code = document.getElementById('adminPass').value;
-      if (code !== 'Tabib2026') {
-        showToast("⚠️ Code secret incorrect ou manquant !", "error");
-        return false;
-      }
       return true;
+    }
+
+    /* ── ADMIN AUTH FLOW ── */
+    async function checkAdminSession() {
+      const { data: { session } } = await supabaseDb.auth.getSession();
+      if (session) {
+        try {
+          // Fetch role from profiles table
+          const { data: profile, error } = await supabaseDb
+            .from('profiles')
+            .select('role')
+            .eq('id', session.user.id)
+            .maybeSingle();
+
+          if (profile && profile.role === 'admin') {
+            // Show dashboard
+            document.getElementById('adminAuthOverlay').classList.add('hidden');
+            document.getElementById('adminMainContent').style.display = 'block';
+            document.getElementById('adminUserEmail').textContent = session.user.email;
+            document.getElementById('adminUserEmail').classList.remove('hidden');
+            document.getElementById('adminLogoutBtn').classList.remove('hidden');
+            loadManageList();
+            return;
+          } else {
+            showToast("⚠️ Accès refusé : Rôle admin requis.", "error");
+            await supabaseDb.auth.signOut();
+          }
+        } catch (e) {
+          console.error("Session check error:", e);
+        }
+      }
+      
+      // Hide dashboard, show overlay
+      document.getElementById('adminAuthOverlay').classList.remove('hidden');
+      document.getElementById('adminMainContent').style.display = 'none';
+      document.getElementById('adminUserEmail').classList.add('hidden');
+      document.getElementById('adminLogoutBtn').classList.add('hidden');
+    }
+
+    async function handleAdminLogin() {
+      const email = document.getElementById('adminEmail').value.trim();
+      const password = document.getElementById('adminPassword').value;
+      const btn = document.getElementById('adminLoginBtn');
+
+      if (!email || !password) {
+        showToast("⚠️ Veuillez remplir tous les champs.", "error");
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = "Connexion...";
+
+      try {
+        const { data, error } = await supabaseDb.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+        
+        showToast("✅ Connexion réussie !");
+        await checkAdminSession();
+      } catch (err) {
+        showToast(`❌ Erreur : ${err.message}`, "error");
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Connexion";
+      }
+    }
+
+    async function handleAdminLogout() {
+      await supabaseDb.auth.signOut();
+      showToast("ℹ️ Déconnecté.");
+      checkAdminSession();
+    }
+
+    async function handleAddMedecin(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btnAddSubmit');
+      const msgDiv = document.getElementById('addMessage');
+      
+      btn.disabled = true;
+      btn.textContent = 'Enregistrement en cours...';
+      
+      msgDiv.classList.add('hidden');
+      msgDiv.className = 'p-4 mb-6 rounded-xl text-sm font-semibold';
+      
+      const payload = {
+        nom: document.getElementById('addNom').value.trim(),
+        specialite: document.getElementById('addSpecialite').value,
+        wilaya: document.getElementById('addWilaya').value,
+        ville: document.getElementById('addVille').value.trim(),
+        adresse: document.getElementById('addAdresse').value.trim(),
+        telephone: document.getElementById('addTelephone').value.trim(),
+        disponible: true
+      };
+      
+      try {
+        const { error } = await supabaseDb
+          .from('medecins')
+          .insert([payload]);
+          
+        if (error) throw error;
+        
+        msgDiv.textContent = "✅ Médecin ajouté avec succès à l'annuaire !";
+        msgDiv.classList.remove('hidden');
+        msgDiv.className = 'p-4 mb-6 rounded-xl text-sm font-semibold bg-emerald-950 text-emerald-300 border border-emerald-800';
+        
+        // Reset form
+        document.getElementById('addNom').value = '';
+        document.getElementById('addVille').value = '';
+        document.getElementById('addAdresse').value = '';
+        document.getElementById('addTelephone').value = '';
+        
+      } catch (err) {
+        msgDiv.textContent = "❌ Erreur lors de l'ajout : " + err.message;
+        msgDiv.classList.remove('hidden');
+        msgDiv.className = 'p-4 mb-6 rounded-xl text-sm font-semibold bg-red-950 text-red-300 border border-red-800';
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Ajouter à la base de données';
+      }
     }
 
     // Switch tab logic
@@ -1021,6 +1257,14 @@ scrapeGoogleMaps(prompt("Entrez la spécialité (ex: Pédiatre) :", "Pédiatre")
     }
     window.addEventListener('DOMContentLoaded', () => {
       if (window.lucide) lucide.createIcons();
+      checkAdminSession();
+      
+      // Listen to auth changes
+      supabaseDb.auth.onAuthStateChange((event, session) => {
+        if (event === 'SIGNED_OUT') {
+          checkAdminSession();
+        }
+      });
     });
   </script>
 </body>

@@ -329,7 +329,33 @@
         </div>
       </div>
 
-      <!-- STEP 2: PROFILE UPDATE STEP (Initially Hidden) -->
+      <!-- STEP 3: LOGIN / SIGNUP STEP -->
+      <div id="claimAuthStep" class="modal-body" style="display:none;flex-direction:column;gap:12px;max-height:calc(100dvh - 140px);overflow-y:auto;">
+        <h4 style="font-size:13px;font-weight:800;color:var(--text-primary);margin:0;text-align:center;">Sécurisez votre fiche</h4>
+        <p style="font-size:11px;color:var(--text-secondary);line-height:1.5;text-align:center;">
+          Pour gérer et modifier cette fiche à tout moment, veuillez vous connecter ou créer un compte professionnel gratuit.
+        </p>
+
+        <div id="claimAuthMsg" class="toast" style="position:static;display:none;width:100%;margin:10px 0;transform:none;opacity:1;pointer-events:auto;box-sizing:border-box;"></div>
+
+        <div>
+          <label class="form-label">Adresse Email</label>
+          <input type="email" id="claimEmail" placeholder="nom@cabinet.com" class="form-input" style="width:100%;padding:8px 12px;font-size:13px;" />
+        </div>
+        <div>
+          <label class="form-label">Mot de passe (min 6 caractères)</label>
+          <input type="password" id="claimPassword" placeholder="••••••••" class="form-input" style="width:100%;padding:8px 12px;font-size:13px;" />
+        </div>
+
+        <div style="display:flex;gap:8px;margin-top:6px;">
+          <button onclick="handleClaimLogin()" class="btn-publish" style="padding:10px 0;font-size:13px;flex:1;background:var(--surface2);color:var(--text-primary);border:1px solid var(--border);">Se connecter</button>
+          <button onclick="handleClaimSignup()" class="btn-publish" style="padding:10px 0;font-size:13px;flex:1;">Créer un compte</button>
+        </div>
+
+        <button onclick="backToOtpVerify()" class="btn-cancel" style="padding:10px 0;font-size:11px;margin-top:4px;">Retour</button>
+      </div>
+
+      <!-- STEP 4: PROFILE UPDATE STEP (Initially Hidden) -->
       <div id="claimEditFormStep" class="modal-body" style="display:none;flex-direction:column;gap:12px;max-height:calc(100dvh - 140px);overflow-y:auto;">
         <p style="font-size:11px;color:var(--text-secondary);line-height:1.5;" class="i18n" data-key="claim_desc">
           Mettez à jour vos informations professionnelles. Ces changements s'appliqueront immédiatement à votre fiche.
@@ -1817,15 +1843,41 @@
     filter();
   }
 
-  /* ══════════ CLAIM PROFILE ══════════ */
+  /* ── CLAIM PROFILE ── */
   let claimBase64Photo = null;
+  let currentUser = null;
+
+  function initAuthListener() {
+    if (supabaseDb) {
+      supabaseDb.auth.onAuthStateChange((event, session) => {
+        currentUser = session ? session.user : null;
+        console.log("Auth State Changed:", event, currentUser ? currentUser.email : "Not logged in");
+      });
+      // Initial check
+      supabaseDb.auth.getSession().then(({ data: { session } }) => {
+        currentUser = session ? session.user : null;
+      });
+    }
+  }
 
   function openClaimModal(doc) {
     selectedDoc = doc;
     claimBase64Photo = doc.photo_url || null;
     
+    // Check if user is logged in and is the owner
+    if (currentUser && doc.claimed_by_profile_id === currentUser.id) {
+      document.getElementById('claimVerifyStartStep').style.display = 'none';
+      document.getElementById('claimVerifyOtpStep').style.display = 'none';
+      document.getElementById('claimAuthStep').style.display = 'none';
+      document.getElementById('claimModal').style.display = 'flex';
+      showClaimEditForm();
+      return;
+    }
+
     // Reset steps
     document.getElementById('claimVerifyStartStep').style.display = 'flex';
+    document.getElementById('claimVerifyOtpStep').style.display = 'none';
+    document.getElementById('claimAuthStep').style.display = 'none';
     document.getElementById('claimEditFormStep').style.display = 'none';
     
     // Set dynamic info on doctor card in verification panel
@@ -1839,17 +1891,6 @@
       this.src = getAvatarUrl(doc.nom, doc.specialite);
     };
     
-    // Localize verification input label dynamically
-    const isPharm = getCategory(doc) === 'pharmacie';
-    const orderLabel = document.querySelector('[data-key="order_num_label"]');
-    if (orderLabel) {
-      if (isPharm) {
-        orderLabel.textContent = currentLang === 'ar' ? 'رقم القيد الوطني للصيادلة' : "Numéro d'Ordre National des Pharmaciens";
-      } else {
-        orderLabel.textContent = currentLang === 'ar' ? 'رقم القيد الوطني للأطباء' : "Numéro d'Ordre National des Médecins";
-      }
-    }
-    
     // Display masked phone number
     document.getElementById('maskedPhone').textContent = maskPhoneNumber(doc.telephone);
     
@@ -1858,8 +1899,10 @@
 
   function simulateMercuryPulse() {
     const s = document.getElementById('mercurySphere');
-    s.classList.add('pulse');
-    setTimeout(() => s.classList.remove('pulse'), 800);
+    if (s) {
+      s.classList.add('pulse');
+      setTimeout(() => s.classList.remove('pulse'), 800);
+    }
   }
 
   let generatedOtpCode = null;
@@ -1876,15 +1919,12 @@
     generatedOtpCode = Math.floor(100000 + Math.random() * 900000).toString();
     otpExpiresAt = Date.now() + 5 * 60 * 1000; // 5 mins
     
-    // Simulate sending SMS/WhatsApp in developers logs/toasts
     showToast(currentLang === 'ar' ? `💬 تم الإرسال (تجريبي): ${generatedOtpCode}` : `💬 OTP envoyé (Test): ${generatedOtpCode}`);
     console.log(`[TabibDZ Auth Code] OTP: ${generatedOtpCode} for profile claim of ${selectedDoc.nom}. Expires in 5 minutes.`);
     
-    // Transition UI
     document.getElementById('claimVerifyStartStep').style.display = 'none';
     document.getElementById('claimVerifyOtpStep').style.display = 'flex';
     
-    // Focus first input box
     setTimeout(() => {
       const firstInput = document.querySelectorAll('.otp-box')[0];
       if (firstInput) firstInput.focus();
@@ -1929,67 +1969,148 @@
       return;
     }
     
-    // Correct code: trigger gravity merge animation
     const sphere = document.getElementById('mercurySphere');
-    sphere.classList.add('merging');
+    if (sphere) sphere.classList.add('merging');
     
     showToast(currentLang === 'ar' ? '✅ تم التأكيد بنجاح!' : '✅ Code validé avec succès !');
     
-    setTimeout(() => {
-      sphere.classList.remove('merging');
-      generatedOtpCode = null; // Destroy code
+    setTimeout(async () => {
+      if (sphere) sphere.classList.remove('merging');
+      generatedOtpCode = null;
       
-      // Transition to edit form step
       document.getElementById('claimVerifyOtpStep').style.display = 'none';
-      document.getElementById('claimEditFormStep').style.display = 'flex';
       
-      // Populate fields on edit form
-      const preview = document.getElementById('claimPhotoPreview');
-      const placeholder = document.getElementById('claimPhotoPlaceholder');
-      if (selectedDoc.photo_url) {
-        preview.src = selectedDoc.photo_url;
-        preview.style.display = 'block';
-        placeholder.style.display = 'none';
+      // If user is already logged in, show claim edit form directly
+      const { data: { session } } = await supabaseDb.auth.getSession();
+      if (session) {
+        currentUser = session.user;
+        showClaimEditForm();
       } else {
-        preview.style.display = 'none';
-        placeholder.style.display = 'flex';
-      }
-      
-      document.getElementById('claimTarif').value = selectedDoc.tarif || '';
-      
-      const days = selectedDoc.jours || ["Dim", "Lun", "Mar", "Mer", "Jeu"];
-      document.getElementById('day-dim').checked = days.includes('Dim') || days.includes('Dimanche') || days.includes('الأحد');
-      document.getElementById('day-lun').checked = days.includes('Lun') || days.includes('Lundi') || days.includes('الاثنين');
-      document.getElementById('day-mar').checked = days.includes('Mar') || days.includes('Mardi') || days.includes('الثلاثاء');
-      document.getElementById('day-mer').checked = days.includes('Mer') || days.includes('Mercredi') || days.includes('الأربعاء');
-      document.getElementById('day-jeu').checked = days.includes('Jeu') || days.includes('Jeudi') || days.includes('الخميس');
-      document.getElementById('day-ven').checked = days.includes('Ven') || days.includes('Vendredi') || days.includes('الجمعة');
-      document.getElementById('day-sam').checked = days.includes('Sam') || days.includes('Samedi') || days.includes('السبت');
-      
-      const m = (selectedDoc.horaires || '').match(/(\d{1,2}):(\d{2})\s*-\s*(\d{1,2}):(\d{2})/);
-      if (m) {
-        document.getElementById('claimStart').value = `${m[1].padStart(2,'0')}:${m[2]}`;
-        document.getElementById('claimEnd').value = `${m[3].padStart(2,'0')}:${m[4]}`;
-      } else {
-        document.getElementById('claimStart').value = '08:00';
-        document.getElementById('claimEnd').value = '16:00';
-      }
-      
-      const isPharm = getCategory(selectedDoc) === 'pharmacie';
-      const gc = document.getElementById('claimGardeContainer');
-      if (gc) {
-        gc.style.display = isPharm ? 'flex' : 'none';
-      }
-      const gCheck = document.getElementById('claimGarde');
-      if (gCheck) {
-        gCheck.checked = selectedDoc.garde || false;
+        // Show auth modal step
+        document.getElementById('claimAuthStep').style.display = 'flex';
       }
     }, 1500);
   }
 
+  function backToOtpVerify() {
+    document.getElementById('claimAuthStep').style.display = 'none';
+    document.getElementById('claimVerifyOtpStep').style.display = 'flex';
+  }
+
+  function showClaimAuthMsg(text, type) {
+    const msg = document.getElementById('claimAuthMsg');
+    msg.textContent = text;
+    msg.style.display = 'block';
+    if (type === 'error') {
+      msg.style.background = 'rgba(239, 68, 68, 0.15)';
+      msg.style.color = '#ef4444';
+      msg.style.border = '1px solid rgba(239, 68, 68, 0.3)';
+    } else {
+      msg.style.background = 'rgba(16, 185, 129, 0.15)';
+      msg.style.color = '#10b981';
+      msg.style.border = '1px solid rgba(16, 185, 129, 0.3)';
+    }
+  }
+
+  async function handleClaimLogin() {
+    const email = document.getElementById('claimEmail').value.trim();
+    const password = document.getElementById('claimPassword').value;
+    
+    if (!email || !password) {
+      showClaimAuthMsg("⚠️ Veuillez remplir tous les champs.", "error");
+      return;
+    }
+    
+    try {
+      const { data, error } = await supabaseDb.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+      
+      currentUser = data.user;
+      showClaimAuthMsg("✅ Connexion réussie !", "success");
+      setTimeout(() => {
+        document.getElementById('claimAuthMsg').style.display = 'none';
+        document.getElementById('claimAuthStep').style.display = 'none';
+        showClaimEditForm();
+      }, 1000);
+    } catch (e) {
+      showClaimAuthMsg("❌ " + e.message, "error");
+    }
+  }
+
+  async function handleClaimSignup() {
+    const email = document.getElementById('claimEmail').value.trim();
+    const password = document.getElementById('claimPassword').value;
+    
+    if (!email || !password || password.length < 6) {
+      showClaimAuthMsg("⚠️ Email valide et mot de passe de 6 caractères min requis.", "error");
+      return;
+    }
+    
+    try {
+      const { data, error } = await supabaseDb.auth.signUp({ email, password });
+      if (error) throw error;
+      
+      currentUser = data.user;
+      showClaimAuthMsg("✅ Compte créé avec succès ! Connecté.", "success");
+      setTimeout(() => {
+        document.getElementById('claimAuthMsg').style.display = 'none';
+        document.getElementById('claimAuthStep').style.display = 'none';
+        showClaimEditForm();
+      }, 1000);
+    } catch (e) {
+      showClaimAuthMsg("❌ " + e.message, "error");
+    }
+  }
+
+  function showClaimEditForm() {
+    document.getElementById('claimEditFormStep').style.display = 'flex';
+    
+    const preview = document.getElementById('claimPhotoPreview');
+    const placeholder = document.getElementById('claimPhotoPlaceholder');
+    if (selectedDoc.photo_url) {
+      preview.src = selectedDoc.photo_url;
+      preview.style.display = 'block';
+      placeholder.style.display = 'none';
+    } else {
+      preview.style.display = 'none';
+      placeholder.style.display = 'flex';
+    }
+    
+    document.getElementById('claimTarif').value = selectedDoc.tarif || '';
+    
+    const days = selectedDoc.jours || ["Dim", "Lun", "Mar", "Mer", "Jeu"];
+    document.getElementById('day-dim').checked = days.includes('Dim') || days.includes('Dimanche') || days.includes('الأحد');
+    document.getElementById('day-lun').checked = days.includes('Lun') || days.includes('Lundi') || days.includes('الاثنين');
+    document.getElementById('day-mar').checked = days.includes('Mar') || days.includes('Mardi') || days.includes('الثلاثاء');
+    document.getElementById('day-mer').checked = days.includes('Mer') || days.includes('Mercredi') || days.includes('الأربعاء');
+    document.getElementById('day-jeu').checked = days.includes('Jeu') || days.includes('Jeudi') || days.includes('الخميس');
+    document.getElementById('day-ven').checked = days.includes('Ven') || days.includes('Vendredi') || days.includes('الجمعة');
+    document.getElementById('day-sam').checked = days.includes('Sam') || days.includes('Samedi') || days.includes('السبت');
+    
+    const m = (selectedDoc.horaires || '').match(/(\d{1,2}):(\d{2})\s*-\s*(\d{1,2}):(\d{2})/);
+    if (m) {
+      document.getElementById('claimStart').value = `${m[1].padStart(2,'0')}:${m[2]}`;
+      document.getElementById('claimEnd').value = `${m[3].padStart(2,'0')}:${m[4]}`;
+    } else {
+      document.getElementById('claimStart').value = '08:00';
+      document.getElementById('claimEnd').value = '16:00';
+    }
+    
+    const isPharm = getCategory(selectedDoc) === 'pharmacie';
+    const gc = document.getElementById('claimGardeContainer');
+    if (gc) {
+      gc.style.display = isPharm ? 'flex' : 'none';
+    }
+    const gCheck = document.getElementById('claimGarde');
+    if (gCheck) {
+      gCheck.checked = selectedDoc.garde || false;
+    }
+  }
+
   function closeClaimModal() {
     document.getElementById('claimModal').style.display = 'none';
-    document.getElementById('claimPhotoInput').value = '';
+    const inp = document.getElementById('claimPhotoInput');
+    if (inp) inp.value = '';
   }
 
   function previewClaimPhoto(event) {
@@ -2038,10 +2159,13 @@
       ALL[index].horaires = horaires;
       ALL[index].rdv_enabled = true;
       ALL[index].garde = garde;
+      if (currentUser) {
+        ALL[index].claimed_by_profile_id = currentUser.id;
+      }
     }
     
     const localProfiles = JSON.parse(localStorage.getItem('tabibdz_profiles') || '{}');
-    localProfiles[selectedDoc.id] = {
+    const updateData = {
       photo_url: claimBase64Photo,
       tarif,
       jours,
@@ -2049,17 +2173,14 @@
       rdv_enabled: true,
       garde
     };
+    if (currentUser) {
+      updateData.claimed_by_profile_id = currentUser.id;
+    }
+    localProfiles[selectedDoc.id] = updateData;
     localStorage.setItem('tabibdz_profiles', JSON.stringify(localProfiles));
     
     try {
-      await supabaseDb.from('medecins').update({
-        photo_url: claimBase64Photo,
-        tarif,
-        jours,
-        horaires,
-        rdv_enabled: true,
-        garde
-      }).eq('id', selectedDoc.id);
+      await supabaseDb.from('medecins').update(updateData).eq('id', selectedDoc.id);
     } catch (e) {
       console.warn('Supabase profile update skipped:', e.message);
     }
@@ -2074,7 +2195,7 @@
   qEl.addEventListener('input',()=>{clrEl.style.display=qEl.value?'flex':'none';filter();});
   clrEl.addEventListener('click',()=>{qEl.value='';clrEl.style.display='none';filter();qEl.focus();});
 
-  /* ══════════ NOTIFICATIONS ══════════ */
+  /* ── NOTIFICATIONS ── */
   let notifications = [];
 
   function initNotifications() {
@@ -2216,7 +2337,7 @@
     });
   }
 
-  /* ══════════ SEO HASH ROUTING ══════════ */
+  /* ── SEO HASH ROUTING ── */
   function applyHashRouting() {
     const hash = window.location.hash;
     if (!hash || !hash.startsWith('#/')) return;
@@ -2322,7 +2443,7 @@
     filter();
   });
 
-  /* ══════════ AUTO-HIDE HUD ON SCROLL ══════════ */
+  /* ── AUTO-HIDE HUD ON SCROLL ── */
   (function() {
     let lastScrollY = 0;
     const hud = document.querySelector('.floating-hud');
@@ -2334,11 +2455,9 @@
       const delta = y - lastScrollY;
 
       if (delta > THRESHOLD && y > 80) {
-        // Scrolling DOWN past the top area → hide
         hud.classList.add('hud-hidden');
         filters.classList.add('filters-hidden');
       } else if (delta < -THRESHOLD) {
-        // Scrolling UP → show
         hud.classList.remove('hud-hidden');
         filters.classList.remove('filters-hidden');
       }
@@ -2347,13 +2466,12 @@
     }, { passive: true });
   })();
 
-  /* ══════════ HORIZONTAL SCROLL FOR DESKTOP CHIPS ══════════ */
+  /* ── HORIZONTAL SCROLL FOR DESKTOP CHIPS ── */
   (function() {
     const attachHorizontalScroll = (rowId) => {
       const row = document.getElementById(rowId);
       if (!row) return;
 
-      // 1. Mouse Wheel Scroll redirection
       row.addEventListener('wheel', (e) => {
         if (e.deltaY !== 0) {
           e.preventDefault();
@@ -2361,7 +2479,6 @@
         }
       }, { passive: false });
 
-      // 2. Drag/Grab scroll
       let isDown = false;
       let startX;
       let scrollLeft;
@@ -2392,14 +2509,14 @@
       });
     };
 
-    // Attach to wbar and sbar
     attachHorizontalScroll('wbar');
     attachHorizontalScroll('sbar');
   })();
 
-  /* ══════════ INIT ══════════ */
+  /* ── INIT ── */
   applyLang();
   initNotifications();
+  initAuthListener();
   load();
   </script>
 </body>
