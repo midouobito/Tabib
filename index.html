@@ -4,8 +4,8 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
   <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://viabbtrtusufxbuhxypb.supabase.co https://cdn.tailwindcss.com https://cdn.jsdelivr.net https://fonts.googleapis.com https://fonts.gstatic.com https://ui-avatars.com https://unpkg.com; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdn.jsdelivr.net https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com https://cdn.jsdelivr.net; font-src https://fonts.gstatic.com; img-src 'self' data: https://ui-avatars.com https://unpkg.com https://*.tile.openstreetmap.org; connect-src 'self' https://viabbtrtusufxbuhxypb.supabase.co https://cdn.jsdelivr.net https://unpkg.com;">
-  <meta name="description" content="TabibDZ – Annuaire médical d'Algérie : médecins, pharmacies, laboratoires et hôpitaux."/>
-  <title>TabibDZ – Annuaire Médical &amp; Santé d'Algérie</title>
+  <meta name="description" content="TabibClick – Annuaire médical d'Algérie : médecins, pharmacies, laboratoires et hôpitaux."/>
+  <title>TabibClick – Annuaire Médical &amp; Santé d'Algérie</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -39,7 +39,7 @@
         <span class="si-icon">
           <i data-lucide="search" style="width:14px;height:14px;stroke-width:2.5px;"></i>
         </span>
-        <input id="q" class="si" type="search" placeholder="Rechercher sur TabibDZ..." autocomplete="off" maxlength="80"/>
+        <input id="q" class="si" type="search" placeholder="Rechercher sur TabibClick..." autocomplete="off" maxlength="80"/>
         <button id="clr" class="si-clr">✕</button>
       </div>
 
@@ -177,7 +177,7 @@
 
       <!-- FOOTER (desktop only, inside content) -->
       <div style="padding:24px 16px 12px; font-size:10px; color:var(--text-muted); text-align:center; border-top:1px solid var(--border-light); margin-top:auto; display:none;" id="footer-desktop" class="desktop-footer">
-        TabibDZ © 2026 · <span class="i18n" data-key="footer_note">Données indicatives.</span>
+        TabibClick © 2026 · <span class="i18n" data-key="footer_note">Données indicatives.</span>
       </div>
 
     </div><!-- /content-area -->
@@ -472,8 +472,8 @@
       rdv_confirm_btn:(slot)=>`Confirmer pour ${slot}`,
       toast_rdv_ok:'✅ Rendez-vous réservé avec succès !',
       toast_rdv_fields:'⚠️ Veuillez remplir votre nom et téléphone',
-      toast_rdv_soon:'La prise de rendez-vous en ligne sera très bientôt disponible sur TabibDZ !',
-      toast_claim_soon:'La revendication de profil sera très bientôt disponible sur TabibDZ !',
+      toast_rdv_soon:'La prise de rendez-vous en ligne sera très bientôt disponible sur TabibClick !',
+      toast_claim_soon:'La revendication de profil sera très bientôt disponible sur TabibClick !',
       claim_btn:'Je suis ce médecin',
       claim_title:'Revendiquer le profil',
       claim_desc:'Mettez à jour vos informations professionnelles (tarifs, horaires, photo) pour enrichir votre fiche publique.',
@@ -535,8 +535,8 @@
       rdv_confirm_btn:(slot)=>`تأكيد الموعد الساعة ${slot}`,
       toast_rdv_ok:'✅ تم حجز الموعد بنجاح!',
       toast_rdv_fields:'⚠️ يرجى إدخال الاسم ورقم الهاتف',
-      toast_rdv_soon:'حجز المواعيد عبر الإنترنت سيكون متاحاً قريباً جداً على TabibDZ!',
-      toast_claim_soon:'تأكيد ملكية الملف الشخصي سيكون متاحاً قريباً جداً على TabibDZ!',
+      toast_rdv_soon:'حجز المواعيد عبر الإنترنت سيكون متاحاً قريباً جداً على TabibClick!',
+      toast_claim_soon:'تأكيد ملكية الملف الشخصي سيكون متاحاً قريباً جداً على TabibClick!',
       claim_btn:'أنا هذا الطبيب',
       claim_title:'تأكيد ملكية الملف الشخصي',
       claim_desc:'قم بتحديث معلوماتك المهنية (الأسعار، الأوقات، الصورة) لإثراء ملفك التعريفي العام.',
@@ -566,7 +566,7 @@
     }
   };
 
-  let currentLang = localStorage.getItem('tabibdz_lang') || 'fr';
+  let currentLang = localStorage.getItem('tabibclick_lang') || 'fr';
   if (currentLang !== 'fr' && currentLang !== 'ar') {
     currentLang = 'fr';
   }
@@ -595,10 +595,10 @@
     if (!gpsOn && gpsTxt) gpsTxt.textContent = t('gps_btn');
     if (ALL.length > 0) { buildWChips(); buildSChips(); filter(); }
   }
-  function toggleLang() { currentLang = currentLang==='fr'?'ar':'fr'; localStorage.setItem('tabibdz_lang',currentLang); applyLang(); }
+  function toggleLang() { currentLang = currentLang==='fr'?'ar':'fr'; localStorage.setItem('tabibclick_lang',currentLang); applyLang(); }
 
   /* ══════════ THEME ══════════ */
-  let currentTheme = localStorage.getItem('tabibdz_theme') || 'light';
+  let currentTheme = localStorage.getItem('tabibclick_theme') || 'light';
   function applyTheme() {
     document.documentElement.setAttribute('data-theme', currentTheme);
     const themeIcon = document.getElementById('themeIcon');
@@ -607,7 +607,7 @@
       if (window.lucide) lucide.createIcons();
     }
   }
-  function toggleTheme() { currentTheme=currentTheme==='light'?'dark':'light'; localStorage.setItem('tabibdz_theme',currentTheme); applyTheme(); }
+  function toggleTheme() { currentTheme=currentTheme==='light'?'dark':'light'; localStorage.setItem('tabibclick_theme',currentTheme); applyTheme(); }
   applyTheme();
 
   /* ══════════ PROGRESS BAR ══════════ */
@@ -628,7 +628,7 @@
   let userLat=null, userLng=null, gpsOn=false;
   let localAvis = {};
   try {
-    localAvis = JSON.parse(localStorage.getItem('tabibdz_avis')||'{}');
+    localAvis = JSON.parse(localStorage.getItem('tabibclick_avis')||'{}');
   } catch(e) {
     console.warn("Corrupted avis in localStorage:", e);
   }
@@ -668,12 +668,12 @@
   }
 
   /* ══════════ DATA LOADING ══════════ */
-  const CACHE_KEY='tabibdz_data', CACHE_TIME='tabibdz_data_ts', CACHE_TTL=30*60*1000;
+  const CACHE_KEY='tabibclick_data', CACHE_TIME='tabibclick_data_ts', CACHE_TTL=30*60*1000;
 
   function applyLocalProfileOverrides(docs) {
     let localProfiles = {};
     try {
-      localProfiles = JSON.parse(localStorage.getItem('tabibdz_profiles') || '{}');
+      localProfiles = JSON.parse(localStorage.getItem('tabibclick_profiles') || '{}');
     } catch(e) {
       console.warn("Corrupted profiles in localStorage:", e);
     }
@@ -728,7 +728,7 @@
       for (const rule of SPEC_KEYWORDS) {
         for (const kw of rule.keywords) {
           if (searchText.includes(kw)) {
-            console.log(`[TabibDZ AutoFix] "${d.nom}" specialty corrected: "${d.specialite}" → "${rule.spec}"`);
+            console.log(`[TabibClick AutoFix] "${d.nom}" specialty corrected: "${d.specialite}" → "${rule.spec}"`);
             return { ...d, specialite: rule.spec };
           }
         }
@@ -852,20 +852,20 @@
   function fmtD(k){ return k<1?`${Math.round(k*1000)} m`:`${k.toFixed(1)} km`; }
 
   function autoRequestGPS() {
-    const pref = localStorage.getItem('tabibdz_gps_pref');
+    const pref = localStorage.getItem('tabibclick_gps_pref');
     if (pref === 'denied') return;
     if (!navigator.geolocation) return;
     navigator.geolocation.getCurrentPosition(p => {
       userLat = p.coords.latitude;
       userLng = p.coords.longitude;
       gpsOn = true;
-      localStorage.setItem('tabibdz_gps_pref', 'allowed');
+      localStorage.setItem('tabibclick_gps_pref', 'allowed');
       document.getElementById('gpsTxt').textContent = t('gps_sorted');
       document.getElementById('gpsBtn').classList.add('active');
       filter();
     }, err => {
       if (err.code === err.PERMISSION_DENIED) {
-        localStorage.setItem('tabibdz_gps_pref', 'denied');
+        localStorage.setItem('tabibclick_gps_pref', 'denied');
       }
     }, { timeout: 8000 });
   }
@@ -875,7 +875,7 @@
     document.getElementById('gpsTxt').textContent=t('gps_locating');
     navigator.geolocation.getCurrentPosition(p=>{
       userLat=p.coords.latitude; userLng=p.coords.longitude; gpsOn=true;
-      localStorage.setItem('tabibdz_gps_pref', 'allowed');
+      localStorage.setItem('tabibclick_gps_pref', 'allowed');
       document.getElementById('gpsTxt').textContent=t('gps_sorted');
       document.getElementById('gpsBtn').classList.add('active');
       showToast(t('toast_gps_ok')); filter();
@@ -883,7 +883,7 @@
       document.getElementById('gpsTxt').textContent=t('gps_btn');
       showToast(t('toast_gps_err'));
       if (err.code === err.PERMISSION_DENIED) {
-        localStorage.setItem('tabibdz_gps_pref', 'denied');
+        localStorage.setItem('tabibclick_gps_pref', 'denied');
       }
     },{timeout:8000});
   }
@@ -1452,18 +1452,18 @@
   function canReview(id) {
     let reviewed = [];
     try {
-      reviewed = JSON.parse(localStorage.getItem('tabibdz_reviewed_ids') || '[]');
+      reviewed = JSON.parse(localStorage.getItem('tabibclick_reviewed_ids') || '[]');
     } catch(e) {}
     return reviewed.length < 3;
   }
   function recordReview(id) {
     let reviewed = [];
     try {
-      reviewed = JSON.parse(localStorage.getItem('tabibdz_reviewed_ids') || '[]');
+      reviewed = JSON.parse(localStorage.getItem('tabibclick_reviewed_ids') || '[]');
     } catch(e) {}
     if (!reviewed.includes(id)) {
       reviewed.push(id);
-      localStorage.setItem('tabibdz_reviewed_ids', JSON.stringify(reviewed));
+      localStorage.setItem('tabibclick_reviewed_ids', JSON.stringify(reviewed));
     }
   }
   function sanitizeName(n) {
@@ -1496,7 +1496,7 @@
     }catch(e){
       if(!localAvis[id])localAvis[id]=[];
       localAvis[id].push({auteur:name,note,commentaire:cmnt,date:today});
-      localStorage.setItem('tabibdz_avis',JSON.stringify(localAvis));
+      localStorage.setItem('tabibclick_avis',JSON.stringify(localAvis));
       recordReview(id); showToast(t('toast_review_local'));
     }
     document.getElementById(`name-${id}`).value='';
@@ -1768,7 +1768,7 @@
     
     let bookings = [];
     try {
-      bookings = JSON.parse(localStorage.getItem('tabibdz_bookings') || '[]');
+      bookings = JSON.parse(localStorage.getItem('tabibclick_bookings') || '[]');
     } catch(e) {
       console.warn("Corrupted bookings in localStorage:", e);
     }
@@ -1824,9 +1824,9 @@
       created_at: new Date().toISOString()
     };
     
-    const bookings = JSON.parse(localStorage.getItem('tabibdz_bookings') || '[]');
+    const bookings = JSON.parse(localStorage.getItem('tabibclick_bookings') || '[]');
     bookings.push(rdvData);
-    localStorage.setItem('tabibdz_bookings', JSON.stringify(bookings));
+    localStorage.setItem('tabibclick_bookings', JSON.stringify(bookings));
     
     try {
       await supabaseDb.from('rendez_vous').insert([rdvData]);
@@ -1916,7 +1916,7 @@
     otpExpiresAt = Date.now() + 5 * 60 * 1000; // 5 mins
     
     showToast(currentLang === 'ar' ? `💬 تم الإرسال (تجريبي): ${generatedOtpCode}` : `💬 OTP envoyé (Test): ${generatedOtpCode}`);
-    console.log(`[TabibDZ Auth Code] OTP: ${generatedOtpCode} for profile claim of ${selectedDoc.nom}. Expires in 5 minutes.`);
+    console.log(`[TabibClick Auth Code] OTP: ${generatedOtpCode} for profile claim of ${selectedDoc.nom}. Expires in 5 minutes.`);
     
     document.getElementById('claimVerifyStartStep').style.display = 'none';
     document.getElementById('claimVerifyOtpStep').style.display = 'flex';
@@ -2160,7 +2160,7 @@
       }
     }
     
-    const localProfiles = JSON.parse(localStorage.getItem('tabibdz_profiles') || '{}');
+    const localProfiles = JSON.parse(localStorage.getItem('tabibclick_profiles') || '{}');
     const updateData = {
       photo_url: claimBase64Photo,
       tarif,
@@ -2173,7 +2173,7 @@
       updateData.claimed_by_profile_id = currentUser.id;
     }
     localProfiles[selectedDoc.id] = updateData;
-    localStorage.setItem('tabibdz_profiles', JSON.stringify(localProfiles));
+    localStorage.setItem('tabibclick_profiles', JSON.stringify(localProfiles));
     
     try {
       await supabaseDb.from('medecins').update(updateData).eq('id', selectedDoc.id);
@@ -2222,8 +2222,8 @@
   }
 
   function clearNotifs() {
-    localStorage.setItem('tabibdz_cleared_notifs', 'true');
-    localStorage.setItem('tabibdz_cleared_ts', Date.now().toString());
+    localStorage.setItem('tabibclick_cleared_notifs', 'true');
+    localStorage.setItem('tabibclick_cleared_ts', Date.now().toString());
     notifications = [];
     renderNotifications();
   }
@@ -2292,9 +2292,9 @@
       candidates = sorted.slice(0, 3);
     }
     
-    const isCleared = localStorage.getItem('tabibdz_cleared_notifs');
+    const isCleared = localStorage.getItem('tabibclick_cleared_notifs');
     if (isCleared) {
-      const clearTime = parseInt(localStorage.getItem('tabibdz_cleared_ts') || '0');
+      const clearTime = parseInt(localStorage.getItem('tabibclick_cleared_ts') || '0');
       candidates = candidates.filter(item => {
         const itemTime = item.created_at ? new Date(item.created_at).getTime() : 0;
         return itemTime > clearTime;
@@ -2306,12 +2306,12 @@
       filteredNotifs = candidates.filter(item => item.wilaya === activeW);
     }
     
-    const lastSeenId = parseInt(localStorage.getItem('tabibdz_last_seen_notif_id') || '0');
+    const lastSeenId = parseInt(localStorage.getItem('tabibclick_last_seen_notif_id') || '0');
     if (filteredNotifs.length > 0) {
       const newest = filteredNotifs[0];
       if (newest.id > lastSeenId) {
         triggerBrowserNotification(newest);
-        localStorage.setItem('tabibdz_last_seen_notif_id', newest.id.toString());
+        localStorage.setItem('tabibclick_last_seen_notif_id', newest.id.toString());
         document.getElementById('notifDot').style.display = 'block';
       }
     }
@@ -2324,7 +2324,7 @@
     if (!window.Notification || Notification.permission !== 'granted') return;
     
     const isDoc = getCategory(item) === 'médecin';
-    const title = "Nouveauté TabibDZ 🔔";
+    const title = "Nouveauté TabibClick 🔔";
     const body = isDoc ? t('notif_new_doc', item.nom, item.ville) : t('notif_new_lab', item.nom, item.ville);
     
     new Notification(title, {
@@ -2394,7 +2394,7 @@
   }
 
   function updateSEOMeta() {
-    let title = "TabibDZ – Annuaire Médical & Santé d'Algérie";
+    let title = "TabibClick – Annuaire Médical & Santé d'Algérie";
     let description = "Trouvez facilement un médecin, une pharmacie de garde, un laboratoire ou un hôpital à proximité en Algérie.";
     
     const catText = activeCategory === 'médecin' ? 'Médecins' : activeCategory === 'pharmacie' ? 'Pharmacies' : activeCategory === 'laboratoire' ? 'Laboratoires' : 'Hôpitaux';
@@ -2402,13 +2402,13 @@
     
     if (activeCategory === 'médecin') {
       const specText = (activeS && activeS !== 'Toutes') ? activeS : 'Médecins';
-      title = `${specText}${wilayaText} – TabibDZ`;
+      title = `${specText}${wilayaText} – TabibClick`;
       description = `Trouvez les meilleurs ${specText.toLowerCase()}${wilayaText}. Adresses, numéros de téléphone, avis patients et prise de rendez-vous en ligne.`;
     } else if (activeCategory === 'pharmacie') {
-      title = `${catText}${wilayaText} – TabibDZ`;
+      title = `${catText}${wilayaText} – TabibClick`;
       description = `Trouvez une pharmacie${wilayaText}. Horaires d'ouverture, coordonnées et pharmacies de garde cette semaine.`;
     } else {
-      title = `${catText}${wilayaText} – TabibDZ`;
+      title = `${catText}${wilayaText} – TabibClick`;
       description = `Trouvez un ${activeCategory}${wilayaText}. Coordonnées, horaires d'ouverture et services médicaux.`;
     }
     
