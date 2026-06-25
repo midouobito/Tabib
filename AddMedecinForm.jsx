@@ -37,6 +37,8 @@ export default function AddMedecinForm() {
           ville: formData.ville,
           adresse: formData.adresse,
           telephone: formData.telephone,
+          horaires: '08:00 - 16:00',
+          jours: ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu'],
           disponible: true, // Par défaut, on le marque comme disponible
         }
       ]);
