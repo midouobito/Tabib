@@ -183,6 +183,12 @@
       display: flex;
       flex-direction: column;
       gap: 6px;
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+    }
+    .floating-hud.hud-hidden {
+      transform: translateX(-50%) translateY(-120%);
+      opacity: 0;
+      pointer-events: none;
     }
     .hud-search-container {
       display: flex;
@@ -290,6 +296,12 @@
       -webkit-backdrop-filter: blur(16px) saturate(130%);
       border-bottom: 1px solid var(--border-light);
       border-radius: 0 0 12px 12px;
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+    }
+    .floating-filters.filters-hidden {
+      transform: translateY(-120%);
+      opacity: 0;
+      pointer-events: none !important;
     }
     .floating-filters > * {
       pointer-events: auto;

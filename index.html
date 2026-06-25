@@ -2026,6 +2026,31 @@
     filter();
   });
 
+  /* ══════════ AUTO-HIDE HUD ON SCROLL ══════════ */
+  (function() {
+    let lastScrollY = 0;
+    const hud = document.querySelector('.floating-hud');
+    const filters = document.querySelector('.floating-filters');
+    const THRESHOLD = 8; // min px to trigger
+
+    window.addEventListener('scroll', () => {
+      const y = window.scrollY;
+      const delta = y - lastScrollY;
+
+      if (delta > THRESHOLD && y > 80) {
+        // Scrolling DOWN past the top area → hide
+        hud.classList.add('hud-hidden');
+        filters.classList.add('filters-hidden');
+      } else if (delta < -THRESHOLD) {
+        // Scrolling UP → show
+        hud.classList.remove('hud-hidden');
+        filters.classList.remove('filters-hidden');
+      }
+
+      lastScrollY = y;
+    }, { passive: true });
+  })();
+
   /* ══════════ INIT ══════════ */
   applyLang();
   initNotifications();
