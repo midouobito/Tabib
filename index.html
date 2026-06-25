@@ -912,20 +912,22 @@
     const visibleDocs = docs.slice(0, visibleLimit);
     visibleDocs.forEach(d=>list.appendChild(buildCard(d)));
     
-    // Add "Voir plus" button if there are more results
+    // Infinite scroll sentinel
     if (docs.length > visibleLimit) {
-      const loadMoreWrap = document.createElement('div');
-      loadMoreWrap.style.cssText = 'display:flex; justify-content:center; padding:10px 0 20px; width:100%;';
-      const btn = document.createElement('button');
-      btn.className = 'btn-map';
-      btn.style.cssText = 'max-width:200px; padding:10px 24px; font-weight:700;';
-      btn.textContent = t('load_more');
-      btn.onclick = () => {
-        visibleLimit += 12;
-        filter(true);
-      };
-      loadMoreWrap.appendChild(btn);
-      list.appendChild(loadMoreWrap);
+      const sentinel = document.createElement('div');
+      sentinel.id = 'scroll-sentinel';
+      sentinel.style.cssText = 'width:100%; height:1px;';
+      list.appendChild(sentinel);
+
+      if (window._scrollObserver) window._scrollObserver.disconnect();
+      window._scrollObserver = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting) {
+          window._scrollObserver.disconnect();
+          visibleLimit += 12;
+          filter(true);
+        }
+      }, { rootMargin: '200px' });
+      window._scrollObserver.observe(sentinel);
     }
   }
 
