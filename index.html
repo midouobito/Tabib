@@ -513,15 +513,19 @@
     const isAr = currentLang === 'ar';
     document.documentElement.lang = currentLang;
     document.documentElement.dir  = isAr ? 'rtl' : 'ltr';
-    document.getElementById('langLabel').textContent = isAr ? 'FR' : 'عربي';
-    document.getElementById('tagline').textContent   = t('tagline');
+    const langLabel = document.getElementById('langLabel');
+    if (langLabel) langLabel.textContent = isAr ? 'FR' : 'عربي';
+    const tagline = document.getElementById('tagline');
+    if (tagline) tagline.textContent   = t('tagline');
     const langObj = LANGS[currentLang] || LANGS['fr'];
     document.querySelectorAll('.i18n[data-key]').forEach(el => {
       const k = el.dataset.key;
       if (langObj[k] && typeof langObj[k] !== 'function') el.textContent = langObj[k];
     });
-    document.getElementById('q').placeholder = isAr ? 'ابحث بالاسم أو المدينة...' : 'Rechercher par nom, ville...';
-    if (!gpsOn) document.getElementById('gpsTxt').textContent = t('gps_btn');
+    const qInput = document.getElementById('q');
+    if (qInput) qInput.placeholder = isAr ? 'ابحث بالاسم أو المدينة...' : 'Rechercher par nom, ville...';
+    const gpsTxt = document.getElementById('gpsTxt');
+    if (!gpsOn && gpsTxt) gpsTxt.textContent = t('gps_btn');
     if (ALL.length > 0) { buildWChips(); buildSChips(); filter(); }
   }
   function toggleLang() { currentLang = currentLang==='fr'?'ar':'fr'; localStorage.setItem('tabibdz_lang',currentLang); applyLang(); }
