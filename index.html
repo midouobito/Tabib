@@ -450,6 +450,8 @@
       rdv_confirm_btn:(slot)=>`Confirmer pour ${slot}`,
       toast_rdv_ok:'✅ Rendez-vous réservé avec succès !',
       toast_rdv_fields:'⚠️ Veuillez remplir votre nom et téléphone',
+      toast_rdv_soon:'La prise de rendez-vous en ligne sera très bientôt disponible sur TabibDZ !',
+      toast_claim_soon:'La revendication de profil sera très bientôt disponible sur TabibDZ !',
       claim_btn:'Je suis ce médecin',
       claim_title:'Revendiquer le profil',
       claim_desc:'Mettez à jour vos informations professionnelles (tarifs, horaires, photo) pour enrichir votre fiche publique.',
@@ -511,6 +513,8 @@
       rdv_confirm_btn:(slot)=>`تأكيد الموعد الساعة ${slot}`,
       toast_rdv_ok:'✅ تم حجز الموعد بنجاح!',
       toast_rdv_fields:'⚠️ يرجى إدخال الاسم ورقم الهاتف',
+      toast_rdv_soon:'حجز المواعيد عبر الإنترنت سيكون متاحاً قريباً جداً على TabibDZ!',
+      toast_claim_soon:'تأكيد ملكية الملف الشخصي سيكون متاحاً قريباً جداً على TabibDZ!',
       claim_btn:'أنا هذا الطبيب',
       claim_title:'تأكيد ملكية الملف الشخصي',
       claim_desc:'قم بتحديث معلوماتك المهنية (الأسعار، الأوقات، الصورة) لإثراء ملفك التعريفي العام.',
@@ -1225,8 +1229,7 @@
       btnRdv.style.cssText = 'flex:1;padding:12px;font-size:14px;font-weight:800;';
       btnRdv.innerHTML = `<i data-lucide="calendar-check" style="width:16px;height:16px;stroke-width:2.5px;"></i> <span>${t('rdv_btn')}</span>`;
       btnRdv.onclick = () => {
-        closeDetailsModal();
-        openRdvModal(doc);
+        showToast(t('toast_rdv_soon'));
       };
       actRow.appendChild(btnRdv);
     }
@@ -1239,8 +1242,7 @@
       const claimTxt = getCategory(doc) === 'pharmacie' ? (currentLang === 'ar' ? 'أنا هذه الصيدلية' : 'Je suis cette pharmacie') : (currentLang === 'ar' ? 'أنا هذا الطبيب' : 'Je suis ce médecin');
       btnClaim.innerHTML = `<i data-lucide="badge-check" style="width:16px;height:16px;stroke-width:2.2px;"></i> <span>${claimTxt}</span>`;
       btnClaim.onclick = () => {
-        closeDetailsModal();
-        openClaimModal(doc);
+        showToast(t('toast_claim_soon'));
       };
       actRow.appendChild(btnClaim);
     }
@@ -1641,8 +1643,7 @@
 
   function closeMapPopupsAndBook(docId) {
     if (map) map.closePopup();
-    const doc = ALL.find(d => d.id === docId);
-    if (doc) openRdvModal(doc);
+    showToast(t('toast_rdv_soon'));
   }
 
   /* ══════════ APPOINTMENTS (RDV) ══════════ */
