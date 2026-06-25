@@ -1,18 +1,4 @@
-<!DOCTYPE html>
-<html lang="fr" data-theme="light" dir="ltr">
-<head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://viabbtrtusufxbuhxypb.supabase.co https://cdn.tailwindcss.com https://cdn.jsdelivr.net https://fonts.googleapis.com https://fonts.gstatic.com https://ui-avatars.com; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://ui-avatars.com; connect-src 'self' https://viabbtrtusufxbuhxypb.supabase.co;">
-  <meta name="description" content="TabibDZ – Annuaire médical d'Algérie : médecins, pharmacies, laboratoires et hôpitaux."/>
-  <title>TabibDZ – Annuaire Médical &amp; Santé d'Algérie</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    /* ══════════ TOKENS ══════════ */
+/* ══════════ TOKENS ══════════ */
     :root {
       --bg:             #F4F6FA;
       --bg2:            #EAECF3;
@@ -40,28 +26,28 @@
       --r2:             4px;
     }
     [data-theme="dark"] {
-      --bg:             #0B0F1C;
-      --bg2:            #111623;
-      --surface:        #151B2C;
-      --surface2:       #1A2235;
-      --border:         #242E45;
-      --border-light:   #1C2438;
+      --bg:             #060913;
+      --bg2:            rgba(255, 255, 255, 0.03);
+      --surface:        rgba(21, 27, 44, 0.45);
+      --surface2:       rgba(255, 255, 255, 0.02);
+      --border:         rgba(255, 255, 255, 0.08);
+      --border-light:   rgba(255, 255, 255, 0.04);
       --text-primary:   #EDF2FF;
-      --text-secondary: #8DA0BC;
-      --text-muted:     #4E6180;
-      --sticky-bg:      rgba(11,15,28,0.96);
-      --chip-bg:        #1A2235;
-      --chip-color:     #7A90AD;
-      --input-bg:       #151B2C;
-      --skel-from:      rgba(255,255,255,0.03);
-      --skel-mid:       rgba(255,255,255,0.07);
+      --text-secondary: #A5B4FC;
+      --text-muted:     #6366F1;
+      --sticky-bg:      rgba(6, 9, 19, 0.85);
+      --chip-bg:        rgba(255, 255, 255, 0.04);
+      --chip-color:     #A5B4FC;
+      --input-bg:       rgba(255, 255, 255, 0.01);
+      --skel-from:      rgba(255, 255, 255, 0.02);
+      --skel-mid:       rgba(255, 255, 255, 0.05);
       --accent:         #6366F1;
-      --accent2:        #38BDF8;
-      --green:          #22C55E;
-      --red:            #F87171;
+      --accent2:        #0EA5E9;
+      --green:          #10B981;
+      --red:            #F43F5E;
       --amber:          #FBBF24;
-      --shadow:         0 2px 12px rgba(0,0,0,0.5), 0 4px 24px rgba(0,0,0,0.3);
-      --shadow-sm:      0 1px 4px rgba(0,0,0,0.35);
+      --shadow:         0 8px 32px 0 rgba(0, 0, 0, 0.37);
+      --shadow-sm:      0 2px 8px 0 rgba(0, 0, 0, 0.2);
     }
 
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -75,6 +61,119 @@
       min-height: 100dvh;
       transition: background 0.25s, color 0.25s;
       margin: 0;
+    }
+
+    /* ══════════ LIQUID GLASS — LIGHT MODE ══════════ */
+    [data-theme="light"] body {
+      background-color: #EEF1F8;
+      background-image:
+        radial-gradient(circle at 12% 20%, rgba(79, 70, 229, 0.12) 0%, transparent 45%),
+        radial-gradient(circle at 88% 80%, rgba(14, 165, 233, 0.10) 0%, transparent 45%),
+        radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.08) 0%, transparent 40%);
+      background-attachment: fixed;
+    }
+    [data-theme="light"] .topbar,
+    [data-theme="light"] .sidebar {
+      background: rgba(255, 255, 255, 0.72);
+      backdrop-filter: blur(18px) saturate(130%);
+      -webkit-backdrop-filter: blur(18px) saturate(130%);
+    }
+    [data-theme="light"] .search-zone {
+      background: rgba(244, 246, 250, 0.65);
+      backdrop-filter: blur(16px) saturate(120%);
+      -webkit-backdrop-filter: blur(16px) saturate(120%);
+    }
+    [data-theme="light"] .doc-card {
+      background: rgba(255, 255, 255, 0.60);
+      backdrop-filter: blur(14px) saturate(120%);
+      -webkit-backdrop-filter: blur(14px) saturate(120%);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.8);
+    }
+    [data-theme="light"] .doc-card:hover {
+      background: rgba(255, 255, 255, 0.78);
+      box-shadow: 0 4px 20px rgba(79,70,229,0.10), inset 0 1px 0 rgba(255,255,255,0.9);
+    }
+    [data-theme="light"] .modal-content {
+      background: rgba(255, 255, 255, 0.75);
+      backdrop-filter: blur(20px) saturate(130%);
+      -webkit-backdrop-filter: blur(20px) saturate(130%);
+    }
+    [data-theme="light"] .mobile-nav {
+      background: rgba(255, 255, 255, 0.72);
+      backdrop-filter: blur(18px) saturate(130%);
+      -webkit-backdrop-filter: blur(18px) saturate(130%);
+    }
+
+    /* ══════════ LIQUID GLASS — DARK MODE (VisionOS) ══════════ */
+    [data-theme="dark"] body {
+      background-color: #060913 !important;
+      background-image:
+        radial-gradient(circle at 15% 15%, rgba(79, 70, 229, 0.35) 0%, transparent 50%),
+        radial-gradient(circle at 85% 85%, rgba(244, 63, 94, 0.35) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.25) 0%, transparent 45%) !important;
+      background-attachment: fixed !important;
+    }
+    [data-theme="dark"] .search-zone {
+      background: rgba(6, 9, 19, 0.6) !important;
+      backdrop-filter: blur(20px) saturate(140%) !important;
+      -webkit-backdrop-filter: blur(20px) saturate(140%) !important;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+    }
+    [data-theme="dark"] .topbar,
+    [data-theme="dark"] .sidebar,
+    [data-theme="dark"] .mobile-nav,
+    [data-theme="dark"] .doc-card,
+    [data-theme="dark"] .modal-content,
+    [data-theme="dark"] .empty-box,
+    [data-theme="dark"] #notifDropdown,
+    [data-theme="dark"] .ctrl-btn,
+    [data-theme="dark"] .gps-btn,
+    [data-theme="dark"] .avis-card {
+      backdrop-filter: blur(24px) saturate(150%) !important;
+      -webkit-backdrop-filter: blur(24px) saturate(150%) !important;
+      box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.08), var(--shadow) !important;
+    }
+    [data-theme="dark"] .doc-card:hover {
+      border-color: rgba(14, 165, 233, 0.45) !important;
+      box-shadow: 0 0 25px rgba(99, 102, 241, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.15) !important;
+      transform: translateY(-2px);
+    }
+    [data-theme="dark"] .form-input {
+      background: rgba(255, 255, 255, 0.02) !important;
+      border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    }
+    [data-theme="dark"] .form-input:focus {
+      border-color: rgba(14, 165, 233, 0.5) !important;
+      box-shadow: 0 0 12px rgba(14, 165, 233, 0.25) !important;
+    }
+    [data-theme="dark"] .star-pick span.sel {
+      color: var(--amber) !important;
+      text-shadow: 0 0 8px rgba(251, 191, 36, 0.5);
+    }
+    [data-theme="dark"] .spec-badge {
+      background: rgba(99, 102, 241, 0.15) !important;
+      border-color: rgba(99, 102, 241, 0.3) !important;
+      box-shadow: 0 0 8px rgba(99, 102, 241, 0.1);
+    }
+    [data-theme="dark"] .btn-call {
+      background: linear-gradient(135deg, #059669, #10B981) !important;
+      box-shadow: 0 2px 10px rgba(16, 185, 129, 0.25);
+    }
+    [data-theme="dark"] .btn-map {
+      background: rgba(255, 255, 255, 0.03) !important;
+      border-color: rgba(255, 255, 255, 0.1) !important;
+    }
+    [data-theme="dark"] .btn-map:hover {
+      border-color: rgba(99, 102, 241, 0.4) !important;
+      background: rgba(255, 255, 255, 0.05) !important;
+    }
+    [data-theme="dark"] .btn-publish {
+      background: linear-gradient(135deg, #4f46e5, #0ea5e9) !important;
+      box-shadow: 0 2px 12px rgba(99, 102, 241, 0.3);
+    }
+    [data-theme="dark"] .chip.on,
+    [data-theme="dark"] .schip.on {
+      box-shadow: 0 0 12px rgba(99, 102, 241, 0.4);
     }
     [dir="rtl"] body, [dir="rtl"] * {
       font-family: 'IBM Plex Sans Arabic', 'Inter', sans-serif;
@@ -492,670 +591,7 @@
       0%,100% { opacity: 1; }
       50%      { opacity: 0.5; }
     }
-  </style>
-</head>
-<body>
-
-  <div id="progress-bar"></div>
-
-  <!-- ══════════ TOP BAR ══════════ -->
-  <header class="topbar">
-    <div class="topbar-logo-wrap">
-      <div class="logo-icon">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
-        </svg>
-      </div>
-      <div>
-        <div class="logo-name">TabibDZ</div>
-        <div id="tagline" class="logo-sub">Dossier Santé Algérie</div>
-      </div>
-    </div>
-    <button id="langBtn" onclick="toggleLang()" class="ctrl-btn">
-      <span>🌐</span><span id="langLabel">عربي</span>
-    </button>
-    <button id="themeBtn" onclick="toggleTheme()" class="ctrl-btn">
-      <span id="themeIcon">🌙</span>
-    </button>
-  </header>
-
-  <!-- ══════════ APP LAYOUT ══════════ -->
-  <div class="app-layout">
-
-    <!-- SIDEBAR (desktop) -->
-    <aside class="sidebar">
-      <p class="sec-label" style="padding:4px 6px 10px">Catégorie</p>
-      <button onclick="setCategory('médecin')"    class="cat-tab active" data-cat="médecin">
-        <span>🩺</span><span class="i18n" data-key="cat_medecin">Médecins</span>
-      </button>
-      <button onclick="setCategory('pharmacie')"  class="cat-tab" data-cat="pharmacie">
-        <span>💊</span><span class="i18n" data-key="cat_pharmacie">Pharmacies</span>
-      </button>
-      <button onclick="setCategory('laboratoire')" class="cat-tab" data-cat="laboratoire">
-        <span>🔬</span><span class="i18n" data-key="cat_labo">Laboratoires</span>
-      </button>
-      <button onclick="setCategory('hôpital')"    class="cat-tab" data-cat="hôpital">
-        <span>🏥</span><span class="i18n" data-key="cat_hopital">Hôpitaux</span>
-      </button>
-      <div class="sidebar-footer">
-        TabibDZ © 2026<br/>
-        <span class="i18n" data-key="footer_note">Données indicatives.</span>
-      </div>
-    </aside>
-
-    <!-- MAIN CONTENT -->
-    <div class="content-area">
-
-      <!-- STICKY SEARCH + FILTERS -->
-      <div class="search-zone">
-        <!-- Search row -->
-        <div class="search-row">
-          <div class="si-wrap">
-            <span class="si-icon">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-              </svg>
-            </span>
-            <input id="q" class="si" type="search" placeholder="Rechercher..." autocomplete="off" maxlength="80"/>
-            <button id="clr" class="si-clr">✕</button>
-          </div>
-          <button id="gpsBtn" class="gps-btn" onclick="requestGPS()">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-              <circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>
-            </svg>
-            <span id="gpsTxt" class="i18n" data-key="gps_btn">Près de moi</span>
-          </button>
-        </div>
-
-        <!-- Filters -->
-        <div class="filters-row">
-          <div class="filter-group">
-            <p class="sec-label i18n" data-key="filter_wilaya">Wilaya</p>
-            <div class="chips-row" id="wbar"></div>
-          </div>
-          <div class="filter-group" id="sbar_container">
-            <p class="sec-label i18n" data-key="filter_spec">Spécialité</p>
-            <div class="chips-row" id="sbar"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- STATS -->
-      <div class="stat-bar">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.2">
-          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
-        </svg>
-        <span id="statsTxt" class="i18n" data-key="loading">Chargement...</span>
-      </div>
-
-      <!-- CARDS LIST -->
-      <div class="cards-area" id="list">
-        <div class="doc-card" id="sk1" style="padding:16px; display:flex; gap:14px;">
-          <div class="skel" style="width:60px; height:60px; border-radius:var(--r); flex-shrink:0;"></div>
-          <div style="flex:1; display:flex; flex-direction:column; gap:9px; padding-top:3px;">
-            <div class="skel" style="height:14px; width:55%; border-radius:3px;"></div>
-            <div class="skel" style="height:11px; width:28%; border-radius:3px;"></div>
-            <div class="skel" style="height:36px; width:100%; border-radius:var(--r2);"></div>
-          </div>
-        </div>
-        <div class="doc-card" id="sk2" style="padding:16px; display:flex; gap:14px;">
-          <div class="skel" style="width:60px; height:60px; border-radius:var(--r); flex-shrink:0;"></div>
-          <div style="flex:1; display:flex; flex-direction:column; gap:9px; padding-top:3px;">
-            <div class="skel" style="height:14px; width:65%; border-radius:3px;"></div>
-            <div class="skel" style="height:11px; width:22%; border-radius:3px;"></div>
-            <div class="skel" style="height:36px; width:100%; border-radius:var(--r2);"></div>
-          </div>
-        </div>
-        <div class="doc-card" id="sk3" style="padding:16px; display:flex; gap:14px;">
-          <div class="skel" style="width:60px; height:60px; border-radius:var(--r); flex-shrink:0;"></div>
-          <div style="flex:1; display:flex; flex-direction:column; gap:9px; padding-top:3px;">
-            <div class="skel" style="height:14px; width:42%; border-radius:3px;"></div>
-            <div class="skel" style="height:11px; width:30%; border-radius:3px;"></div>
-            <div class="skel" style="height:36px; width:100%; border-radius:var(--r2);"></div>
-          </div>
-        </div>
-        <div class="doc-card" id="sk4" style="padding:16px; display:flex; gap:14px;">
-          <div class="skel" style="width:60px; height:60px; border-radius:var(--r); flex-shrink:0;"></div>
-          <div style="flex:1; display:flex; flex-direction:column; gap:9px; padding-top:3px;">
-            <div class="skel" style="height:14px; width:70%; border-radius:3px;"></div>
-            <div class="skel" style="height:11px; width:18%; border-radius:3px;"></div>
-            <div class="skel" style="height:36px; width:100%; border-radius:var(--r2);"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- EMPTY STATE -->
-      <div id="empty" class="empty-box" style="margin:0 16px;">
-        <div style="font-size:44px; margin-bottom:10px;">🩺</div>
-        <h3 class="i18n" data-key="empty_title" style="font-size:15px; font-weight:700; margin:0 0 6px; color:var(--text-primary)">Aucun résultat trouvé</h3>
-        <p class="i18n" data-key="empty_desc" style="font-size:12px; color:var(--text-muted); max-width:260px; line-height:1.6; margin:0 0 16px;">Essayez d'ajuster votre recherche ou réinitialisez les filtres.</p>
-        <button onclick="resetAll()" class="i18n" data-key="reset_btn" style="padding:8px 18px; border-radius:var(--r2); background:var(--accent); color:#fff; border:none; font-size:13px; font-weight:700; cursor:pointer;">Réinitialiser</button>
-      </div>
-
-      <!-- FOOTER (desktop only, inside content) -->
-      <div style="padding:24px 16px 12px; font-size:10px; color:var(--text-muted); text-align:center; border-top:1px solid var(--border-light); margin-top:auto; display:none;" id="footer-desktop" class="desktop-footer">
-        TabibDZ © 2026 · <span class="i18n" data-key="footer_note">Données indicatives.</span>
-      </div>
-
-    </div><!-- /content-area -->
-  </div><!-- /app-layout -->
-
-  <!-- ══════════ MOBILE BOTTOM NAV ══════════ -->
-  <nav class="mobile-nav" id="mobileNav">
-    <div class="mobile-nav-inner">
-      <button class="mnav-btn active" data-cat="médecin" onclick="setCategory('médecin')">
-        <span class="micon">🩺</span>
-        <span class="i18n" data-key="cat_medecin">Médecins</span>
-      </button>
-      <button class="mnav-btn" data-cat="pharmacie" onclick="setCategory('pharmacie')">
-        <span class="micon">💊</span>
-        <span class="i18n" data-key="cat_pharmacie">Pharmacies</span>
-      </button>
-      <button class="mnav-btn" data-cat="laboratoire" onclick="setCategory('laboratoire')">
-        <span class="micon">🔬</span>
-        <span class="i18n" data-key="cat_labo">Labos</span>
-      </button>
-      <button class="mnav-btn" data-cat="hôpital" onclick="setCategory('hôpital')">
-        <span class="micon">🏥</span>
-        <span class="i18n" data-key="cat_hopital">Hôpitaux</span>
-      </button>
-    </div>
-  </nav>
-
-  <!-- TOAST -->
-  <div class="toast" id="toast"></div>
-
-  <script>
-  /* ══════════ SECURITY ══════════ */
-  function sanitizeName(s)    { return s.replace(/[<>{}()\[\]\\/;=]/g,'').slice(0,60).trim(); }
-  function sanitizeComment(s) { return s.replace(/[<>{}\]/g,'').slice(0,500).trim(); }
-  const sessionReviews = JSON.parse(sessionStorage.getItem('tabibdz_session_rev') || '{}');
-  function canReview(id)  { return (sessionReviews[id]||0) < 3; }
-  function recordReview(id) {
-    sessionReviews[id] = (sessionReviews[id]||0)+1;
-    sessionStorage.setItem('tabibdz_session_rev', JSON.stringify(sessionReviews));
-  }
-
-  /* ══════════ TRANSLATIONS ══════════ */
-  const LANGS = {
-    fr: {
-      cat_medecin:'Médecins', cat_pharmacie:'Pharmacies', cat_labo:'Labos', cat_hopital:'Hôpitaux',
-      gps_btn:'Près de moi', gps_locating:'Localisation...', gps_sorted:'✓ Par distance',
-      filter_wilaya:'Wilaya', filter_spec:'Spécialité',
-      loading:'Chargement...', no_result:'Aucun résultat',
-      stats_found:(n,cat,open,gps)=>`${n} ${cat}${n>1?'s':''} · ${open} ouvert${open>1?'s':''}${gps?' · par proximité':''}`,
-      empty_title:'Aucun résultat trouvé', empty_desc:"Essayez d'ajuster votre recherche ou réinitialisez les filtres.",
-      reset_btn:'Réinitialiser', leave_review:'✏️ Laisser un avis',
-      give_review:'Votre avis', name_ph:'Prénom (ex: Fatima B.)', rating_lbl:'Note :',
-      comment_ph:'Votre commentaire...', publish_btn:'Publier', cancel_btn:'Annuler',
-      call_btn:'📞 Appeler', directions_btn:'🗺️ Itinéraire',
-      open_lbl:'Ouvert', closed_lbl:'Fermé',
-      reviews_title:(n)=>`Avis (${n})`, no_reviews:'Aucun avis patient.',
-      pos_lbl:'Positif', neu_lbl:'Neutre', neg_lbl:'Négatif',
-      all_lbl:'Toutes', tagline:'Dossier Santé Algérie',
-      footer_note:'Données indicatives.',
-      toast_no_gps:'GPS non disponible', toast_gps_ok:'📍 Position captée',
-      toast_gps_err:'Position non disponible', toast_review_ok:'✅ Merci pour votre avis !',
-      toast_review_local:'✅ Avis enregistré localement', toast_name_req:'⚠️ Entrez votre prénom',
-      toast_star_req:'⚠️ Choisissez une note', toast_short_cmt:'⚠️ Commentaire trop court',
-      toast_rate_limit:'⚠️ Limite de 3 avis atteinte', loading_cache:'⚡ Données depuis le cache',
-      cat_label_med:'médecin', cat_label_pha:'pharmacie', cat_label_lab:'laboratoire', cat_label_hop:'hôpital',
-    },
-    ar: {
-      cat_medecin:'أطباء', cat_pharmacie:'صيدليات', cat_labo:'مخابر', cat_hopital:'مستشفيات',
-      gps_btn:'بالقرب مني', gps_locating:'جاري التحديد...', gps_sorted:'✓ حسب المسافة',
-      filter_wilaya:'الولاية', filter_spec:'التخصص',
-      loading:'جاري التحميل...', no_result:'لا توجد نتائج',
-      stats_found:(n,cat,open,gps)=>`${n} ${cat} · ${open} مفتوح${gps?' · حسب القرب':''}`,
-      empty_title:'لا توجد نتائج', empty_desc:'حاول تعديل البحث أو إعادة ضبط الفلاتر.',
-      reset_btn:'إعادة ضبط', leave_review:'✏️ اترك تقييماً',
-      give_review:'رأيك', name_ph:'اسمك (مثال: فاطمة ب.)', rating_lbl:'التقييم:',
-      comment_ph:'اكتب تعليقك...', publish_btn:'نشر', cancel_btn:'إلغاء',
-      call_btn:'📞 اتصل', directions_btn:'🗺️ المسار',
-      open_lbl:'مفتوح', closed_lbl:'مغلق',
-      reviews_title:(n)=>`آراء (${n})`, no_reviews:'لا توجد آراء بعد.',
-      pos_lbl:'إيجابي', neu_lbl:'محايد', neg_lbl:'سلبي',
-      all_lbl:'الكل', tagline:'الدليل الصحي الجزائري',
-      footer_note:'البيانات لأغراض إعلامية فقط.',
-      toast_no_gps:'GPS غير متاح', toast_gps_ok:'📍 تم تحديد الموقع',
-      toast_gps_err:'الموقع غير متاح', toast_review_ok:'✅ شكراً على تقييمك!',
-      toast_review_local:'✅ تم حفظ التقييم محلياً', toast_name_req:'⚠️ أدخل اسمك',
-      toast_star_req:'⚠️ اختر التقييم', toast_short_cmt:'⚠️ التعليق قصير جداً',
-      toast_rate_limit:'⚠️ حد 3 تقييمات', loading_cache:'⚡ البيانات من الذاكرة المؤقتة',
-      cat_label_med:'طبيب', cat_label_pha:'صيدلية', cat_label_lab:'مخبر', cat_label_hop:'مستشفى',
-    }
-  };
-
-  let currentLang = localStorage.getItem('tabibdz_lang') || 'fr';
-  function t(key, ...args) {
-    const e = LANGS[currentLang][key];
-    return typeof e === 'function' ? e(...args) : (e || key);
-  }
-  function applyLang() {
-    const isAr = currentLang === 'ar';
-    document.documentElement.lang = currentLang;
-    document.documentElement.dir  = isAr ? 'rtl' : 'ltr';
-    document.getElementById('langLabel').textContent = isAr ? 'FR' : 'عربي';
-    document.getElementById('tagline').textContent   = t('tagline');
-    document.querySelectorAll('.i18n[data-key]').forEach(el => {
-      const k = el.dataset.key;
-      if (LANGS[currentLang][k] && typeof LANGS[currentLang][k] !== 'function') el.textContent = LANGS[currentLang][k];
-    });
-    document.getElementById('q').placeholder = isAr ? 'ابحث بالاسم أو المدينة...' : 'Rechercher par nom, ville...';
-    if (!gpsOn) document.getElementById('gpsTxt').textContent = t('gps_btn');
-    if (ALL.length > 0) { buildWChips(); buildSChips(); filter(); }
-  }
-  function toggleLang() { currentLang = currentLang==='fr'?'ar':'fr'; localStorage.setItem('tabibdz_lang',currentLang); applyLang(); }
-
-  /* ══════════ THEME ══════════ */
-  let currentTheme = localStorage.getItem('tabibdz_theme') || 'light';
-  function applyTheme() {
-    document.documentElement.setAttribute('data-theme', currentTheme);
-    document.getElementById('themeIcon').textContent = currentTheme==='dark' ? '☀️' : '🌙';
-  }
-  function toggleTheme() { currentTheme=currentTheme==='light'?'dark':'light'; localStorage.setItem('tabibdz_theme',currentTheme); applyTheme(); }
-  applyTheme();
-
-  /* ══════════ PROGRESS BAR ══════════ */
-  let pTimer=null;
-  function startProgress() {
-    const b=document.getElementById('progress-bar');
-    b.style.width='0%'; b.style.opacity='1'; b.classList.remove('done');
-    let w=0; pTimer=setInterval(()=>{w=Math.min(w+(w<60?8:w<85?3:0.5),90);b.style.width=w+'%';},120);
-  }
-  function doneProgress() {
-    clearInterval(pTimer);
-    const b=document.getElementById('progress-bar');
-    b.style.width='100%'; setTimeout(()=>b.classList.add('done'),300);
-  }
-
-  /* ══════════ STATE ══════════ */
-  let ALL=[], activeCategory='médecin', activeW='Toutes', activeS='Toutes';
-  let userLat=null, userLng=null, gpsOn=false;
-  let localAvis = JSON.parse(localStorage.getItem('tabibdz_avis')||'{}');
-
-  const supabaseUrl='https://viabbtrtusufxbuhxypb.supabase.co';
-  const supabaseKey='sb_publishable_i2E9hvP2PfkSsrYauszvCw_GO7BhNeP';
-  const supabaseDb=supabase.createClient(supabaseUrl, supabaseKey);
-
-  const FB=[
-    {id:1,nom:"Dr. Benali Ahmed",specialite:"Ophtalmologue",ville:"Ain Touta",wilaya:"Batna",adresse:"Rue principale, bâtiment X",telephone:"0550123456",horaires:"08:00 - 16:00",jours:["Dim","Lun","Mar","Mer","Jeu"],disponible:true,lat:35.4167,lng:5.8833,
-      avis:[{auteur:"Fatima B.",note:5,commentaire:"Très bon médecin, très à l'écoute.",date:"2025-05-10"},{auteur:"Karim M.",note:4,commentaire:"Bon docteur, attente un peu longue.",date:"2025-04-22"},{auteur:"Nadia R.",note:2,commentaire:"Cabinet mal organisé, j'ai attendu 2h.",date:"2025-03-15"}]},
-    {id:2,nom:"Dr. Mansouri Djamila",specialite:"Pédiatre",ville:"Batna",wilaya:"Batna",adresse:"Cité 1200 logements",telephone:"0661987654",horaires:"09:00 - 17:00",jours:["Sam","Dim","Lun","Mar","Mer","Jeu"],disponible:true,lat:35.5555,lng:6.1667,
-      avis:[{auteur:"Amira K.",note:5,commentaire:"Parfaite avec les enfants, très douce.",date:"2025-05-18"},{auteur:"Yacine D.",note:5,commentaire:"Je recommande vivement.",date:"2025-05-01"},{auteur:"Samira L.",note:3,commentaire:"Bien mais difficile à joindre.",date:"2025-04-10"}]},
-    {id:3,nom:"Dr. Hadjadj Karim",specialite:"Cardiologue",ville:"Batna",wilaya:"Batna",adresse:"Rue Mostefa Ben Boulaïd",telephone:"0770445566",horaires:"08:30 - 15:30",jours:["Dim","Lun","Mar","Mer","Jeu"],disponible:false,lat:35.5600,lng:6.1700,
-      avis:[{auteur:"Hassan B.",note:5,commentaire:"Excellent cardiologue, diagnostic précis.",date:"2025-05-20"},{auteur:"Meriem O.",note:1,commentaire:"Fermé sans prévenir, déplacement pour rien.",date:"2025-04-30"}]},
-    {id:4,nom:"Pharmacie de Garde Batna",specialite:"Pharmacie",ville:"Batna",wilaya:"Batna",adresse:"Avenue de l'Indépendance",telephone:"033801234",horaires:"00:00 - 24:00",jours:["Sam","Dim","Lun","Mar","Mer","Jeu","Ven"],disponible:true,lat:35.5500,lng:6.1600,avis:[]},
-    {id:5,nom:"Laboratoire d'analyses médicales Mila",specialite:"Laboratoire",ville:"Mila",wilaya:"Mila",adresse:"Cité des Fleurs",telephone:"031567890",horaires:"07:30 - 16:30",jours:["Dim","Lun","Mar","Mer","Jeu"],disponible:true,lat:36.4500,lng:6.2600,avis:[]}
-  ];
-
-  /* ══════════ AVATAR ══════════ */
-  const avColors=['av-1','av-2','av-3','av-4','av-5','av-6','av-7','av-8'];
-  function hashStr(s){ let h=0; for(let c of s) h=(h*31+c.charCodeAt(0))&0xffffffff; return Math.abs(h); }
-  function getAvatarColor(spec){ return avColors[hashStr(spec||'')%avColors.length]; }
-  function getAvatarUrl(nom, spec){
-    const clean=nom.replace(/Dr\.?\s*/i,'').trim();
-    const colors=['4F46E5','0EA5E9','16A34A','DC2626','D97706','7C3AED','0891B2','059669'];
-    const bg=colors[hashStr(spec||'')%colors.length];
-    return `https://ui-avatars.com/api/?name=${encodeURIComponent(clean)}&background=${bg}&color=fff&size=128&bold=true&font-size=0.38&rounded=false&format=png`;
-  }
-
-  /* ══════════ DATA LOADING ══════════ */
-  const CACHE_KEY='tabibdz_data', CACHE_TIME='tabibdz_data_ts', CACHE_TTL=30*60*1000;
-  function loadFromCache(){
-    try{
-      const ts=parseInt(sessionStorage.getItem(CACHE_TIME)||'0');
-      const d=sessionStorage.getItem(CACHE_KEY);
-      if(d && Date.now()-ts<CACHE_TTL) return JSON.parse(d);
-    }catch(e){}
-    return null;
-  }
-  function saveToCache(d){
-    try{ sessionStorage.setItem(CACHE_KEY,JSON.stringify(d)); sessionStorage.setItem(CACHE_TIME,Date.now().toString()); }catch(e){}
-  }
-  function withTimeout(p,ms){ return Promise.race([p,new Promise((_,r)=>setTimeout(()=>r(new Error('timeout')),ms))]); }
-
-  async function load(){
-    startProgress();
-    const cached=loadFromCache();
-    if(cached){ ALL=cached; buildWChips(); buildSChips(); filter(); doneProgress(); showToast(t('loading_cache')); refreshFromNetwork(); return; }
-    await refreshFromNetwork();
-  }
-  async function refreshFromNetwork(){
-    try{
-      const {data,error}=await withTimeout(supabaseDb.from('medecins').select('*, avis(*)'),6000);
-      if(error) throw error;
-      if(data&&data.length>0){ ALL=data; saveToCache(data); buildWChips(); buildSChips(); filter(); doneProgress(); return; }
-    }catch(e){ console.warn('Supabase:',e.message); }
-    try{ const r=await fetch('medecins.json'); if(!r.ok) throw 0; ALL=await r.json(); saveToCache(ALL); }
-    catch(e){ ALL=FB; }
-    buildWChips(); buildSChips(); filter(); doneProgress();
-  }
-
-  /* ══════════ CATEGORIES ══════════ */
-  function getCategory(item){
-    const s=(item.specialite||'').toLowerCase().trim();
-    if(s.includes('pharmacie')) return 'pharmacie';
-    if(s.includes('laboratoire')||s.includes('analyse')) return 'laboratoire';
-    if(s.includes('hôpital')||s.includes('hopital')||s.includes('clinique')) return 'hôpital';
-    return 'médecin';
-  }
-  function setCategory(cat){
-    activeCategory=cat; activeS='Toutes';
-    // Desktop sidebar
-    document.querySelectorAll('.cat-tab').forEach(b=>b.classList.toggle('active',b.dataset.cat===cat));
-    // Mobile bottom nav
-    document.querySelectorAll('.mnav-btn').forEach(b=>b.classList.toggle('active',b.dataset.cat===cat));
-    // Spec filter visibility
-    const sb=document.getElementById('sbar_container');
-    if(cat==='médecin'){ sb.style.display=''; buildSChips(); } else sb.style.display='none';
-    filter();
-  }
-
-  /* ══════════ OPENING HOURS ══════════ */
-  function isOpen(d){
-    if(!d.disponible) return false;
-    const now=new Date(), days=['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
-    if(d.jours&&!d.jours.includes(days[now.getDay()])) return false;
-    const m=d.horaires.match(/(\d{1,2}):(\d{2})\s*-\s*(\d{1,2}):(\d{2})/);
-    if(!m) return true;
-    const o=+m[1]*60+ +m[2], c=+m[3]*60+ +m[4], n=now.getHours()*60+now.getMinutes();
-    return n>=o&&n<c;
-  }
-
-  function dist(a,b,c,e){ const R=6371,dL=(c-a)*Math.PI/180,dG=(e-b)*Math.PI/180,x=Math.sin(dL/2)**2+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(dG/2)**2; return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x)); }
-  function fmtD(k){ return k<1?`${Math.round(k*1000)} m`:`${k.toFixed(1)} km`; }
-
-  function requestGPS(){
-    if(!navigator.geolocation){ showToast(t('toast_no_gps')); return; }
-    document.getElementById('gpsTxt').textContent=t('gps_locating');
-    navigator.geolocation.getCurrentPosition(p=>{
-      userLat=p.coords.latitude; userLng=p.coords.longitude; gpsOn=true;
-      document.getElementById('gpsTxt').textContent=t('gps_sorted');
-      document.getElementById('gpsBtn').classList.add('active');
-      showToast(t('toast_gps_ok')); filter();
-    },()=>{ document.getElementById('gpsTxt').textContent=t('gps_btn'); showToast(t('toast_gps_err')); },{timeout:8000});
-  }
-
-  function starsHtml(n){ let h='<span style="display:inline-flex;gap:1px;font-size:12px;color:var(--amber);">'; for(let i=1;i<=5;i++) h+=`<span style="opacity:${i<=n?1:0.2}">★</span>`; return h+'</span>'; }
-  function sentimentClass(n){ return n>=4?'dot-pos':n===3?'dot-mid':'dot-neg'; }
-  function sentimentLabel(n){ return n>=4?t('pos_lbl'):n===3?t('neu_lbl'):t('neg_lbl'); }
-  function sentimentColor(n){ return n>=4?'var(--green)':n===3?'var(--amber)':'var(--red)'; }
-  function scoreClass(a){ return a>=4?'score-high':a>=3?'score-mid':'score-low'; }
-  function getAllAvis(doc){ return [...(doc.avis||[]),(localAvis[doc.id]||[])].flat(); }
-  function avgScore(av){ return !av.length?null:av.reduce((s,a)=>s+a.note,0)/av.length; }
-
-  /* ══════════ CHIPS ══════════ */
-  function buildWChips(){
-    const lbl=t('all_lbl');
-    const ws=[lbl,...new Set(ALL.map(d=>d.wilaya))];
-    const z=document.getElementById('wbar'); z.innerHTML='';
-    ws.forEach((w,i)=>{
-      const b=document.createElement('button'); b.className='chip';
-      b.textContent=w;
-      if((activeW==='Toutes'&&i===0)||w===activeW) b.classList.add('on');
-      b.onclick=()=>{ activeW=(i===0)?'Toutes':w; z.querySelectorAll('.chip').forEach(c=>c.classList.toggle('on',c===b)); filter(); };
-      z.appendChild(b);
-    });
-  }
-  function buildSChips(){
-    const lbl=t('all_lbl');
-    const docs=ALL.filter(d=>getCategory(d)==='médecin');
-    const ss=[lbl,...new Set(docs.map(d=>d.specialite))];
-    const z=document.getElementById('sbar'); z.innerHTML='';
-    ss.forEach((s,i)=>{
-      const b=document.createElement('button'); b.className='schip';
-      b.textContent=s; if(i===0||s===activeS) b.classList.add('on');
-      b.onclick=()=>{ activeS=(i===0)?'Toutes':s; z.querySelectorAll('.schip').forEach(c=>c.classList.toggle('on',c===b)); filter(); };
-      z.appendChild(b);
-    });
-  }
-
-  /* ══════════ FILTER & RENDER ══════════ */
-  function filter(){
-    const q=document.getElementById('q').value.toLowerCase().trim();
-    let res=ALL.slice().filter(d=>getCategory(d)===activeCategory);
-    if(activeW!=='Toutes') res=res.filter(d=>d.wilaya===activeW);
-    if(activeCategory==='médecin'&&activeS!=='Toutes') res=res.filter(d=>d.specialite===activeS);
-    if(q) res=res.filter(d=>[d.nom,d.specialite,d.ville,d.wilaya,d.adresse].some(f=>(f||'').toLowerCase().includes(q)));
-    if(gpsOn&&userLat!==null){ res.forEach(d=>d._dist=dist(userLat,userLng,d.lat,d.lng)); res.sort((a,b)=>a._dist-b._dist); }
-    else { res.sort((a,b)=>(isOpen(a)?0:1)-(isOpen(b)?0:1)||a.nom.localeCompare(b.nom)); }
-    render(res);
-  }
-
-  function render(docs){
-    ['sk1','sk2','sk3','sk4'].forEach(id=>{const e=document.getElementById(id);if(e)e.remove();});
-    const list=document.getElementById('list'), empty=document.getElementById('empty');
-    list.innerHTML='';
-    if(!docs.length){
-      empty.style.display='flex'; empty.style.flexDirection='column';
-      empty.querySelectorAll('.i18n[data-key]').forEach(el=>{
-        const k=el.dataset.key;
-        if(LANGS[currentLang][k]&&typeof LANGS[currentLang][k]!=='function') el.textContent=LANGS[currentLang][k];
-      });
-      document.getElementById('statsTxt').textContent=t('no_result'); return;
-    }
-    empty.style.display='none';
-    const open=docs.filter(d=>isOpen(d)).length;
-    const catLabel=activeCategory==='médecin'?t('cat_label_med'):activeCategory==='pharmacie'?t('cat_label_pha'):activeCategory==='laboratoire'?t('cat_label_lab'):t('cat_label_hop');
-    document.getElementById('statsTxt').textContent=t('stats_found',docs.length,catLabel,open,gpsOn);
-    docs.forEach(d=>list.appendChild(buildCard(d)));
-  }
-
-  /* ══════════ BUILD CARD ══════════ */
-  function buildCard(doc){
-    const open=isOpen(doc), allAvis=getAllAvis(doc), avg=avgScore(allAvis);
-    const mapsUrl=`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(doc.lat+','+doc.lng)}`;
-
-    const wrap=document.createElement('div'); wrap.className='doc-card';
-
-    /* Header: photo + info */
-    const hdr=document.createElement('div');
-    hdr.style.cssText='padding:14px 14px 10px; display:flex; gap:12px; align-items:flex-start;';
-
-    /* Photo */
-    const photo=document.createElement('img');
-    photo.src=getAvatarUrl(doc.nom,doc.specialite); photo.alt=doc.nom;
-    photo.className='doc-photo'; photo.loading='lazy';
-    photo.onerror=function(){
-      const fb=document.createElement('div');
-      fb.className=`doc-photo ${getAvatarColor(doc.specialite)}`;
-      fb.style.cssText='display:flex;align-items:center;justify-content:center;font-weight:900;font-size:18px;color:#fff;';
-      const p=doc.nom.replace(/Dr\.?\s*/i,'').trim().split(/\s+/);
-      fb.textContent=(p[0][0]+(p[1]?p[1][0]:'')).toUpperCase();
-      this.parentNode.replaceChild(fb,this);
-    };
-    hdr.appendChild(photo);
-
-    /* Info block */
-    const info=document.createElement('div'); info.style.cssText='flex:1;min-width:0;';
-
-    /* Name + status */
-    const nr=document.createElement('div');
-    nr.style.cssText='display:flex;align-items:flex-start;justify-content:space-between;gap:6px;flex-wrap:wrap;margin-bottom:4px;';
-    const ne=document.createElement('div');
-    ne.style.cssText='font-size:14px;font-weight:800;color:var(--text-primary);line-height:1.3;';
-    ne.textContent=doc.nom; nr.appendChild(ne);
-    const sb=document.createElement('span');
-    sb.style.cssText='display:inline-flex;align-items:center;gap:3px;padding:3px 7px;border-radius:var(--r2);font-size:10px;font-weight:700;flex-shrink:0;';
-    sb.className=open?'badge-open':'badge-closed';
-    const dot=document.createElement('span');
-    dot.style.cssText=`width:5px;height:5px;border-radius:50%;background:${open?'var(--green)':'var(--text-muted)'};${open?'animation:pulse 2s infinite':''}`;
-    sb.appendChild(dot); sb.appendChild(document.createTextNode(open?t('open_lbl'):t('closed_lbl')));
-    nr.appendChild(sb); info.appendChild(nr);
-
-    /* Spec */
-    const spec=document.createElement('span'); spec.className='spec-badge';
-    spec.textContent=doc.specialite; info.appendChild(spec);
-
-    /* Distance */
-    if(gpsOn&&doc._dist!=null){
-      const de=document.createElement('div');
-      de.style.cssText='margin-top:4px;display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:700;color:var(--green);background:rgba(22,163,74,0.08);border:1px solid rgba(22,163,74,0.2);border-radius:var(--r2);padding:2px 6px;';
-      de.innerHTML=`<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>`;
-      de.appendChild(document.createTextNode(fmtD(doc._dist))); info.appendChild(de);
-    }
-
-    /* Rating inline */
-    if(avg){
-      const rr=document.createElement('div');
-      rr.style.cssText='display:flex;align-items:center;gap:8px;margin-top:8px;padding:7px 9px;background:var(--surface2);border:1px solid var(--border-light);border-radius:var(--r2);';
-      const ring=document.createElement('div'); ring.className=`score-ring ${scoreClass(avg)}`; ring.textContent=avg.toFixed(1);
-      rr.appendChild(ring);
-      const ri=document.createElement('div');
-      ri.innerHTML=starsHtml(Math.round(avg));
-      const rm=document.createElement('div');
-      rm.style.cssText='font-size:10px;font-weight:600;color:var(--text-muted);margin-top:2px;';
-      const pos=allAvis.filter(a=>a.note>=4).length, neg=allAvis.filter(a=>a.note<=2).length;
-      rm.textContent=`${allAvis.length} avis · ${pos} pos · ${neg} neg`;
-      ri.appendChild(rm); rr.appendChild(ri); info.appendChild(rr);
-    }
-
-    hdr.appendChild(info); wrap.appendChild(hdr);
-
-    /* Details */
-    const det=document.createElement('div');
-    det.style.cssText='padding:10px 14px;border-top:1px solid var(--border-light);display:flex;flex-direction:column;gap:5px;';
-
-    function drow(svg, el){
-      const row=document.createElement('div');
-      row.style.cssText='display:flex;align-items:flex-start;gap:7px;font-size:12px;color:var(--text-secondary);';
-      row.innerHTML=`<span style="flex-shrink:0;margin-top:1px;color:var(--accent2);">${svg}</span>`;
-      row.appendChild(el); return row;
-    }
-    const iconMap=`<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>`;
-    const iconClock=`<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`;
-    const iconPhone=`<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.07 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3 1.22h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 9a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 16z"/></svg>`;
-
-    const ac=document.createElement('span');
-    const as=document.createElement('strong'); as.style.color='var(--text-primary)'; as.textContent=doc.ville;
-    const aw=document.createElement('span'); aw.style.cssText='color:var(--accent2);font-weight:700;'; aw.textContent=doc.wilaya;
-    ac.appendChild(document.createTextNode(doc.adresse+', ')); ac.appendChild(as); ac.appendChild(document.createTextNode(' — ')); ac.appendChild(aw);
-    det.appendChild(drow(iconMap,ac));
-
-    const hc=document.createElement('span'); hc.textContent=`${doc.horaires} · `;
-    const hs=document.createElement('strong'); hs.style.color='var(--text-primary)'; hs.textContent=(doc.jours||[]).join(' · '); hc.appendChild(hs);
-    det.appendChild(drow(iconClock,hc));
-
-    const pc=document.createElement('span'); pc.style.cssText='font-weight:700;color:var(--accent);'; pc.textContent=doc.telephone;
-    det.appendChild(drow(iconPhone,pc));
-    wrap.appendChild(det);
-
-    /* Reviews */
-    const revSec=document.createElement('div'); revSec.style.borderTop='1px solid var(--border-light)';
-    if(allAvis.length>0){
-      const rh=document.createElement('div');
-      rh.style.cssText='padding:9px 14px 0;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);';
-      rh.textContent=t('reviews_title',allAvis.length); revSec.appendChild(rh);
-      const ar=document.createElement('div'); ar.className='avis-row';
-      allAvis.forEach(a=>{
-        const c=document.createElement('div'); c.className='avis-card';
-        const sr=document.createElement('div'); sr.style.cssText='display:flex;align-items:center;gap:5px;margin-bottom:5px;';
-        const de=document.createElement('div'); de.className=sentimentClass(a.note);
-        const sl=document.createElement('span'); sl.style.cssText=`font-size:10px;font-weight:700;color:${sentimentColor(a.note)};`; sl.textContent=sentimentLabel(a.note);
-        const sd=document.createElement('span'); sd.style.cssText='margin-left:auto;font-size:10px;font-weight:600;color:var(--text-muted);'; sd.textContent=a.date.slice(0,7);
-        sr.appendChild(de); sr.appendChild(sl); sr.appendChild(sd); c.appendChild(sr);
-        const ss=document.createElement('div'); ss.innerHTML=starsHtml(a.note); c.appendChild(ss);
-        const sc=document.createElement('p'); sc.style.cssText='font-size:11px;color:var(--text-secondary);margin-top:5px;line-height:1.5;'; sc.textContent=a.commentaire; c.appendChild(sc);
-        const sa=document.createElement('p'); sa.style.cssText='font-size:10px;font-weight:700;color:var(--text-muted);margin-top:5px;'; sa.textContent='— '+a.auteur; c.appendChild(sa);
-        ar.appendChild(c);
-      });
-      revSec.appendChild(ar);
-    } else {
-      const nr2=document.createElement('div'); nr2.style.cssText='padding:9px 14px;font-size:11px;font-style:italic;color:var(--text-muted);'; nr2.textContent=t('no_reviews'); revSec.appendChild(nr2);
-    }
-    wrap.appendChild(revSec);
-
-    /* Review form */
-    const fw=document.createElement('div');
-    fw.style.cssText='padding:9px 14px;border-top:1px solid var(--border-light);';
-    const lb=document.createElement('button'); lb.className='btn-review'; lb.textContent=t('leave_review'); lb.onclick=()=>toggleForm(doc.id); fw.appendChild(lb);
-
-    const fd=document.createElement('div'); fd.id=`form-${doc.id}`;
-    fd.style.cssText='display:none;flex-direction:column;gap:7px;margin-top:9px;padding:11px;background:var(--surface2);border:1px solid var(--border-light);border-radius:var(--r);';
-    const ft=document.createElement('div'); ft.style.cssText='font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--text-primary);'; ft.textContent=t('give_review'); fd.appendChild(ft);
-    const ni=document.createElement('input'); ni.type='text'; ni.id=`name-${doc.id}`; ni.placeholder=t('name_ph'); ni.maxLength=60; ni.className='form-input'; ni.style.cssText='width:100%;padding:7px 11px;font-size:12px;'; fd.appendChild(ni);
-    const sr2=document.createElement('div'); sr2.style.cssText='display:flex;align-items:center;gap:8px;';
-    const sl2=document.createElement('span'); sl2.style.cssText='font-size:11px;font-weight:600;color:var(--text-secondary);'; sl2.textContent=t('rating_lbl');
-    const sp=document.createElement('div'); sp.className='star-pick'; sp.style.cssText='display:flex;gap:2px;'; sp.id=`stars-${doc.id}`; sp.dataset.val='0';
-    for(let i=1;i<=5;i++){ const s=document.createElement('span'); s.textContent='★'; s.onclick=()=>setStar(doc.id,i); sp.appendChild(s); }
-    sr2.appendChild(sl2); sr2.appendChild(sp); fd.appendChild(sr2);
-    const ta=document.createElement('textarea'); ta.id=`txt-${doc.id}`; ta.rows=3; ta.placeholder=t('comment_ph'); ta.maxLength=500; ta.className='form-input'; ta.style.cssText='width:100%;padding:7px 11px;font-size:12px;resize:none;'; fd.appendChild(ta);
-    const br=document.createElement('div'); br.style.cssText='display:flex;gap:7px;';
-    const pb=document.createElement('button'); pb.className='btn-publish'; pb.textContent=t('publish_btn'); pb.onclick=()=>submitAvis(doc.id);
-    const cb=document.createElement('button'); cb.className='btn-cancel'; cb.textContent=t('cancel_btn'); cb.onclick=()=>toggleForm(doc.id);
-    br.appendChild(pb); br.appendChild(cb); fd.appendChild(br); fw.appendChild(fd); wrap.appendChild(fw);
-
-    /* Action buttons */
-    const ab=document.createElement('div'); ab.style.cssText='padding:0 14px 12px;display:flex;gap:8px;';
-    const ca=document.createElement('a'); ca.href=`tel:${doc.telephone}`; ca.className='btn-call';
-    ca.innerHTML=`<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.07 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3 1.22h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 9a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 16z"/></svg>`;
-    ca.appendChild(document.createTextNode(t('call_btn'))); ab.appendChild(ca);
-    const ma=document.createElement('a'); ma.href=mapsUrl; ma.target='_blank'; ma.rel='noopener noreferrer'; ma.className='btn-map';
-    ma.innerHTML=`<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>`;
-    ma.appendChild(document.createTextNode(t('directions_btn'))); ab.appendChild(ma);
-    wrap.appendChild(ab);
-    return wrap;
-  }
-
-  /* ══════════ HELPERS ══════════ */
-  function toggleForm(id){
-    const f=document.getElementById(`form-${id}`);
-    if(f.style.display==='none'||f.style.display===''){f.style.display='flex';f.style.flexDirection='column';}
-    else f.style.display='none';
-  }
-  function setStar(id,val){
-    const z=document.getElementById(`stars-${id}`); z.dataset.val=val;
-    z.querySelectorAll('span').forEach((s,i)=>s.classList.toggle('sel',i<val));
-  }
-  async function submitAvis(id){
-    if(!canReview(id)){showToast(t('toast_rate_limit'));return;}
-    const n=document.getElementById(`name-${id}`).value.trim();
-    const note=parseInt(document.getElementById(`stars-${id}`).dataset.val||'0');
-    const txt=document.getElementById(`txt-${id}`).value.trim();
-    if(!n){showToast(t('toast_name_req'));return;}
-    if(!note){showToast(t('toast_star_req'));return;}
-    if(txt.length<10){showToast(t('toast_short_cmt'));return;}
-    const name=sanitizeName(n), cmnt=sanitizeComment(txt), today=new Date().toISOString().slice(0,10);
-    try{
-      const{error}=await supabaseDb.from('avis').insert([{medecin_id:id,auteur:name,note,commentaire:cmnt,date:today}]);
-      if(error) throw error; recordReview(id); showToast(t('toast_review_ok'));
-    }catch(e){
-      if(!localAvis[id])localAvis[id]=[];
-      localAvis[id].push({auteur:name,note,commentaire:cmnt,date:today});
-      localStorage.setItem('tabibdz_avis',JSON.stringify(localAvis));
-      recordReview(id); showToast(t('toast_review_local'));
-    }
-    document.getElementById(`name-${id}`).value='';
-    document.getElementById(`stars-${id}`).dataset.val='0';
-    document.getElementById(`stars-${id}`).querySelectorAll('span').forEach(s=>s.classList.remove('sel'));
-    document.getElementById(`txt-${id}`).value='';
-    toggleForm(id); sessionStorage.removeItem(CACHE_KEY); await load();
-  }
-  function resetAll(){
-    document.getElementById('q').value=''; document.getElementById('clr').style.display='none';
-    activeW='Toutes'; activeS='Toutes'; gpsOn=false; userLat=userLng=null;
-    document.getElementById('gpsTxt').textContent=t('gps_btn');
-    document.getElementById('gpsBtn').classList.remove('active');
-    document.querySelectorAll('.chip').forEach((c,i)=>c.classList.toggle('on',i===0));
-    document.querySelectorAll('.schip').forEach((c,i)=>c.classList.toggle('on',i===0));
-    filter();
-  }
-  function showToast(msg){
-    const el=document.getElementById('toast'); el.textContent=msg;
-    el.classList.add('show'); setTimeout(()=>el.classList.remove('show'),3000);
-  }
-
-  const qEl=document.getElementById('q'),clrEl=document.getElementById('clr');
-  qEl.addEventListener('input',()=>{clrEl.style.display=qEl.value?'flex':'none';filter();});
-  clrEl.addEventListener('click',()=>{qEl.value='';clrEl.style.display='none';filter();qEl.focus();});
-
-  /* ══════════ INIT ══════════ */
-  applyLang();
-  load();
-  </script>
-</body>
-</html>
+  
 
 /* ══════════ GRAVITATIONAL VERIFICATION ANOMALY SYSTEM ══════════ */
 .gravity-well-core {

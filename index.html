@@ -651,13 +651,65 @@
     });
   }
 
+  /* ══════════ SPECIALTY AUTO-CORRECTION ══════════ */
+  const SPEC_KEYWORDS = [
+    { keywords: ['endocrinolog', 'diabétolog', 'diabetolog'], spec: 'Endocrinologue' },
+    { keywords: ['pédiatr', 'pediatr', 'enfant'], spec: 'Pédiatre' },
+    { keywords: ['cardiolog'], spec: 'Cardiologue' },
+    { keywords: ['dermatolog'], spec: 'Dermatologue' },
+    { keywords: ['gynécolog', 'gynecolog', 'obstétri'], spec: 'Gynécologue' },
+    { keywords: ['ophtalmolog', 'ophtalmo'], spec: 'Ophtalmologue' },
+    { keywords: ['oto-rhino', 'orl', 'oto rhino'], spec: 'ORL' },
+    { keywords: ['pneumolog', 'pulmonolog'], spec: 'Pneumologue' },
+    { keywords: ['néphrolog', 'nephrolog'], spec: 'Néphrologue' },
+    { keywords: ['neurolog'], spec: 'Neurologue' },
+    { keywords: ['rhumatolog'], spec: 'Rhumatologue' },
+    { keywords: ['gastr', 'hépatolog'], spec: 'Gastro-entérologue' },
+    { keywords: ['urolog'], spec: 'Urologue' },
+    { keywords: ['chirurgi', 'chirurgien'], spec: 'Chirurgien' },
+    { keywords: ['orthopéd', 'orthoped'], spec: 'Orthopédiste' },
+    { keywords: ['psychiatr'], spec: 'Psychiatre' },
+    { keywords: ['dentist', 'dentaire', 'stomato'], spec: 'Dentiste' },
+    { keywords: ['radiol', 'imagerie'], spec: 'Radiologue' },
+    { keywords: ['anesthési', 'anesthesi', 'réanimat'], spec: 'Anesthésiste' },
+    { keywords: ['allergolog', 'immunolog'], spec: 'Allergologue' },
+    { keywords: ['hématolog', 'hematolog'], spec: 'Hématologue' },
+    { keywords: ['oncolog', 'cancérolog'], spec: 'Oncologue' },
+    { keywords: ['infectiolog'], spec: 'Infectiologue' },
+    { keywords: ['médecine interne', 'interniste'], spec: 'Médecin interniste' },
+  ];
+
+  function normalizeSpecialties(docs) {
+    return docs.map(d => {
+      if (getCategory(d) !== 'médecin') return d;
+      const currentSpec = (d.specialite || '').toLowerCase().trim();
+      // Only auto-correct generic specialties
+      if (currentSpec !== 'généraliste' && currentSpec !== 'generaliste' && currentSpec !== 'médecin' && currentSpec !== 'medecin') return d;
+      
+      // Check the name/title for specialty keywords
+      const nomLower = (d.nom || '').toLowerCase();
+      const adresseLower = (d.adresse || '').toLowerCase();
+      const searchText = nomLower + ' ' + adresseLower;
+      
+      for (const rule of SPEC_KEYWORDS) {
+        for (const kw of rule.keywords) {
+          if (searchText.includes(kw)) {
+            console.log(`[TabibDZ AutoFix] "${d.nom}" specialty corrected: "${d.specialite}" → "${rule.spec}"`);
+            return { ...d, specialite: rule.spec };
+          }
+        }
+      }
+      return d;
+    });
+  }
+
   function loadFromCache(){
     try{
       const ts=parseInt(sessionStorage.getItem(CACHE_TIME)||'0');
       const d=sessionStorage.getItem(CACHE_KEY);
       if(d && Date.now()-ts<CACHE_TTL) {
         const parsed = JSON.parse(d);
-        return applyLocalProfileOverrides(parsed);
+        return normalizeSpecialties(applyLocalProfileOverrides(parsed));
       }
     }catch(e){}
     return null;
@@ -692,7 +744,7 @@
         const {data,error}=await withTimeout(supabaseDb.from('medecins').select('*, avis(*)'),6000);
         if(error) throw error;
         if(data&&data.length>0){
-          const docsWithOverrides = applyLocalProfileOverrides(data);
+          const docsWithOverrides = normalizeSpecialties(applyLocalProfileOverrides(data));
           ALL=docsWithOverrides;
           saveToCache(data);
           buildWChips(); buildSChips(); 
@@ -706,11 +758,11 @@
     try{
       const r=await fetch('medecins.json'); if(!r.ok) throw 0;
       const data = await r.json();
-      ALL=applyLocalProfileOverrides(data);
+      ALL=normalizeSpecialties(applyLocalProfileOverrides(data));
       saveToCache(data);
     }
     catch(e){
-      ALL=applyLocalProfileOverrides(FB);
+      ALL=normalizeSpecialties(applyLocalProfileOverrides(FB));
     }
     buildWChips(); buildSChips(); 
     applyHashRouting();
@@ -821,7 +873,7 @@
       const b=document.createElement('button'); b.className='chip';
       b.textContent=w;
       if((activeW==='Toutes'&&i===0)||w===activeW) b.classList.add('on');
-      b.onclick=()=>{ activeW=(i===0)?'Toutes':w; z.querySelectorAll('.chip').forEach(c=>c.classList.toggle('on',c===b)); filter(); };
+      b.onclick=()=>{ activeW=(i===0)?'Toutes':w; z.querySelectorAll('.chip').forEach(c=>c.classList.toggle('on',c===b)); updateHash(); filter(); };
       z.appendChild(b);
     });
   }
@@ -833,7 +885,7 @@
     ss.forEach((s,i)=>{
       const b=document.createElement('button'); b.className='schip';
       b.textContent=s; if(i===0||s===activeS) b.classList.add('on');
-      b.onclick=()=>{ activeS=(i===0)?'Toutes':s; z.querySelectorAll('.schip').forEach(c=>c.classList.toggle('on',c===b)); filter(); };
+      b.onclick=()=>{ activeS=(i===0)?'Toutes':s; z.querySelectorAll('.schip').forEach(c=>c.classList.toggle('on',c===b)); updateHash(); filter(); };
       z.appendChild(b);
     });
   }
@@ -1528,6 +1580,9 @@
         orderLabel.textContent = currentLang === 'ar' ? 'رقم القيد الوطني للأطباء' : "Numéro d'Ordre National des Médecins";
       }
     }
+    
+    // Display masked phone number
+    document.getElementById('maskedPhone').textContent = maskPhoneNumber(doc.telephone);
     
     document.getElementById('claimModal').style.display = 'flex';
   }
