@@ -21,6 +21,7 @@
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ar.js"></script>
   <link rel="stylesheet" href="index.css"/>
+  <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
 
@@ -42,12 +43,12 @@
     
     <!-- Admin & Notif controls -->
     <a href="admin.html" class="ctrl-btn" title="Administration">
-      <span>⚙️</span>
+      <i data-lucide="settings"></i>
     </a>
     
     <div style="position: relative; display: inline-block;">
       <button id="notifBtn" onclick="toggleNotifs()" class="ctrl-btn" style="position: relative;">
-        <span>🔔</span>
+        <i data-lucide="bell"></i>
         <span id="notifDot" style="display:none; position:absolute; top:-2px; right:-2px; width:8px; height:8px; background:var(--red); border-radius:50%; border:1.5px solid var(--surface);"></span>
       </button>
       
@@ -64,10 +65,10 @@
     </div>
 
     <button id="langBtn" onclick="toggleLang()" class="ctrl-btn">
-      <span>🌐</span><span id="langLabel">عربي</span>
+      <i data-lucide="languages"></i><span id="langLabel" style="margin-left:4px;">عربي</span>
     </button>
     <button id="themeBtn" onclick="toggleTheme()" class="ctrl-btn">
-      <span id="themeIcon">🌙</span>
+      <span id="themeIcon"></span>
     </button>
   </header>
 
@@ -78,16 +79,16 @@
     <aside class="sidebar">
       <p class="sec-label" style="padding:4px 6px 10px">Catégorie</p>
       <button onclick="setCategory('médecin')"    class="cat-tab active" data-cat="médecin">
-        <span>🩺</span><span class="i18n" data-key="cat_medecin">Médecins</span>
+        <i data-lucide="stethoscope"></i><span class="i18n" data-key="cat_medecin">Médecins</span>
       </button>
       <button onclick="setCategory('pharmacie')"  class="cat-tab" data-cat="pharmacie">
-        <span>💊</span><span class="i18n" data-key="cat_pharmacie">Pharmacies</span>
+        <i data-lucide="pill"></i><span class="i18n" data-key="cat_pharmacie">Pharmacies</span>
       </button>
       <button onclick="setCategory('laboratoire')" class="cat-tab" data-cat="laboratoire">
-        <span>🔬</span><span class="i18n" data-key="cat_labo">Laboratoires</span>
+        <i data-lucide="flask-conical"></i><span class="i18n" data-key="cat_labo">Laboratoires</span>
       </button>
       <button onclick="setCategory('hôpital')"    class="cat-tab" data-cat="hôpital">
-        <span>🏥</span><span class="i18n" data-key="cat_hopital">Hôpitaux</span>
+        <i data-lucide="hospital"></i><span class="i18n" data-key="cat_hopital">Hôpitaux</span>
       </button>
       <div class="sidebar-footer">
         TabibDZ © 2026<br/>
@@ -104,17 +105,13 @@
         <div class="search-row">
           <div class="si-wrap">
             <span class="si-icon">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-              </svg>
+              <i data-lucide="search" style="width:14px;height:14px;stroke-width:2.5px;"></i>
             </span>
             <input id="q" class="si" type="search" placeholder="Rechercher..." autocomplete="off" maxlength="80"/>
             <button id="clr" class="si-clr">✕</button>
           </div>
           <button id="gpsBtn" class="gps-btn" onclick="requestGPS()">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-              <circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>
-            </svg>
+            <i data-lucide="navigation" style="width:14px;height:14px;stroke-width:2.5px;"></i>
             <span id="gpsTxt" class="i18n" data-key="gps_btn">Près de moi</span>
           </button>
         </div>
@@ -140,13 +137,11 @@
 
       <!-- STATS -->
       <div class="stat-bar">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.2" style="flex-shrink:0;">
-          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
-        </svg>
+        <i data-lucide="users" style="width:13px;height:13px;stroke-width:2.2px;color:var(--accent);margin-right:2px;flex-shrink:0;"></i>
         <span id="statsTxt" class="i18n" data-key="loading" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Chargement...</span>
         
         <button id="viewToggleBtn" onclick="toggleView()" class="ctrl-btn" style="margin-inline-start: auto; display: inline-flex; align-items: center; gap: 4px;">
-          <span id="viewToggleIcon">🗺️</span> <span id="viewToggleTxt" class="i18n" data-key="view_map">Carte</span>
+          <span id="viewToggleIcon" style="display:inline-flex;align-items:center;justify-content:center;"><i data-lucide="map" style="width:14px;height:14px;stroke-width:2.5px;"></i></span> <span id="viewToggleTxt" class="i18n" data-key="view_map">Carte</span>
         </button>
       </div>
 
@@ -209,19 +204,19 @@
   <nav class="mobile-nav" id="mobileNav">
     <div class="mobile-nav-inner">
       <button class="mnav-btn active" data-cat="médecin" onclick="setCategory('médecin')">
-        <span class="micon">🩺</span>
+        <i class="micon" data-lucide="stethoscope"></i>
         <span class="i18n" data-key="cat_medecin">Médecins</span>
       </button>
       <button class="mnav-btn" data-cat="pharmacie" onclick="setCategory('pharmacie')">
-        <span class="micon">💊</span>
+        <i class="micon" data-lucide="pill"></i>
         <span class="i18n" data-key="cat_pharmacie">Pharmacies</span>
       </button>
       <button class="mnav-btn" data-cat="laboratoire" onclick="setCategory('laboratoire')">
-        <span class="micon">🔬</span>
+        <i class="micon" data-lucide="flask-conical"></i>
         <span class="i18n" data-key="cat_labo">Labos</span>
       </button>
       <button class="mnav-btn" data-cat="hôpital" onclick="setCategory('hôpital')">
-        <span class="micon">🏥</span>
+        <i class="micon" data-lucide="hospital"></i>
         <span class="i18n" data-key="cat_hopital">Hôpitaux</span>
       </button>
     </div>
@@ -342,11 +337,13 @@
           <label class="form-label i18n" data-key="claim_photo">Photo du cabinet ou de profil</label>
           <div style="display:flex;align-items:center;gap:12px;margin-top:4px;">
             <img id="claimPhotoPreview" src="" class="doc-photo" style="display:none;" />
-            <div id="claimPhotoPlaceholder" class="doc-photo" style="display:flex;align-items:center;justify-content:center;background:var(--bg2);color:var(--text-muted);font-weight:700;font-size:20px;">🩺</div>
+            <div id="claimPhotoPlaceholder" class="doc-photo" style="display:flex;align-items:center;justify-content:center;background:var(--bg2);color:var(--text-muted);">
+              <i data-lucide="image" style="width:24px;height:24px;stroke-width:2px;color:var(--text-muted);"></i>
+            </div>
             <div style="flex:1;">
               <input type="file" id="claimPhotoInput" accept="image/*" style="display:none;" onchange="previewClaimPhoto(event)" />
-              <button onclick="document.getElementById('claimPhotoInput').click()" class="ctrl-btn">
-                <span>📸</span> <span class="i18n" data-key="claim_choose_photo">Choisir une image</span>
+              <button onclick="document.getElementById('claimPhotoInput').click()" class="ctrl-btn" style="display:inline-flex;align-items:center;gap:4px;">
+                <i data-lucide="camera" style="width:14px;height:14px;stroke-width:2px;"></i> <span class="i18n" data-key="claim_choose_photo">Choisir une image</span>
               </button>
               <div style="font-size:10px;color:var(--text-muted);margin-top:4px;" class="i18n" data-key="claim_photo_size">Format JPG/PNG, Max 500KB</div>
             </div>
@@ -571,7 +568,11 @@
   let currentTheme = localStorage.getItem('tabibdz_theme') || 'light';
   function applyTheme() {
     document.documentElement.setAttribute('data-theme', currentTheme);
-    document.getElementById('themeIcon').textContent = currentTheme==='dark' ? '☀️' : '🌙';
+    const themeIcon = document.getElementById('themeIcon');
+    if (themeIcon) {
+      themeIcon.innerHTML = currentTheme==='dark' ? '<i data-lucide="sun"></i>' : '<i data-lucide="moon"></i>';
+      if (window.lucide) lucide.createIcons();
+    }
   }
   function toggleTheme() { currentTheme=currentTheme==='light'?'dark':'light'; localStorage.setItem('tabibdz_theme',currentTheme); applyTheme(); }
   applyTheme();
@@ -918,6 +919,7 @@
     } else {
       render(res);
     }
+    if (window.lucide) lucide.createIcons();
   }
 
   function render(docs){
@@ -1007,7 +1009,7 @@
     if (getCategory(doc) === 'pharmacie' && doc.garde === true) {
       const gb = document.createElement('span');
       gb.style.cssText = 'display:inline-flex;align-items:center;gap:3px;padding:3px 7px;border-radius:var(--r2);font-size:10px;font-weight:700;flex-shrink:0;background:rgba(14,165,233,0.12);color:var(--accent2);border:1px solid rgba(14,165,233,0.25);';
-      gb.textContent = `🌙 ${t('garde_lbl')}`;
+      gb.innerHTML = `<i data-lucide="moon" style="width:10px;height:10px;stroke-width:2.5px;"></i> ${t('garde_lbl')}`;
       badgesWrap.appendChild(gb);
     }
     nr.appendChild(badgesWrap); info.appendChild(nr);
@@ -1020,8 +1022,8 @@
     
     if (doc.tarif) {
       const tb=document.createElement('span');
-      tb.style.cssText='display:inline-block;padding:2px 7px;border-radius:var(--r2);font-size:11px;font-weight:700;background:rgba(22,163,74,0.08);color:var(--green);border:1px solid rgba(22,163,74,0.15);';
-      tb.textContent=`💰 ${doc.tarif} DA`;
+      tb.style.cssText='display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:var(--r2);font-size:11px;font-weight:700;background:rgba(22,163,74,0.08);color:var(--green);border:1px solid rgba(22,163,74,0.15);';
+      tb.innerHTML=`<i data-lucide="banknote" style="width:11px;height:11px;stroke-width:2.5px;"></i> ${doc.tarif} DA`;
       specRow.appendChild(tb);
     }
     info.appendChild(specRow);
@@ -1055,28 +1057,25 @@
     const det=document.createElement('div');
     det.style.cssText='padding:10px 14px;border-top:1px solid var(--border-light);display:flex;flex-direction:column;gap:5px;';
 
-    function drow(svg, el){
+    function drow(iconName, el){
       const row=document.createElement('div');
       row.style.cssText='display:flex;align-items:flex-start;gap:7px;font-size:12px;color:var(--text-secondary);';
-      row.innerHTML=`<span style="flex-shrink:0;margin-top:1px;color:var(--accent2);">${svg}</span>`;
+      row.innerHTML=`<span style="flex-shrink:0;margin-top:2px;color:var(--accent2);display:inline-flex;align-items:center;"><i data-lucide="${iconName}" style="width:11px;height:11px;stroke-width:2.5px;"></i></span>`;
       row.appendChild(el); return row;
     }
-    const iconMap=`<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>`;
-    const iconClock=`<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`;
-    const iconPhone=`<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.07 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3 1.22h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 9a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 16z"/></svg>`;
 
     const ac=document.createElement('span');
     const as=document.createElement('strong'); as.style.color='var(--text-primary)'; as.textContent=doc.ville;
     const aw=document.createElement('span'); aw.style.cssText='color:var(--accent2);font-weight:700;'; aw.textContent=doc.wilaya;
     ac.appendChild(document.createTextNode(doc.adresse+', ')); ac.appendChild(as); ac.appendChild(document.createTextNode(' — ')); ac.appendChild(aw);
-    det.appendChild(drow(iconMap,ac));
+    det.appendChild(drow('map-pin',ac));
 
     const hc=document.createElement('span'); hc.textContent=`${doc.horaires} · `;
     const hs=document.createElement('strong'); hs.style.color='var(--text-primary)'; hs.textContent=(doc.jours||[]).join(' · '); hc.appendChild(hs);
-    det.appendChild(drow(iconClock,hc));
+    det.appendChild(drow('clock',hc));
 
     const pc=document.createElement('span'); pc.style.cssText='font-weight:700;color:var(--accent);'; pc.textContent=doc.telephone;
-    det.appendChild(drow(iconPhone,pc));
+    det.appendChild(drow('phone',pc));
     wrap.appendChild(det);
 
     /* Reviews */
@@ -1142,18 +1141,18 @@
     const ab=document.createElement('div'); ab.style.cssText='padding:0 14px 12px;display:flex;gap:8px;';
     
     const ca=document.createElement('a'); ca.href=`tel:${doc.telephone}`; ca.className='btn-call';
-    ca.innerHTML=`<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.07 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3 1.22h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 9a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 16z"/></svg>`;
+    ca.innerHTML=`<i data-lucide="phone" style="width:12px;height:12px;stroke-width:2.5px;margin-right:4px;"></i>`;
     ca.appendChild(document.createTextNode(t('call_btn'))); ab.appendChild(ca);
 
     if (getCategory(doc) === 'médecin' && doc.rdv_enabled !== false) {
       const rdv_b=document.createElement('button'); rdv_b.className='btn-map';
-      rdv_b.style.cssText='border-color:var(--accent);color:var(--accent);';
-      rdv_b.innerHTML=`<span style="font-size:12px;">📅</span> <span>${t('rdv_btn')}</span>`;
+      rdv_b.style.cssText='border-color:var(--accent);color:var(--accent);display:inline-flex;align-items:center;gap:4px;';
+      rdv_b.innerHTML=`<i data-lucide="calendar" style="width:12px;height:12px;stroke-width:2.5px;"></i> <span>${t('rdv_btn')}</span>`;
       rdv_b.onclick=()=>openRdvModal(doc); ab.appendChild(rdv_b);
     }
 
     const ma=document.createElement('a'); ma.href=mapsUrl; ma.target='_blank'; ma.rel='noopener noreferrer'; ma.className='btn-map';
-    ma.innerHTML=`<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>`;
+    ma.innerHTML=`<i data-lucide="navigation" style="width:12px;height:12px;stroke-width:2.5px;margin-right:4px;"></i>`;
     ma.appendChild(document.createTextNode(t('directions_btn'))); ab.appendChild(ma);
     wrap.appendChild(ab);
     return wrap;
@@ -1241,13 +1240,13 @@
     const mapDiv = document.getElementById('mapView');
     
     if (currentView === 'map') {
-      icon.textContent = '📋';
+      icon.innerHTML = '<i data-lucide="list" style="width:14px;height:14px;stroke-width:2.5px;"></i>';
       txt.textContent = t('view_list');
       list.style.display = 'none';
       mapDiv.style.display = 'block';
       filter();
     } else {
-      icon.textContent = '🗺️';
+      icon.innerHTML = '<i data-lucide="map" style="width:14px;height:14px;stroke-width:2.5px;"></i>';
       txt.textContent = t('view_map');
       list.style.display = 'flex';
       mapDiv.style.display = 'none';
@@ -1290,6 +1289,9 @@
         maxZoom: 19
       }).addTo(map);
       markersLayer = L.layerGroup().addTo(map);
+      map.on('popupopen', () => {
+        if (window.lucide) lucide.createIcons();
+      });
     } else {
       markersLayer.clearLayers();
     }
@@ -1327,28 +1329,28 @@
       });
       
       const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(doc.lat+','+doc.lng)}`;
-      const hasTarif = doc.tarif ? `<div style="font-size:11px;font-weight:700;color:var(--green);margin-top:2px;">💰 ${doc.tarif} DA</div>` : '';
+      const hasTarif = doc.tarif ? `<div style="font-size:11px;font-weight:700;color:var(--green);margin-top:2px;display:flex;align-items:center;gap:3px;"><i data-lucide="banknote" style="width:11px;height:11px;stroke-width:2.5px;"></i> ${doc.tarif} DA</div>` : '';
       
-      let actionButtons = `<a href="tel:${doc.telephone}" style="flex:1;background:var(--green);color:#fff;text-align:center;padding:5px 0;border-radius:4px;font-size:11px;font-weight:700;text-decoration:none;display:inline-block;">${t('call_btn')}</a>`;
+      let actionButtons = `<a href="tel:${doc.telephone}" style="flex:1;background:var(--green);color:#fff;text-align:center;padding:5px 0;border-radius:4px;font-size:11px;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:3px;text-align:center;"><i data-lucide="phone" style="width:11px;height:11px;stroke-width:2.5px;"></i> ${t('call_btn')}</a>`;
       
       if (getCategory(doc) === 'médecin' && doc.rdv_enabled !== false) {
         actionButtons = `
-          <button onclick="closeMapPopupsAndBook(${doc.id})" style="flex:1;background:var(--accent);color:#fff;text-align:center;padding:5px 0;border:none;border-radius:4px;font-size:11px;font-weight:700;cursor:pointer;display:inline-block;white-space:nowrap;">📅 ${t('rdv_btn')}</button>
-          <a href="tel:${doc.telephone}" style="flex:1;background:var(--green);color:#fff;text-align:center;padding:5px 0;border-radius:4px;font-size:11px;font-weight:700;text-decoration:none;display:inline-block;text-align:center;">📞</a>
+          <button onclick="closeMapPopupsAndBook(${doc.id})" style="flex:2;background:var(--accent);color:#fff;text-align:center;padding:5px 0;border:none;border-radius:4px;font-size:11px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:3px;white-space:nowrap;"><i data-lucide="calendar" style="width:11px;height:11px;stroke-width:2.5px;"></i> ${t('rdv_btn')}</button>
+          <a href="tel:${doc.telephone}" style="flex:1;background:var(--green);color:#fff;text-align:center;padding:5px 0;border-radius:4px;font-size:11px;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;">📞</a>
         `;
       }
       
-      const gardeBadge = isGarde ? `<span style="display:inline-block;padding:2px 6px;border-radius:3px;font-size:9px;font-weight:700;background:rgba(14,165,233,0.15);color:var(--accent2);margin-top:2px;">🌙 ${t('garde_lbl')}</span>` : '';
+      const gardeBadge = isGarde ? `<span style="display:inline-flex;align-items:center;gap:2px;padding:2px 6px;border-radius:3px;font-size:9px;font-weight:700;background:rgba(14,165,233,0.15);color:var(--accent2);margin-top:2px;"><i data-lucide="moon" style="width:9px;height:9px;stroke-width:2.5px;"></i> ${t('garde_lbl')}</span>` : '';
       
       const popupContent = `
         <div class="map-popup" style="font-family:'Inter', sans-serif;min-width:180px;color:var(--text-primary);padding:2px;">
           <h4 style="margin:0 0 3px 0;font-size:13px;font-weight:800;color:var(--text-primary);line-height:1.3;">${doc.nom}</h4>
-          <div style="font-size:10px;font-weight:700;color:var(--accent);">${doc.specialite} ${gardeBadge}</div>
+          <div style="font-size:10px;font-weight:700;color:var(--accent);display:flex;align-items:center;gap:4px;flex-wrap:wrap;">${doc.specialite} ${gardeBadge}</div>
           ${hasTarif}
-          <div style="font-size:11px;color:var(--text-secondary);margin:6px 0 8px 0;line-height:1.3;">📍 ${doc.ville}, ${doc.wilaya}</div>
+          <div style="font-size:11px;color:var(--text-secondary);margin:6px 0 8px 0;line-height:1.3;display:flex;align-items:center;gap:3px;"><i data-lucide="map-pin" style="width:11px;height:11px;stroke-width:2.5px;"></i> ${doc.ville}, ${doc.wilaya}</div>
           <div style="display:flex;gap:5px;">
             ${actionButtons}
-            <a href="${mapsUrl}" target="_blank" style="flex:1;background:var(--surface2);color:var(--text-secondary);text-align:center;padding:5px 0;border-radius:4px;font-size:11px;font-weight:700;text-decoration:none;display:inline-block;border:1px solid var(--border);">${t('directions_btn')}</a>
+            <a href="${mapsUrl}" target="_blank" style="flex:1;background:var(--surface2);color:var(--text-secondary);text-align:center;padding:5px 0;border-radius:4px;font-size:11px;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:3px;border:1px solid var(--border);"><i data-lucide="navigation" style="width:11px;height:11px;stroke-width:2.5px;"></i> ${t('directions_btn')}</a>
           </div>
         </div>
       `;
