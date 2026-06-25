@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://viabbtrtusufxbuhxypb.supabase.co https://cdn.tailwindcss.com https://cdn.jsdelivr.net https://fonts.googleapis.com https://fonts.gstatic.com https://ui-avatars.com https://unpkg.com; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdn.jsdelivr.net https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com https://cdn.jsdelivr.net; font-src https://fonts.gstatic.com; img-src 'self' data: https://ui-avatars.com https://unpkg.com https://*.tile.openstreetmap.org; connect-src 'self' https://viabbtrtusufxbuhxypb.supabase.co;">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://viabbtrtusufxbuhxypb.supabase.co https://cdn.tailwindcss.com https://cdn.jsdelivr.net https://fonts.googleapis.com https://fonts.gstatic.com https://ui-avatars.com https://unpkg.com; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdn.jsdelivr.net https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com https://cdn.jsdelivr.net; font-src https://fonts.gstatic.com; img-src 'self' data: https://ui-avatars.com https://unpkg.com https://*.tile.openstreetmap.org; connect-src 'self' https://viabbtrtusufxbuhxypb.supabase.co https://cdn.jsdelivr.net https://unpkg.com;">
   <meta name="description" content="TabibDZ – Annuaire médical d'Algérie : médecins, pharmacies, laboratoires et hôpitaux."/>
   <title>TabibDZ – Annuaire Médical &amp; Santé d'Algérie</title>
   <script src="https://cdn.tailwindcss.com"></script>
@@ -183,6 +183,9 @@
       </button>
     </div>
   </nav>
+
+  <!-- TOAST -->
+  <div id="toast" class="toast"></div>
 
   <!-- 📅 RDV MODAL -->
   <div id="rdvModal" class="modal-overlay" onclick="if(event.target===this) closeRdvModal()">
@@ -1216,7 +1219,7 @@
     } else {
       icon.innerHTML = '<i data-lucide="map" style="width:14px;height:14px;stroke-width:2.5px;"></i>';
       txt.textContent = t('view_map');
-      list.style.display = 'flex';
+      list.style.display = 'grid';
       mapDiv.style.display = 'none';
       filter();
     }
