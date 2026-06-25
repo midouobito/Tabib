@@ -762,6 +762,7 @@
       buildSChips();
       applyHashRouting();
       filter();
+      checkUrlRoute();
       checkForNewNotifications();
       doneProgress();
       showToast(t('loading_cache'));
@@ -770,6 +771,7 @@
       return;
     }
     await refreshFromNetwork();
+    checkUrlRoute();
     autoRequestGPS();
   }
   async function refreshFromNetwork(){
@@ -1142,11 +1144,44 @@
     return wrap;
   }
 
+  /* ── SEO METADATA & DYNAMIC ROUTING ── */
+  function updateDoctorSEOMeta(doc) {
+    const title = `Dr. ${doc.nom} - ${doc.specialite} à ${doc.ville}, ${doc.wilaya} | TabibClick`;
+    const desc = `Consultez les coordonnées de Dr. ${doc.nom} (${doc.specialite}) à ${doc.ville}, ${doc.wilaya} : numéro de téléphone ${doc.telephone}, adresse cabinet ${doc.adresse}. Tarifs, jours d'ouverture et avis des patients.`;
+    document.title = title;
+    const metaDesc = document.querySelector('meta[name="description"]');
+    if (metaDesc) {
+      metaDesc.setAttribute('content', desc);
+    }
+  }
+
+  function checkUrlRoute() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const medParam = urlParams.get('medecin') || urlParams.get('id');
+    if (medParam) {
+      const idStr = medParam.split('-')[0];
+      const id = parseInt(idStr);
+      if (!isNaN(id)) {
+        const doc = ALL.find(d => d.id === id);
+        if (doc) {
+          openDoctorDetails(doc, false);
+        }
+      }
+    }
+  }
+
   /* ══════════ DETAILS SHEET MODAL ══════════ */
   let activeDetailDocId = null;
 
   function openDoctorDetails(doc, isUpdate = false) {
     activeDetailDocId = doc.id;
+    
+    if (!isUpdate) {
+      const slug = `${doc.id}-${doc.nom.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
+      const newUrl = `${window.location.protocol}//${window.location.host}${window.location.pathname}?medecin=${slug}`;
+      window.history.pushState({ path: newUrl }, '', newUrl);
+      updateDoctorSEOMeta(doc);
+    }
     const modal = document.getElementById('detailsModal');
     const body = document.getElementById('detailsModalBody');
     body.innerHTML = '';
@@ -1446,6 +1481,11 @@
       modal.classList.remove('show');
       setTimeout(() => modal.style.display = 'none', 300);
     }
+    
+    // Restore base URL and SEO
+    const cleanUrl = `${window.location.protocol}//${window.location.host}${window.location.pathname}`;
+    window.history.pushState({ path: cleanUrl }, '', cleanUrl);
+    updateSEOMeta();
   }
 
   /* ══════════ HELPERS ══════════ */
