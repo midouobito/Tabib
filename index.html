@@ -2346,6 +2346,56 @@
     }, { passive: true });
   })();
 
+  /* ══════════ HORIZONTAL SCROLL FOR DESKTOP CHIPS ══════════ */
+  (function() {
+    const attachHorizontalScroll = (rowId) => {
+      const row = document.getElementById(rowId);
+      if (!row) return;
+
+      // 1. Mouse Wheel Scroll redirection
+      row.addEventListener('wheel', (e) => {
+        if (e.deltaY !== 0) {
+          e.preventDefault();
+          row.scrollLeft += e.deltaY;
+        }
+      }, { passive: false });
+
+      // 2. Drag/Grab scroll
+      let isDown = false;
+      let startX;
+      let scrollLeft;
+
+      row.addEventListener('mousedown', (e) => {
+        isDown = true;
+        row.style.cursor = 'grabbing';
+        startX = e.pageX - row.offsetLeft;
+        scrollLeft = row.scrollLeft;
+      });
+
+      row.addEventListener('mouseleave', () => {
+        isDown = false;
+        row.style.cursor = '';
+      });
+
+      row.addEventListener('mouseup', () => {
+        isDown = false;
+        row.style.cursor = '';
+      });
+
+      row.addEventListener('mousemove', (e) => {
+        if (!isDown) return;
+        e.preventDefault();
+        const x = e.pageX - row.offsetLeft;
+        const walk = (x - startX) * 1.5;
+        row.scrollLeft = scrollLeft - walk;
+      });
+    };
+
+    // Attach to wbar and sbar
+    attachHorizontalScroll('wbar');
+    attachHorizontalScroll('sbar');
+  })();
+
   /* ══════════ INIT ══════════ */
   applyLang();
   initNotifications();

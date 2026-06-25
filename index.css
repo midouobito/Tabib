@@ -333,13 +333,30 @@
       display: flex;
       overflow-x: auto;
       gap: 6px;
-      padding: 4px 12px;
+      padding: 4px 12px 6px;
       scrollbar-width: none;
       -ms-overflow-style: none;
       width: 100%;
     }
     .chips-row::-webkit-scrollbar {
       display: none;
+    }
+    @media (min-width: 768px) {
+      .chips-row:hover {
+        scrollbar-width: thin;
+        -ms-overflow-style: auto;
+      }
+      .chips-row:hover::-webkit-scrollbar {
+        display: block;
+        height: 4px;
+      }
+      .chips-row::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .chips-row::-webkit-scrollbar-thumb {
+        background: var(--border);
+        border-radius: 10px;
+      }
     }
     .chip {
       flex-shrink: 0; padding: 5px 12px; border-radius: var(--r2);
