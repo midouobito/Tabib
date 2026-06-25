@@ -1078,13 +1078,18 @@
 
     /* Review form + claim button row */
     const fw=document.createElement('div');
-    fw.style.cssText='padding:9px 14px;border-top:1px dashed var(--border-light);display:flex;gap:8px;';
-    const lb=document.createElement('button'); lb.className='btn-review'; lb.style.flex='1'; lb.textContent=t('leave_review'); lb.onclick=()=>toggleForm(doc.id); fw.appendChild(lb);
+    fw.style.cssText='padding:10px 14px;border-top:1px dashed var(--border-light);display:flex;gap:8px;';
+    const lb=document.createElement('button'); lb.className='btn-review';
+    lb.style.flex='1';
+    lb.innerHTML=`<i data-lucide="message-square-plus" style="width:14px;height:14px;stroke-width:2.2px;"></i> <span>${t('leave_review')}</span>`;
+    lb.onclick=()=>toggleForm(doc.id); fw.appendChild(lb);
     
     if (getCategory(doc) === 'médecin' || getCategory(doc) === 'pharmacie') {
       const cb_claim=document.createElement('button');
-      cb_claim.className='btn-review'; cb_claim.style.cssText='flex:1;border-color:var(--accent2);color:var(--accent2);';
-      cb_claim.textContent = getCategory(doc) === 'pharmacie' ? (currentLang === 'ar' ? '✅ أنا هذه الصيدلية' : '✅ Je suis cette pharmacie') : t('claim_btn');
+      cb_claim.className='btn-claim';
+      cb_claim.style.flex='1';
+      const claimTxt = getCategory(doc) === 'pharmacie' ? (currentLang === 'ar' ? 'أنا هذه الصيدلية' : 'Je suis cette pharmacie') : (currentLang === 'ar' ? 'أنا هذا الطبيب' : 'Je suis ce médecin');
+      cb_claim.innerHTML=`<i data-lucide="badge-check" style="width:14px;height:14px;stroke-width:2.2px;"></i> <span>${claimTxt}</span>`;
       cb_claim.onclick=()=>openClaimModal(doc);
       fw.appendChild(cb_claim);
     }
@@ -1114,19 +1119,18 @@
     const ab=document.createElement('div'); ab.className='card-actions';
     
     const ca=document.createElement('a'); ca.href=`tel:${doc.telephone}`; ca.className='btn-call';
-    ca.innerHTML=`<i data-lucide="phone" style="width:12px;height:12px;stroke-width:2.5px;margin-right:4px;"></i>`;
-    ca.appendChild(document.createTextNode(t('call_btn'))); ab.appendChild(ca);
+    ca.innerHTML=`<i data-lucide="phone" style="width:16px;height:16px;stroke-width:2.5px;"></i> <span>${t('call_btn')}</span>`;
+    ab.appendChild(ca);
 
     if (getCategory(doc) === 'médecin' && doc.rdv_enabled !== false) {
-      const rdv_b=document.createElement('button'); rdv_b.className='btn-map';
-      rdv_b.style.cssText='border-color:var(--accent);color:var(--accent);display:inline-flex;align-items:center;gap:4px;';
-      rdv_b.innerHTML=`<i data-lucide="calendar" style="width:12px;height:12px;stroke-width:2.5px;"></i> <span>${t('rdv_btn')}</span>`;
+      const rdv_b=document.createElement('button'); rdv_b.className='btn-rdv';
+      rdv_b.innerHTML=`<i data-lucide="calendar-check" style="width:16px;height:16px;stroke-width:2.5px;"></i> <span>${t('rdv_btn')}</span>`;
       rdv_b.onclick=()=>openRdvModal(doc); ab.appendChild(rdv_b);
     }
 
-    const ma=document.createElement('a'); ma.href=mapsUrl; ma.target='_blank'; ma.rel='noopener noreferrer'; ma.className='btn-map';
-    ma.innerHTML=`<i data-lucide="navigation" style="width:12px;height:12px;stroke-width:2.5px;margin-right:4px;"></i>`;
-    ma.appendChild(document.createTextNode(t('directions_btn'))); ab.appendChild(ma);
+    const ma=document.createElement('a'); ma.href=mapsUrl; ma.target='_blank'; ma.rel='noopener noreferrer'; ma.className='btn-directions';
+    ma.innerHTML=`<i data-lucide="map-pin" style="width:16px;height:16px;stroke-width:2.5px;"></i> <span>${t('directions_btn')}</span>`;
+    ab.appendChild(ma);
     wrap.appendChild(ab);
     return wrap;
   }
